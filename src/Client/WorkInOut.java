@@ -4,9 +4,13 @@
  */
 package Client;
 
+import vo.EmpVO;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 /**
  *
@@ -19,6 +23,7 @@ public class WorkInOut extends JFrame {
     private JButton bt_out;
     private JLabel inOutImage_l;
     private JPanel north_p;
+    private String user_name;
     // 변수 선언 끝
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(WorkInOut.class.getName());
@@ -29,13 +34,31 @@ public class WorkInOut extends JFrame {
     //기본 생성자
     public WorkInOut() {
         initComponents();
+        EmpVO emp = new EmpVO();
+        user_name = emp.getEname();
+
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
         //출근 버튼 이벤트
         bt_in.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                String message;
+                System.out.println(user_name);
+                if (user_name != null && !user_name.isEmpty()) {
+
+                    message = user_name + "님 출근하셨습니다. 오늘도 열심히 힘내세요.";
+
+                } else {
+
+                    message = "출근했습니다. 오늘도 열심히 힘내세요."; // 이름 정보가 없을 경우 기본 메시지
+
+                }
+
                 JOptionPane.showMessageDialog(WorkInOut.this,
-                        "출근 했습니다 오늘도 열심히 힘내세요.", "출근 알림", JOptionPane.INFORMATION_MESSAGE);
+
+                        message, "출근 알림", JOptionPane.INFORMATION_MESSAGE);
+
             }
         });
         // 퇴근 버튼 이벤트
@@ -47,6 +70,8 @@ public class WorkInOut extends JFrame {
             }
 
         });
+
+
 
     }//기본 생성자의 끝
 

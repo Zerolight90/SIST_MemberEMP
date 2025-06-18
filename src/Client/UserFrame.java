@@ -146,6 +146,7 @@ public class UserFrame extends javax.swing.JFrame {
             public void actionPerformed(ActionEvent e) {
             WorkInOut workInOutWindow = new WorkInOut();
             }
+
         });
     } //생성자의 끝
 
