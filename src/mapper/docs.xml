@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="docs">
+    <resultMap id="map1" type="vo.DocsVO">
+        <association property="dvo" javaType="vo.DeptVO" select="dept.getDept" column="deptno">
+        </association>
+    </resultMap>
+    <select id="all" resultMap="map1">
+        select * from documents
+    </select>
+    <select id="search_dept" resultType="vo.DocsVO" parameterType="String">
+        SELECT * FROM documents
+        WHERE deptno = #{no}
+    </select>
+
+    <insert id="insertDoc" parameterType="vo.DocsVO" >
+        INSERT INTO documents (docs_num, title, content, empno, deptno, visibility, date)
+        VALUES (#{docs_num}, #{title}, #{content}, #{empno}, #{deptno}, #{visibility}, #{date})
+    </insert>
+    <select id="Docs_Dept" parameterType="string" resultType="vo.DocsVO">
+        SELECT * FROM documents WHERE deptno = #{deptno}
+    </select>
+    <insert id="share_Docs" parameterType="map">
+        INSERT INTO docs_shared (docs_num, deptno)
+        VALUES (#{docs_num}, #{deptno})
+    </insert>
+
+    <select id="reDocs" parameterType="string" resultType="vo.DocsVO">
+        SELECT d.docs_num, d.title, d.content, d.empno, d.deptno,
+        e.ename AS writerName, dp.dname AS deptName
+        FROM documents d INNER JOIN docs_shared ds
+        ON d.docs_num = ds.docs_num
+        INNER JOIN emp e ON d.empno = e.empno
+        INNER JOIN dept dp ON d.deptno = dp.deptno
+        WHERE ds.deptno = #{deptno}
+    </select>
+
+</mapper>
