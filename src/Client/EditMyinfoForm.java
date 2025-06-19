@@ -16,8 +16,8 @@ public class EditMyinfoForm extends javax.swing.JDialog {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(EditMyinfoForm.class.getName());
 
-    // 로그인한 사원의 사번을 LoginFrame 으로부터 받아올 변수 선언
-    String loginedEmpno;
+    // 로그인한 사원의 모든 정보가 담긴 EmpVO를 LoginFrame 으로부터 받아올 변수 선언
+    EmpVO vo;
 
     // 팩토리 생성
     SqlSessionFactory factory;
@@ -62,30 +62,30 @@ public class EditMyinfoForm extends javax.swing.JDialog {
      * Creates new form EditMyinfoForm
      */
 
-    // LoginFrame 으로부터 로그인한 사원의 사번을 받아오기 위해 기본 생성자에서 문자열 값 하나 받기 (String str)
-    public EditMyinfoForm(java.awt.Frame parent, boolean modal, String str) {
+    // LoginFrame 으로부터 로그인한 사원의 모든 정보를 받아오기 위해 기본 생성자에서 EmpVO 받기 (EmpVO vo)
+    public EditMyinfoForm(UserFrame parent, boolean modal, EmpVO vo) {
         super(parent, modal);
-        loginedEmpno = str; // LoginFrame 으로부터 받아온 사번을 앞서 선언한 변수에 저장
+        this.vo = vo; // LoginFrame 으로부터 받아온 vo를 앞서 선언한 변수에 저장
 
         initComponents();
         initdb();
 
         // 내 정보 수정 창에 1차적으로 내 정보 설정하기
         SqlSession ss = factory.openSession();
-        EmpVO vo = ss.selectOne("emp.getMyInfoEdit", loginedEmpno);
-        empno_tf.setText(vo.getEmpno());
-        ename_tf.setText(vo.getEname());
-        pos_tf.setText(vo.getPosname());
-        dname_tf.setText(vo.getDname());
-        sal_tf.setText(vo.getSal());
-        hiredate_tf.setText(vo.getHireDATE());
-        email_tf.setText(vo.getEmail());
-        phone_tf.setText(vo.getPhone());
-        att_tf.setText(vo.getAttend_status());
-        mgr_tf.setText(vo.getMgr());
+        EmpVO evo = ss.selectOne("emp.getMyInfoEdit", this.vo.getEmpno());
+        empno_tf.setText(evo.getEmpno());
+        ename_tf.setText(evo.getEname());
+        pos_tf.setText(evo.getPosname());
+        dname_tf.setText(evo.getDname());
+        sal_tf.setText(evo.getSal());
+        hiredate_tf.setText(evo.getHireDATE());
+        email_tf.setText(evo.getEmail());
+        phone_tf.setText(evo.getPhone());
+        att_tf.setText(evo.getAttend_status());
+        mgr_tf.setText(evo.getMgr());
 
         // 수정 버튼을 눌렀을 때 수정 가능한 내 정보들의 텍스트 필드 값을 문자열 변수에 저장한 후
-        // 위에서 사용했던 EmpVO vo를 재사용하여 필요한 정보들을 setter를 이용해 바꿔주고
+        // 위에서 사용했던 EmpVO evo를 재사용하여 필요한 정보들을 setter를 이용해 바꿔주고
         // 그 이후 업데이트 쿼리를 이용해서 DB에 업데이트 시킨다.
         bt_edit.addActionListener(new ActionListener() {
             @Override
@@ -96,25 +96,27 @@ public class EditMyinfoForm extends javax.swing.JDialog {
 
                 SqlSession ss = factory.openSession();
 
-                vo.setEname(ename);
-                vo.setEmail(email);
-                vo.setPhone(phone);
-                int cnt = ss.update("emp.editMyInfo", vo);
+                evo.setEname(ename);
+                evo.setEmail(email);
+                evo.setPhone(phone);
+                int cnt = ss.update("emp.editMyInfo", evo);
 
                 // 변동 사항이 있을 경우에만 커밋을 통해 DB에 적용시키고
                 // 실시간으로 내 정보 수정 창에서 변동된 사항을 바로 갱신시켜 보여준다.
                 if (cnt != 0) {
                     ss.commit();
-                    empno_tf.setText(vo.getEmpno());
-                    ename_tf.setText(vo.getEname());
-                    pos_tf.setText(vo.getPosname());
-                    dname_tf.setText(vo.getDname());
-                    sal_tf.setText(vo.getSal());
-                    hiredate_tf.setText(vo.getHireDATE());
-                    email_tf.setText(vo.getEmail());
-                    phone_tf.setText(vo.getPhone());
-                    att_tf.setText(vo.getAttend_status());
-                    mgr_tf.setText(vo.getMgr());
+                    empno_tf.setText(evo.getEmpno());
+                    ename_tf.setText(evo.getEname());
+                    pos_tf.setText(evo.getPosname());
+                    dname_tf.setText(evo.getDname());
+                    sal_tf.setText(evo.getSal());
+                    hiredate_tf.setText(evo.getHireDATE());
+                    email_tf.setText(evo.getEmail());
+                    phone_tf.setText(evo.getPhone());
+                    att_tf.setText(evo.getAttend_status());
+                    mgr_tf.setText(evo.getMgr());
+
+                    parent.EditMyInfoTable(evo); // UserFrame의 테이블을 갱신시키기 위한 함수 호출
                 }
                 else
                     ss.rollback(); // 변동된 사항이 없을 경우 롤백시켜 취소한다.
