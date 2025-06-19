@@ -34,23 +34,17 @@ public class WorkInOut extends JFrame {
     private JPanel north_p;
     private String user_name;
     private String loginedEmpno; // 로그인한 사번을 저장할 변수
-    EmpVO vo;
+    private int status; // handleClockOut에서 쓰일 status값 저장소
 
     //DB관련 변수
     SqlSessionFactory factory;
     SqlSession ss;
-    List<CommuteVO> commuteList;
-
 
     // 변수 선언 끝
 
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(WorkInOut.class.getName());
-
-    /**
-     * Creates new form WorkInOut
-     */
     //기본 생성자
     public WorkInOut(UserFrame userFrame) {
+        //UseerFrame에 있는 enmpno를 가져 오기 위해 변수를 선언한다.
         user_name = userFrame.vo.getEname();
         loginedEmpno = userFrame.vo.getEmpno();
         initComponents();
@@ -65,6 +59,7 @@ public class WorkInOut extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 handleClockIn();
+                dispose();
             }
 
         });
@@ -73,6 +68,7 @@ public class WorkInOut extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 handleClockOut();
+                dispose();
             }
 
         });
@@ -91,11 +87,11 @@ public class WorkInOut extends JFrame {
         if (now.isAfter(lateTime)) {
 
             map.put("status", "5");
-            map.put("note", "지각으로 기록됨");
+            map.put("note", "지각");
 
         } else {
             map.put("status", "0");
-            map.put("note", "정상 출근");
+            map.put("note", "출근");
         }
 
         SqlSession ss = null; // SqlSession 변수를 try 블록 바깥에 선언
@@ -115,16 +111,28 @@ public class WorkInOut extends JFrame {
         JOptionPane.showMessageDialog(WorkInOut.this,
                 user_name+"님 오늘하루도 고생하셨습니다.");
 
+        try {
+            ss = factory.openSession();
+            status = ss.selectOne("commute.getStatus", loginedEmpno); // empno로 status 조회
+            System.out.println(status);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
         Map<String, String> map = new HashMap<>();
         map.put("empno", loginedEmpno);
         map.put("status", "1");
-        map.put("note", "정상 퇴근");
 
+        if (status == 5) {
+            map.put("note", "지각");
+       } else if (status == 0) {
+            map.put("note", "정상 퇴근");
+        }
 
         SqlSession ss = null; // SqlSession 변수를 try 블록 바깥에 선언
 
         try {
-            ss = factory.openSession(); // factory는 SqlSessionFactory 객체로 가정
+            ss = factory.openSession();
             ss.update("commute.chkout", map);
             ss.commit();
         } catch (Exception e) {
@@ -173,13 +181,5 @@ public class WorkInOut extends JFrame {
         pack();
         this.setVisible(true);
     }
-
-
-
-
-    /**
-     * @param args the command line arguments
-     */
-
 
 }

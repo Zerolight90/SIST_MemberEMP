@@ -15,7 +15,7 @@
     </select>
 
 
-    <select id="searchByEmpnoYearMonth" parameterType="Map" resultType="vo.CommuteVO">
+    <select id="searchByYearMonth" parameterType="Map" resultType="vo.CommuteVO">
         SELECT empno,date, chkin, chkout, attend_note
         FROM team_db.attendance
         WHERE
@@ -25,15 +25,22 @@
         date ASC
     </select>
 
-    <select id="chkin" parameterType="Map">
+    <insert id="chkin" parameterType="Map">
 
         INSERT INTO attendance (empno, date, chkin, chkout, attend_status, attend_note)
         VALUES
        (#{empno}, DATE(NOW()), TIME(NOW()), NULL, #{status}, #{note})
 
+    </insert>
+
+    <select id="getStatus" parameterType="String" resultType="int" >
+        <!-- 특정 사번의 퇴근 시간이 없는 오늘 상태 키값을 가져온다 -->
+         SELECT attend_status FROM team_db.attendance
+        where empno = #{empno} AND date = DATE(NOW()) AND chkout is null
+
     </select>
 
-    <select id="chkout" parameterType="Map">
+    <update id="chkout" parameterType="Map">
         UPDATE attendance
         SET
         chkout = TIME(NOW()),
@@ -42,6 +49,6 @@
         WHERE
         empno = #{empno}
         AND date = DATE(NOW());
-    </select>
+    </update>
 
 </mapper>
