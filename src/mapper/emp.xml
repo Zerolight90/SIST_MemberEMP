@@ -16,9 +16,9 @@
         WHERE username = #{username}
     </select>
 
-    <!-- 로그인 시 사번 저장 쿼리 -->
-    <select id="getEmpno" resultType="String" parameterType="String">
-        SELECT empno FROM emp
+    <!-- 로그인 시 사원의 모든 정보 저장 쿼리 -->
+    <select id="getEmpno" resultType="vo.EmpVO" parameterType="String">
+        SELECT * FROM emp
         WHERE username = #{username}
     </select>
 
@@ -37,4 +37,11 @@
         ON e.deptno = d.deptno
         WHERE e.empno = #{empno}
     </select>
+
+    <!-- 내 정보 수정값 업데이트하기 -->
+    <update id="editMyInfo" parameterType="vo.EmpVO">
+        UPDATE emp
+        SET ename = #{ename}, email = #{email}, phone = #{phone}
+        WHERE empno = #{empno}
+    </update>
 </mapper>
