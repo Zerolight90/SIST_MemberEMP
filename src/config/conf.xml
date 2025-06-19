@@ -18,5 +18,7 @@
         <mapper resource="mapper/emp.xml"/>
         <mapper resource="mapper/Commute.xml"/>
         <mapper resource="mapper/searchEmp.xml"/>
+        <mapper resource="mapper/dept.xml"/>
+        <mapper resource="mapper/docs.xml"/>
     </mappers>
 </configuration>

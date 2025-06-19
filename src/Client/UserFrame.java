@@ -290,6 +290,22 @@ public class UserFrame extends javax.swing.JFrame {
             }
         });
 
+        // 업무 일지 버튼 눌렀을 때 화면 변경
+        bt_workLog.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cl.show(UserFrame.this.centerCard_p,"workLogCard");
+            }
+        });
+
+        // 업무 일지 - 업무일지 작성 버튼 눌렀을 때 창 띄우기
+        bt_workLogWrite.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new docs();
+            }
+        });
+
         // 나의 근태정보 버튼 눌렀을 때 화면 변경
         bt_myAtt.addActionListener(new ActionListener() {
             @Override
@@ -306,6 +322,27 @@ public class UserFrame extends javax.swing.JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
 //                searchAttendance(); //
+            }
+        });
+
+        // 관리자 모드 버튼 눌렀을 시 관리자 인증 진행한 후
+        // 권한번호가 일정 번호라면 인증 성공해서 창 닫고 AdminFrame 열기
+        // 일정 번호가 안 된다면 인증 실패해서 메세지 띄우기
+        bt_adminMode.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (vo.getRole_num().equals("3")){
+                    UserFrame.this.dispose();
+
+                    try {
+                        new AdminFrame(vo);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+
+                } else {
+                    JOptionPane.showMessageDialog(UserFrame.this, "권한이 없습니다!");
+                }
             }
         });
 
