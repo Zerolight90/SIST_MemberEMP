@@ -355,6 +355,15 @@ public class UserFrame extends javax.swing.JFrame {
 
         });
 
+        bt_logOut.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                UserFrame.this.dispose();
+
+                new LoginFrame().setVisible(true);
+            }
+        });
+
         // 종료 버튼 누를 시 UserFrame 종료
         bt_exit.addActionListener(new ActionListener() {
             @Override
@@ -459,6 +468,7 @@ public class UserFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         south_p = new javax.swing.JPanel();
+        bt_logOut = new javax.swing.JButton();
         bt_exit = new javax.swing.JButton();
         west_p = new javax.swing.JPanel();
         northImage_l = new javax.swing.JLabel();
@@ -522,6 +532,9 @@ public class UserFrame extends javax.swing.JFrame {
 
         south_p.setPreferredSize(new java.awt.Dimension(884, 80));
         south_p.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 30, 30));
+
+        bt_logOut.setText("로그아웃");
+        south_p.add(bt_logOut);
 
         bt_exit.setText("종료");
         south_p.add(bt_exit);
@@ -857,6 +870,7 @@ public class UserFrame extends javax.swing.JFrame {
     private javax.swing.JButton bt_exit;
     private javax.swing.JButton bt_find;
     private javax.swing.JButton bt_home;
+    private javax.swing.JButton bt_logOut;
     private javax.swing.JButton bt_myAtt;
     private javax.swing.JButton bt_myInfo;
     private javax.swing.JButton bt_myList;

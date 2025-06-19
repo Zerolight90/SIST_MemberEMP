@@ -6,6 +6,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import vo.EmpVO;
 
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -117,9 +118,12 @@ public class EditMyinfoForm extends javax.swing.JDialog {
                     mgr_tf.setText(evo.getMgr());
 
                     parent.EditMyInfoTable(evo); // UserFrame의 테이블을 갱신시키기 위한 함수 호출
+                    JOptionPane.showMessageDialog(EditMyinfoForm.this, "정보 수정이 완료됐습니다!");
                 }
-                else
+                else {
                     ss.rollback(); // 변동된 사항이 없을 경우 롤백시켜 취소한다.
+                    JOptionPane.showMessageDialog(EditMyinfoForm.this, "수정된 값이 없습니다!");
+                }
 
                 ss.close();
             }

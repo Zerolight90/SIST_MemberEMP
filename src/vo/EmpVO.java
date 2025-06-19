@@ -2,7 +2,7 @@ package vo;
 
 public class EmpVO {
     private String
-            empno, deptno, role_num, ename, attend_status, sal, hireDATE,
+            empno, deptno, role_num, ename, work_status, sal, hireDATE,
             resign_DATE, phone, email, mgr, username, password, dname, posname;
 
     public String getEmpno() {
@@ -38,11 +38,11 @@ public class EmpVO {
     }
 
     public String getAttend_status() {
-        return attend_status;
+        return work_status;
     }
 
     public void setAttend_status(String attend_status) {
-        this.attend_status = attend_status;
+        this.work_status = attend_status;
     }
 
     public String getSal() {

@@ -24,7 +24,7 @@
 
     <!-- 내 정보 테이블 필요값 얻기 -->
     <select id="getMyInfo" resultType="vo.EmpVO" parameterType="String">
-        SELECT e.empno, e.ename, e.hiredate, d.dname, e.sal, e.phone, e.email, e.hiredate
+        SELECT e.empno, e.ename, e.posname, d.dname, e.sal, e.phone, e.email, e.hiredate
         FROM emp e INNER JOIN dept d
         ON e.deptno = d.deptno
         WHERE e.empno = #{empno}
@@ -32,7 +32,7 @@
 
     <!-- 내 정보 수정에 1차로 표시할 값 얻기 -->
     <select id="getMyInfoEdit" resultType="vo.EmpVO" parameterType="String">
-        SELECT e.empno, e.ename, e.posname, d.dname, e.sal, e.hiredate, e.email, e.phone, e.attend_status, e.mgr
+        SELECT e.empno, e.ename, e.posname, d.dname, e.sal, e.hiredate, e.email, e.phone, e.work_status, e.mgr
         FROM emp e INNER JOIN dept d
         ON e.deptno = d.deptno
         WHERE e.empno = #{empno}
@@ -43,5 +43,6 @@
         UPDATE emp
         SET ename = #{ename}, email = #{email}, phone = #{phone}
         WHERE empno = #{empno}
+        AND (ename != #{ename} OR email != #{email} OR phone != #{phone})
     </update>
 </mapper>
