@@ -1,15 +1,10 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JDialog.java to edit this template
- */
 package Client;
 
-import vo.EmpVO;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-
+import vo.EmpVO;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,10 +12,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.List;
 
-/**
- *
- * @author zhfja
- */
 public class EditMyinfoForm extends javax.swing.JDialog {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(EditMyinfoForm.class.getName());
@@ -79,24 +70,55 @@ public class EditMyinfoForm extends javax.swing.JDialog {
         initComponents();
         initdb();
 
-        // 수정 버튼을 눌렀을 때 (미완성)
+        // 내 정보 수정 창에 1차적으로 내 정보 설정하기
+        SqlSession ss = factory.openSession();
+        EmpVO vo = ss.selectOne("emp.getMyInfoEdit", loginedEmpno);
+        empno_tf.setText(vo.getEmpno());
+        ename_tf.setText(vo.getEname());
+        pos_tf.setText(vo.getPosname());
+        dname_tf.setText(vo.getDname());
+        sal_tf.setText(vo.getSal());
+        hiredate_tf.setText(vo.getHireDATE());
+        email_tf.setText(vo.getEmail());
+        phone_tf.setText(vo.getPhone());
+        att_tf.setText(vo.getAttend_status());
+        mgr_tf.setText(vo.getMgr());
+
+        // 수정 버튼을 눌렀을 때 수정 가능한 내 정보들의 텍스트 필드 값을 문자열 변수에 저장한 후
+        // 위에서 사용했던 EmpVO vo를 재사용하여 필요한 정보들을 setter를 이용해 바꿔주고
+        // 그 이후 업데이트 쿼리를 이용해서 DB에 업데이트 시킨다.
         bt_edit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String empno = empno_tf.getText().trim();
                 String ename = ename_tf.getText().trim();
-                String pos = pos_tf.getText().trim();
-                String dname = dname_tf.getText().trim();
-                String sal = sal_tf.getText().trim();
-                String hiredate = hiredate_tf.getText().trim();
                 String email = email_tf.getText().trim();
                 String phone = phone_tf.getText().trim();
-                String att = att_tf.getText().trim();
-                String mgr = mgr_tf.getText().trim();
 
                 SqlSession ss = factory.openSession();
-                List<EmpVO> list = ss.selectList("emp.getMyInfoEdit", loginedEmpno);
-                
+
+                vo.setEname(ename);
+                vo.setEmail(email);
+                vo.setPhone(phone);
+                int cnt = ss.update("emp.editMyInfo", vo);
+
+                // 변동 사항이 있을 경우에만 커밋을 통해 DB에 적용시키고
+                // 실시간으로 내 정보 수정 창에서 변동된 사항을 바로 갱신시켜 보여준다.
+                if (cnt != 0) {
+                    ss.commit();
+                    empno_tf.setText(vo.getEmpno());
+                    ename_tf.setText(vo.getEname());
+                    pos_tf.setText(vo.getPosname());
+                    dname_tf.setText(vo.getDname());
+                    sal_tf.setText(vo.getSal());
+                    hiredate_tf.setText(vo.getHireDATE());
+                    email_tf.setText(vo.getEmail());
+                    phone_tf.setText(vo.getPhone());
+                    att_tf.setText(vo.getAttend_status());
+                    mgr_tf.setText(vo.getMgr());
+                }
+                else
+                    ss.rollback(); // 변동된 사항이 없을 경우 롤백시켜 취소한다.
+
                 ss.close();
             }
         });
@@ -110,7 +132,7 @@ public class EditMyinfoForm extends javax.swing.JDialog {
         });
     }
 
-    // DB 기본 설정 함수
+    // DB 연결 함수
     private void initdb(){
         try {
             Reader r = Resources.getResourceAsReader(
@@ -303,9 +325,5 @@ public class EditMyinfoForm extends javax.swing.JDialog {
         getContentPane().add(center_p, java.awt.BorderLayout.CENTER);
 
         pack();
-    }// </editor-fold>//GEN-END:initComponents
-
-    /**
-     * @param args the command line arguments
-     */
     }
+}
