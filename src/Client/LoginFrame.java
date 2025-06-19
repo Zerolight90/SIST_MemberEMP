@@ -146,7 +146,7 @@ public class LoginFrame extends JFrame {
 
                 // 로그인 성공 시 UserFrame 에 로그인된 사원의 모든 정보를 넘겨주기 위한 구문
                 ss = factory.openSession();
-                vo = ss.selectOne("emp.getEmpno", username);
+                vo = ss.selectOne("emp.getEmp", username);
                 UserFrame parent = new UserFrame(vo); // UserFrame 기본 생성자에서 사원의 모든 정보가 담긴 vo 받기!
                 ss.close();
 
