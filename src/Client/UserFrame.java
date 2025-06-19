@@ -40,8 +40,8 @@ public class UserFrame extends javax.swing.JFrame {
     String[] date_name = {"사번", "날짜", "출근", "퇴근", "상태"};
     String[][] chk;
 
-    // 로그인한 사원의 사번을 LoginFrame 으로부터 받아올 변수 선언
-    String loginedEmpno;
+    // 로그인한 사원의 모든 정보를 LoginFrame 으로부터 받아올 변수 선언
+    EmpVO vo;
     ;
     // 내 정보 테이블을 갱신하기 위해 사용할 2차원 오브젝트 배열과 1차원 문자열 배열 선언
     Object[][] myinfo;
@@ -51,33 +51,34 @@ public class UserFrame extends javax.swing.JFrame {
      */
 
     //기본 생성자
-    public UserFrame(String str) {
-        // LoginFrame 으로부터 로그인한 사원의 사번을 받아오기 위해 기본 생성자에서 문자열 값 하나 받기 (String str)
+    public UserFrame(EmpVO vo) {
+        // LoginFrame 으로부터 로그인한 사원의 모든 정보를 받아오기 위해 기본 생성자에서 EmpVO 받기 (EmpVO vo)
 
-        loginedEmpno = str; // LoginFrame 으로부터 받아온 사번을 앞서 선언한 변수에 저장
+        this.vo = vo; // LoginFrame 으로부터 받아온 vo를 앞서 선언한 vo에 저장
 
         cl = new CardLayout();
 
         // MyBatis 초기화
         initDB();
 
+        // 창 구성
         initComponents();
 
-        // LoginFrame 으로부터 받아온 사번을 이용해 내 정보 테이블 갱신하기
-        if (loginedEmpno != null) {
+        // LoginFrame 으로부터 받아온 vo를 이용해 내 정보 테이블 갱신하기
+        if (this.vo != null) {
             ss = factory.openSession();
-            List<EmpVO> list = ss.selectList("emp.getMyInfo", loginedEmpno);
+            List<EmpVO> list = ss.selectList("emp.getMyInfo", this.vo.getEmpno());
             myinfo = new Object[list.size()][myinfo_cname.length];
             int i = 0;
-            for (EmpVO vo : list) {
-                myinfo[i][0] = vo.getEmpno();
-                myinfo[i][1] = vo.getEname();
-                myinfo[i][2] = vo.getPosname();
-                myinfo[i][3] = vo.getDname();
-                myinfo[i][4] = vo.getSal();
-                myinfo[i][5] = vo.getPhone();
-                myinfo[i][6] = vo.getEmail();
-                myinfo[i][7] = vo.getHireDATE();
+            for (EmpVO evo : list) {
+                myinfo[i][0] = evo.getEmpno();
+                myinfo[i][1] = evo.getEname();
+                myinfo[i][2] = evo.getPosname();
+                myinfo[i][3] = evo.getDname();
+                myinfo[i][4] = evo.getSal();
+                myinfo[i][5] = evo.getPhone();
+                myinfo[i][6] = evo.getEmail();
+                myinfo[i][7] = evo.getHireDATE();
             }
             table_myInfo.setModel(new DefaultTableModel(myinfo, myinfo_cname));
             ss.close();
@@ -118,10 +119,11 @@ public class UserFrame extends javax.swing.JFrame {
         bt_editMyInfo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new EditMyinfoForm(UserFrame.this, true, loginedEmpno).setVisible(true);
+                new EditMyinfoForm(UserFrame.this, true, UserFrame.this.vo).setVisible(true);
             }
         });
 
+        // 나의 근태정보 버튼 눌렀을 때 화면 변경
         bt_myAtt.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -150,7 +152,33 @@ public class UserFrame extends javax.swing.JFrame {
         });
     } //생성자의 끝
 
-
+    // 내 정보 수정 창에서 사원 정보를 수정했을 때 내 정보 테이블 갱신하는 함수
+    public void EditMyInfoTable(EmpVO vo){
+        ss = factory.openSession();
+        List<EmpVO> list = ss.selectList("emp.getMyInfo", this.vo.getEmpno());
+        myinfo = new Object[list.size()][myinfo_cname.length];
+        int i = 0;
+        for (EmpVO evo : list) {
+            myinfo[i][0] = evo.getEmpno();
+            myinfo[i][1] = evo.getEname();
+            myinfo[i][2] = evo.getPosname();
+            myinfo[i][3] = evo.getDname();
+            myinfo[i][4] = evo.getSal();
+            myinfo[i][5] = evo.getPhone();
+            myinfo[i][6] = evo.getEmail();
+            myinfo[i][7] = evo.getHireDATE();
+        }
+        table_myInfo.setModel(new DefaultTableModel(myinfo, myinfo_cname));
+        table_myInfo.getColumnModel().getColumn(0).setPreferredWidth(50);   // 사번
+        table_myInfo.getColumnModel().getColumn(1).setPreferredWidth(80);   // 이름
+        table_myInfo.getColumnModel().getColumn(2).setPreferredWidth(100);  // 직급
+        table_myInfo.getColumnModel().getColumn(3).setPreferredWidth(120);  // 부서
+        table_myInfo.getColumnModel().getColumn(4).setPreferredWidth(60);   // 급여
+        table_myInfo.getColumnModel().getColumn(5).setPreferredWidth(120);  // 연락처
+        table_myInfo.getColumnModel().getColumn(6).setPreferredWidth(150);  // 이메일
+        table_myInfo.getColumnModel().getColumn(7).setPreferredWidth(100);  // 입사일
+        ss.close();
+    }
 
     //DB연결 함수
     private void initDB() {
