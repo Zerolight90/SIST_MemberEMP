@@ -6,7 +6,7 @@
 <mapper namespace="searchEmp">
     <!-- 사번 검색 쿼리 -->
     <select id="searchEmpno" resultType="vo.EmpVO" parameterType="String">
-        SELECT e.empno, e.ename, e.ename, d.dname, e.phone, e.email, e.hiredate
+        SELECT e.empno, e.ename, e.posname, d.dname, e.phone, e.email, e.hiredate
         FROM emp e INNER JOIN dept d
                               ON e.deptno = d.deptno
         WHERE e.empno LIKE CONCAT('%', #{empno}, '%')
@@ -14,7 +14,7 @@
 
     <!-- 이름 검색 쿼리 -->
     <select id="searchEname" resultType="vo.EmpVO" parameterType="String">
-        SELECT e.empno, e.ename, e.ename, d.dname, e.phone, e.email, e.hiredate
+        SELECT e.empno, e.ename, e.posname, d.dname, e.phone, e.email, e.hiredate
         FROM emp e INNER JOIN dept d
                               ON e.deptno = d.deptno
         WHERE e.ename LIKE CONCAT('%', #{ename}, '%')
@@ -22,7 +22,7 @@
 
     <!-- 직급명 검색 쿼리 -->
     <select id="searchPos" resultType="vo.EmpVO" parameterType="String">
-        SELECT e.empno, e.ename, e.ename, d.dname, e.phone, e.email, e.hiredate
+        SELECT e.empno, e.ename, e.posname, d.dname, e.phone, e.email, e.hiredate
         FROM emp e INNER JOIN dept d
                               ON e.deptno = d.deptno
         WHERE e.posname LIKE CONCAT('%', #{posname}, '%')
@@ -30,7 +30,7 @@
 
     <!-- 부서명 검색 쿼리 -->
     <select id="searchEmp" resultType="vo.EmpVO" parameterType="String">
-        SELECT e.empno, e.ename, e.ename, d.dname, e.phone, e.email, e.hiredate
+        SELECT e.empno, e.ename, e.posname, d.dname, e.phone, e.email, e.hiredate
         FROM emp e INNER JOIN dept d
                               ON e.deptno = d.deptno
         WHERE d.dname LIKE CONCAT('%', #{dname}, '%')
@@ -38,7 +38,7 @@
 
     <!-- 전화번호 검색 쿼리 -->
     <select id="searchPhone" resultType="vo.EmpVO" parameterType="String">
-        SELECT e.empno, e.ename, e.ename, d.dname, e.phone, e.email, e.hiredate
+        SELECT e.empno, e.ename, e.posname, d.dname, e.phone, e.email, e.hiredate
         FROM emp e INNER JOIN dept d
                               ON e.deptno = d.deptno
         WHERE e.phone LIKE CONCAT('%', #{phone}, '%')
@@ -46,7 +46,7 @@
 
     <!-- 이메일 검색 쿼리 -->
     <select id="searchEmail" resultType="vo.EmpVO" parameterType="String">
-        SELECT e.empno, e.ename, e.ename, d.dname, e.phone, e.email, e.hiredate
+        SELECT e.empno, e.ename, e.posname, d.dname, e.phone, e.email, e.hiredate
         FROM emp e INNER JOIN dept d
                               ON e.deptno = d.deptno
         WHERE e.email LIKE CONCAT('%', #{email}, '%')
@@ -54,7 +54,7 @@
 
     <!-- 입사일 검색 쿼리 -->
     <select id="searchHiredate" resultType="vo.EmpVO" parameterType="String">
-        SELECT e.empno, e.ename, e.ename, d.dname, e.phone, e.email, e.hiredate
+        SELECT e.empno, e.ename, e.posname, d.dname, e.phone, e.email, e.hiredate
         FROM emp e INNER JOIN dept d
                               ON e.deptno = d.deptno
         WHERE e.hiredate LIKE CONCAT('%', #{hiredate}, '%')
