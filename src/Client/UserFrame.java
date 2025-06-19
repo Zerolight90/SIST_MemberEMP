@@ -20,7 +20,7 @@ import java.io.Reader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.swing.ImageIcon;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -103,6 +103,14 @@ public class UserFrame extends javax.swing.JFrame {
         table_myInfo.getColumnModel().getColumn(6).setPreferredWidth(150);  // 이메일
         table_myInfo.getColumnModel().getColumn(7).setPreferredWidth(100);  // 입사일
 
+        // 홈 버튼 눌렀을 때 화면 변경
+        bt_home.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cl.show(UserFrame.this.centerCard_p, "homeCard");
+            }
+        });
+
         // 내 정보 버튼 눌렀을 때 화면 변경
         bt_myInfo.addActionListener(new ActionListener() {
             @Override
@@ -128,149 +136,156 @@ public class UserFrame extends javax.swing.JFrame {
         });
 
         // 사원 조회 - 검색 버튼 눌렀을 때 수행
+        // 콤보박스에 무엇이 선택됐는지와 검색창에 무엇이 입력되었는지를 알아내고
+        // 콤보박스 값에 따라서 조건식에 맞는 사원들의 정보를 리스트에 담아서
+        // 사원 조회 테이블에 갱신시킨다
         bt_search.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int cnt = search_cbox.getSelectedIndex();
-                String str = value_tf.getText().trim();
+                int cnt = search_cbox.getSelectedIndex(); // 콤보박스에서 선택된 인덱스값 얻어내기
+                String str = value_tf.getText().trim(); // 검색창 텍스트필드에 입력된값 얻기
 
-                int i = 0;
-                List<EmpVO> list;
+                int i = 0; // 스위치문 안의 반복문에서 사용할 증가용 정수 선언
+                List<EmpVO> list; // 스위치문에서 사용할 EmpVO를 자료형으로 받는 리스트 선언
 
-                switch (cnt){
-                    case 0:
-                        ss = factory.openSession();
-                        list = ss.selectList("searchEmp.searchEmpno", str);
-                        searchInfo = new Object[list.size()][searchInfo_cname.length];
+                if (str.isEmpty() == false) {
+                    switch (cnt) { // 콤보박스에서 선택된 인덱스값이 무엇인지에 따라서 스위치문 진행
+                        case 0:
+                            ss = factory.openSession();
+                            list = ss.selectList("searchEmp.searchEmpno", str);
+                            searchInfo = new Object[list.size()][searchInfo_cname.length];
 
-                        i = 0;
-                        for (EmpVO vo : list) {
-                            searchInfo[i][0] = vo.getEmpno();
-                            searchInfo[i][1] = vo.getEname();
-                            searchInfo[i][2] = vo.getPosname();
-                            searchInfo[i][3] = vo.getDname();
-                            searchInfo[i][4] = vo.getPhone();
-                            searchInfo[i][5] = vo.getEmail();
-                            searchInfo[i][6] = vo.getHireDATE();
-                            i++;
-                        }
-                        table_emp.setModel(new DefaultTableModel(searchInfo, searchInfo_cname));
-                        ss.close();
-                        break;
-                    case 1:
-                        ss = factory.openSession();
-                        list = ss.selectList("searchEmp.searchEname", str);
-                        searchInfo = new Object[list.size()][searchInfo_cname.length];
+                            i = 0;
+                            for (EmpVO vo : list) {
+                                searchInfo[i][0] = vo.getEmpno();
+                                searchInfo[i][1] = vo.getEname();
+                                searchInfo[i][2] = vo.getPosname();
+                                searchInfo[i][3] = vo.getDname();
+                                searchInfo[i][4] = vo.getPhone();
+                                searchInfo[i][5] = vo.getEmail();
+                                searchInfo[i][6] = vo.getHireDATE();
+                                i++;
+                            }
+                            table_emp.setModel(new DefaultTableModel(searchInfo, searchInfo_cname));
+                            ss.close();
+                            break;
+                        case 1:
+                            ss = factory.openSession();
+                            list = ss.selectList("searchEmp.searchEname", str);
+                            searchInfo = new Object[list.size()][searchInfo_cname.length];
 
-                        i = 0;
-                        for (EmpVO vo : list) {
-                            searchInfo[i][0] = vo.getEmpno();
-                            searchInfo[i][1] = vo.getEname();
-                            searchInfo[i][2] = vo.getPosname();
-                            searchInfo[i][3] = vo.getDname();
-                            searchInfo[i][4] = vo.getPhone();
-                            searchInfo[i][5] = vo.getEmail();
-                            searchInfo[i][6] = vo.getHireDATE();
-                            i++;
-                        }
-                        table_emp.setModel(new DefaultTableModel(searchInfo, searchInfo_cname));
-                        ss.close();
-                        break;
-                    case 2:
-                        ss = factory.openSession();
-                        list = ss.selectList("searchEmp.searchPos", str);
-                        searchInfo = new Object[list.size()][searchInfo_cname.length];
+                            i = 0;
+                            for (EmpVO vo : list) {
+                                searchInfo[i][0] = vo.getEmpno();
+                                searchInfo[i][1] = vo.getEname();
+                                searchInfo[i][2] = vo.getPosname();
+                                searchInfo[i][3] = vo.getDname();
+                                searchInfo[i][4] = vo.getPhone();
+                                searchInfo[i][5] = vo.getEmail();
+                                searchInfo[i][6] = vo.getHireDATE();
+                                i++;
+                            }
+                            table_emp.setModel(new DefaultTableModel(searchInfo, searchInfo_cname));
+                            ss.close();
+                            break;
+                        case 2:
+                            ss = factory.openSession();
+                            list = ss.selectList("searchEmp.searchPos", str);
+                            searchInfo = new Object[list.size()][searchInfo_cname.length];
 
-                        i = 0;
-                        for (EmpVO vo : list) {
-                            searchInfo[i][0] = vo.getEmpno();
-                            searchInfo[i][1] = vo.getEname();
-                            searchInfo[i][2] = vo.getPosname();
-                            searchInfo[i][3] = vo.getDname();
-                            searchInfo[i][4] = vo.getPhone();
-                            searchInfo[i][5] = vo.getEmail();
-                            searchInfo[i][6] = vo.getHireDATE();
-                            i++;
-                        }
-                        table_emp.setModel(new DefaultTableModel(searchInfo, searchInfo_cname));
-                        ss.close();
-                        break;
-                    case 3:
-                        ss = factory.openSession();
-                        list = ss.selectList("searchEmp.searchEmp", str);
-                        searchInfo = new Object[list.size()][searchInfo_cname.length];
+                            i = 0;
+                            for (EmpVO vo : list) {
+                                searchInfo[i][0] = vo.getEmpno();
+                                searchInfo[i][1] = vo.getEname();
+                                searchInfo[i][2] = vo.getPosname();
+                                searchInfo[i][3] = vo.getDname();
+                                searchInfo[i][4] = vo.getPhone();
+                                searchInfo[i][5] = vo.getEmail();
+                                searchInfo[i][6] = vo.getHireDATE();
+                                i++;
+                            }
+                            table_emp.setModel(new DefaultTableModel(searchInfo, searchInfo_cname));
+                            ss.close();
+                            break;
+                        case 3:
+                            ss = factory.openSession();
+                            list = ss.selectList("searchEmp.searchEmp", str);
+                            searchInfo = new Object[list.size()][searchInfo_cname.length];
 
-                        i = 0;
-                        for (EmpVO vo : list) {
-                            searchInfo[i][0] = vo.getEmpno();
-                            searchInfo[i][1] = vo.getEname();
-                            searchInfo[i][2] = vo.getPosname();
-                            searchInfo[i][3] = vo.getDname();
-                            searchInfo[i][4] = vo.getPhone();
-                            searchInfo[i][5] = vo.getEmail();
-                            searchInfo[i][6] = vo.getHireDATE();
-                            i++;
-                        }
-                        table_emp.setModel(new DefaultTableModel(searchInfo, searchInfo_cname));
-                        ss.close();
-                        break;
-                    case 4:
-                        ss = factory.openSession();
-                        list = ss.selectList("searchEmp.searchPhone", str);
-                        searchInfo = new Object[list.size()][searchInfo_cname.length];
+                            i = 0;
+                            for (EmpVO vo : list) {
+                                searchInfo[i][0] = vo.getEmpno();
+                                searchInfo[i][1] = vo.getEname();
+                                searchInfo[i][2] = vo.getPosname();
+                                searchInfo[i][3] = vo.getDname();
+                                searchInfo[i][4] = vo.getPhone();
+                                searchInfo[i][5] = vo.getEmail();
+                                searchInfo[i][6] = vo.getHireDATE();
+                                i++;
+                            }
+                            table_emp.setModel(new DefaultTableModel(searchInfo, searchInfo_cname));
+                            ss.close();
+                            break;
+                        case 4:
+                            ss = factory.openSession();
+                            list = ss.selectList("searchEmp.searchPhone", str);
+                            searchInfo = new Object[list.size()][searchInfo_cname.length];
 
-                        i = 0;
-                        for (EmpVO vo : list) {
-                            searchInfo[i][0] = vo.getEmpno();
-                            searchInfo[i][1] = vo.getEname();
-                            searchInfo[i][2] = vo.getPosname();
-                            searchInfo[i][3] = vo.getDname();
-                            searchInfo[i][4] = vo.getPhone();
-                            searchInfo[i][5] = vo.getEmail();
-                            searchInfo[i][6] = vo.getHireDATE();
-                            i++;
-                        }
-                        table_emp.setModel(new DefaultTableModel(searchInfo, searchInfo_cname));
-                        ss.close();
-                        break;
-                    case 5:
-                        ss = factory.openSession();
-                        list = ss.selectList("searchEmp.searchEmail", str);
-                        searchInfo = new Object[list.size()][searchInfo_cname.length];
+                            i = 0;
+                            for (EmpVO vo : list) {
+                                searchInfo[i][0] = vo.getEmpno();
+                                searchInfo[i][1] = vo.getEname();
+                                searchInfo[i][2] = vo.getPosname();
+                                searchInfo[i][3] = vo.getDname();
+                                searchInfo[i][4] = vo.getPhone();
+                                searchInfo[i][5] = vo.getEmail();
+                                searchInfo[i][6] = vo.getHireDATE();
+                                i++;
+                            }
+                            table_emp.setModel(new DefaultTableModel(searchInfo, searchInfo_cname));
+                            ss.close();
+                            break;
+                        case 5:
+                            ss = factory.openSession();
+                            list = ss.selectList("searchEmp.searchEmail", str);
+                            searchInfo = new Object[list.size()][searchInfo_cname.length];
 
-                        i = 0;
-                        for (EmpVO vo : list) {
-                            searchInfo[i][0] = vo.getEmpno();
-                            searchInfo[i][1] = vo.getEname();
-                            searchInfo[i][2] = vo.getPosname();
-                            searchInfo[i][3] = vo.getDname();
-                            searchInfo[i][4] = vo.getPhone();
-                            searchInfo[i][5] = vo.getEmail();
-                            searchInfo[i][6] = vo.getHireDATE();
-                            i++;
-                        }
-                        table_emp.setModel(new DefaultTableModel(searchInfo, searchInfo_cname));
-                        ss.close();
-                        break;
-                    case 6:
-                        ss = factory.openSession();
-                        list = ss.selectList("searchEmp.searchHiredate", str);
-                        searchInfo = new Object[list.size()][searchInfo_cname.length];
+                            i = 0;
+                            for (EmpVO vo : list) {
+                                searchInfo[i][0] = vo.getEmpno();
+                                searchInfo[i][1] = vo.getEname();
+                                searchInfo[i][2] = vo.getPosname();
+                                searchInfo[i][3] = vo.getDname();
+                                searchInfo[i][4] = vo.getPhone();
+                                searchInfo[i][5] = vo.getEmail();
+                                searchInfo[i][6] = vo.getHireDATE();
+                                i++;
+                            }
+                            table_emp.setModel(new DefaultTableModel(searchInfo, searchInfo_cname));
+                            ss.close();
+                            break;
+                        case 6:
+                            ss = factory.openSession();
+                            list = ss.selectList("searchEmp.searchHiredate", str);
+                            searchInfo = new Object[list.size()][searchInfo_cname.length];
 
-                        i = 0;
-                        for (EmpVO vo : list) {
-                            searchInfo[i][0] = vo.getEmpno();
-                            searchInfo[i][1] = vo.getEname();
-                            searchInfo[i][2] = vo.getPosname();
-                            searchInfo[i][3] = vo.getDname();
-                            searchInfo[i][4] = vo.getPhone();
-                            searchInfo[i][5] = vo.getEmail();
-                            searchInfo[i][6] = vo.getHireDATE();
-                            i++;
-                        }
-                        table_emp.setModel(new DefaultTableModel(searchInfo, searchInfo_cname));
-                        ss.close();
-                        break;
+                            i = 0;
+                            for (EmpVO vo : list) {
+                                searchInfo[i][0] = vo.getEmpno();
+                                searchInfo[i][1] = vo.getEname();
+                                searchInfo[i][2] = vo.getPosname();
+                                searchInfo[i][3] = vo.getDname();
+                                searchInfo[i][4] = vo.getPhone();
+                                searchInfo[i][5] = vo.getEmail();
+                                searchInfo[i][6] = vo.getHireDATE();
+                                i++;
+                            }
+                            table_emp.setModel(new DefaultTableModel(searchInfo, searchInfo_cname));
+                            ss.close();
+                            break;
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(UserFrame.this, "값을 입력하세요");
                 }
             }
         });
@@ -301,6 +316,14 @@ public class UserFrame extends javax.swing.JFrame {
             WorkInOut workInOutWindow = new WorkInOut();
             }
 
+        });
+
+        // 종료 버튼 누를 시 UserFrame 종료
+        bt_exit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                UserFrame.this.dispose();
+            }
         });
     } //생성자의 끝
 
