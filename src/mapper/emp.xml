@@ -17,7 +17,7 @@
     </select>
 
     <!-- 로그인 시 사원의 모든 정보 저장 쿼리 -->
-    <select id="getEmpno" resultType="vo.EmpVO" parameterType="String">
+    <select id="getEmp" resultType="vo.EmpVO" parameterType="String">
         SELECT * FROM emp
         WHERE username = #{username}
     </select>
