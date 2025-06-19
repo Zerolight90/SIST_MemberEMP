@@ -51,8 +51,9 @@ public class UserFrame extends javax.swing.JFrame {
      */
 
     //기본 생성자
-    public UserFrame(EmpVO vo) {
-        // LoginFrame 으로부터 로그인한 사원의 모든 정보를 받아오기 위해 기본 생성자에서 EmpVO 받기 (EmpVO vo)
+    public UserFrame(EmpVO vo) { // LoginFrame 으로부터 로그인한 사원의 모든 정보를 받기 위해 기본 생성자에서 EmpVO 받기
+        String ename = vo.getEname();
+        setTitle(ename+"님 환영합니다!");
 
         this.vo = vo; // LoginFrame 으로부터 받아온 vo를 앞서 선언한 vo에 저장
 
@@ -120,6 +121,14 @@ public class UserFrame extends javax.swing.JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 new EditMyinfoForm(UserFrame.this, true, UserFrame.this.vo).setVisible(true);
+            }
+        });
+
+        // 사원 조회 - 검색 버튼 눌렀을 때의 감지자
+        bt_search.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
             }
         });
 
