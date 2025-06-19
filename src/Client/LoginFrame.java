@@ -22,7 +22,7 @@ public class LoginFrame extends JFrame {
 
     private SqlSessionFactory factory; // DB 연결용 팩토리
 
-    String loginedEmpno; // UserFrame 에 로그인된 계정의 사번을 넘겨주기 위한 문자열 변수 선언
+    EmpVO vo; // UserFrame 에 로그인된 계정의 모든 정보를 넘겨주기 위한 EmpVO 변수 선언
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(LoginFrame.class.getName());
 
@@ -144,13 +144,13 @@ public class LoginFrame extends JFrame {
             if (user != null) { // user 가 null 이 아니면 (넘어온 사원의 정보가 있다면), 즉 로그인 성공을 의미함
                 JOptionPane.showMessageDialog(this, "로그인 성공");
 
-                // 로그인 성공 시 UserFrame 에 로그인된 사원의 사번을 넘겨주기 위한 구문
+                // 로그인 성공 시 UserFrame 에 로그인된 사원의 모든 정보를 넘겨주기 위한 구문
                 ss = factory.openSession();
-                loginedEmpno = ss.selectOne("emp.getEmpno", username);
-                UserFrame parent = new UserFrame(loginedEmpno); // UserFrame 기본 생성자에서 사번 받기!
+                vo = ss.selectOne("emp.getEmpno", username);
+                UserFrame parent = new UserFrame(vo); // UserFrame 기본 생성자에서 사원의 모든 정보가 담긴 vo 받기!
                 ss.close();
 
-                // 로그인 성공 및 사번을 넘겨준 후에 로그인 창은 닫고 UserFrame 창 띄우기
+                // 로그인 성공 및 EmpVO vo를 넘겨준 후에 로그인 창은 닫고 UserFrame 창 띄우기
                 this.dispose();
                 parent.setVisible(true);
 
