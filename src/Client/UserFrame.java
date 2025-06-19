@@ -533,6 +533,10 @@ public class UserFrame extends javax.swing.JFrame {
         west_p.setLayout(new java.awt.GridLayout(9, 1, 0, 15));
 
         northImage_l.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        ImageIcon icon = new ImageIcon(getClass().getResource("/images/sist.png"));
+        Image img = icon.getImage().getScaledInstance(240, 60, Image.SCALE_SMOOTH);
+        northImage_l.setBorder(javax.swing.BorderFactory.createEmptyBorder(15, 1, 1, 1));
+        northImage_l.setIcon(new ImageIcon(img));
         west_p.add(northImage_l);
 
         bt_home.setText("홈");

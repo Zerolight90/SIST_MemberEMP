@@ -78,6 +78,10 @@ public class AdminFrame extends JFrame {
         // 홈
         JPanel admin_p = new JPanel(new BorderLayout());
         JLabel homeImage_l = new JLabel("", SwingConstants.CENTER);
+        ImageIcon icon = new ImageIcon(getClass().getResource("/images/adminHome.jpg"));
+        Image img = icon.getImage().getScaledInstance(600, 760, Image.SCALE_SMOOTH);
+        homeImage_l.setBorder(javax.swing.BorderFactory.createEmptyBorder(15, 1, 1, 1));
+        homeImage_l.setIcon(new ImageIcon(img));
         admin_p.add(homeImage_l, BorderLayout.CENTER);
         centerCard_p.add(admin_p, "adminCard");
 
@@ -228,6 +232,15 @@ public class AdminFrame extends JFrame {
 
                     }
                 });
+            }
+        });
+
+        bt_userMode.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                AdminFrame.this.dispose();
+
+                new UserFrame(vo).setVisible(true);
             }
         });
     }

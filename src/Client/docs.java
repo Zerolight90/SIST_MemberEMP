@@ -11,10 +11,7 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.io.IOException;
 import java.io.Reader;
 import java.time.LocalDate;
@@ -30,10 +27,12 @@ public class docs extends JFrame {
     JPanel north_p;
     JTable table;
     JLabel jl1, dateL;
+    int i;
 
     DocsVO dvo;
     EmpVO evo;
     DeptVO dpvo;
+    List<DocsVO> Docslist;
     SqlSessionFactory factory;
 
     public docs(){
@@ -78,7 +77,7 @@ public class docs extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 SqlSession ss = factory.openSession();
-                List<DocsVO> Docslist = ss.selectList("docs.Docs_Dept", evo.getDeptno());
+                Docslist = ss.selectList("docs.Docs_Dept", "10");
                 String[] column = { "문서번호", "제목", "내용" };
                 String[][] data = new String[Docslist.size()][column.length];
                 for (int i = 0; i < Docslist.size(); i++) {
@@ -87,10 +86,35 @@ public class docs extends JFrame {
                     data[i][1] = doc.getTitle();
                     data[i][2] = doc.getContent();
 
-                    table.setModel((new DefaultTableModel(data, column)));
+                    table.setModel(new DefaultTableModel(data, column){
+                        @Override
+                        public boolean isCellEditable(int row, int column) {
+                            return false;
+                        }
+                    });
 
                 }
                 ss.close();
+
+                table.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        int cnt = e.getClickCount();
+                        System.out.println("들어감");
+                        if (cnt == 2) {
+                            System.out.println("더블클릭");
+                            i = table.getSelectedRow();
+                            String[] select_m = {"열람", "공유"};
+                            JOptionPane.showOptionDialog(docs.this, "선택", "타이틀", 0, 0, null, select_m, select_m[0]);
+
+
+                        }
+
+
+
+                    }
+                });
+
                 JScrollPane scrollPane = new JScrollPane(table);
                 JOptionPane.showMessageDialog(docs.this, scrollPane, "부서 문서 목록", JOptionPane.INFORMATION_MESSAGE);
 
