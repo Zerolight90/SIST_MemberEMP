@@ -2,18 +2,61 @@ package vo;
 
 public class DocsVO {
     private String docs_num, empno, deptno, title, visibility, logs_num, content, date, co_letter;
-    private DeptVO dcvo;
+    private String ename;
+    private String dname;
+    public DSharedVO dsvo;
 
-    public DeptVO getDcvo() {
-        return dcvo;
+    public DSharedVO getDsvo() {
+        return dsvo;
     }
 
-    public DeptVO getDvo() {
-        return dcvo;
+    public void setDsvo(DSharedVO dsvo) {
+        this.dsvo = dsvo;
     }
 
-    public void setDcvo(DeptVO dvo) {
-        this.dcvo = dvo;
+    public String getShare_id() {
+        return share_id;
+    }
+
+    public void setShare_id(String share_id) {
+        this.share_id = share_id;
+    }
+
+    private String share_id;
+
+    public String getEname() {
+        return ename;
+    }
+
+    public void setEname(String ename) {
+        this.ename = ename;
+    }
+
+    public String getDname() {
+        return dname;
+    }
+
+    public void setDname(String dname) {
+        this.dname = dname;
+    }
+
+    private DeptVO dpvo;
+    private EmpVO evo;
+
+    public EmpVO getEvo() {
+        return evo;
+    }
+
+    public void setEvo(EmpVO evo) {
+        this.evo = evo;
+    }
+
+    public DeptVO getDpvo() {
+        return dpvo;
+    }
+
+    public void setDpvo(DeptVO dpvo) {
+        this.dpvo = dpvo;
     }
 
     public String getDocs_num() {
