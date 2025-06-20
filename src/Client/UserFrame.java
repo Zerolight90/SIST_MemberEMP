@@ -325,15 +325,12 @@ public class UserFrame extends JFrame {
         bt_myAtt.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-//                new InOut();
                 cl.show(UserFrame.this.centerCard_p, "myAttCard");
                 All_searchAttendance();
             }
         });
 
         // "나의 근태정보" 패널의 "조회" 버튼에 대한 ActionListener 추가
-
         bt_find.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -602,7 +599,6 @@ public class UserFrame extends JFrame {
         ss.close();
 
     } // All_searchAttendanec 종료
-
 
     private void viewAttendanceTable(List<CommuteVO> list) {
 
