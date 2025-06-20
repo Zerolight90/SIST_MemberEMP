@@ -6,10 +6,9 @@
     <select id="vac_search" resultType="vo.Leave_ofVO" parameterType="map">
 <!--        select * from attendance a inner join emp e on a.empno = e.empno -->
 
-        SELECT lname,ldate,duration,lprocessed,lstatus
-        FROM team_db.leave_of
-        WHERE
-        empno = #{empno}
+        select lname,ldate,duration,lprocessed,lstatus
+        from leave_of
+        where empno = #{empno} and date_format(ldate, '%Y') = 2025
 
     </select>
 
