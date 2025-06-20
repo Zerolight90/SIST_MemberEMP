@@ -88,7 +88,7 @@ public class LoginFrame extends JFrame {
 
         getContentPane().add(north_p, BorderLayout.PAGE_START);
 
-        center_p.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 30));
+        center_p.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
         center_p.setLayout(new GridLayout(2, 1));
 
         id_l.setHorizontalAlignment(SwingConstants.CENTER);
