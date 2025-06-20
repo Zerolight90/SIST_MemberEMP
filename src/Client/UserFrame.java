@@ -59,6 +59,7 @@ public class UserFrame extends JFrame {
     double remin;
     List<Leave_historyVO> history_List;
     List<Leave_ofVO> Leave_info ;
+    List<Leave_ofVO> Leave_now;
     String[] vac_colum = { "휴가 항목", "휴가 기간", "남은 휴가", "신청 날짜", "결재 상태"};
     Object[][] vac_info;
 
@@ -375,10 +376,12 @@ public class UserFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 cl.show(UserFrame.this.centerCard_p, "myVacCard");
+                nowVac();
                 setLabel();
             }
         });
 
+        //로그아웃
         bt_logOut.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -483,6 +486,24 @@ public class UserFrame extends JFrame {
                 vacTable();
             }
         });
+    }
+
+    private void nowVac(){
+        String selectedYear = (String) year_cb.getSelectedItem();
+        Map<String, String> map = new HashMap<>();
+        map.put("empno", vo.getEmpno());
+//        map.put("year", selectedYear);
+
+        ss = null; // SqlSession 초기화
+        try {
+            ss = factory.openSession();
+            // 로그인한 사번의 근태 조회
+            Leave_info = ss.selectList("leave.vac_search", map); //
+            viewVacTable(Leave_info); // 이 메소드는 JTable을 업데이트합니다.
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        ss.close();
     }
 
     // 휴가 상태 테이블
