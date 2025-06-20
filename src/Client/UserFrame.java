@@ -10,13 +10,15 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import vo.CommuteVO;
+import vo.Leave_historyVO;
+import vo.Leave_ofVO;
 
-import java.awt.CardLayout;
-import java.awt.Image;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.Reader;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,13 +26,13 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 /**
- *
  * @author zhfja
  */
 public class UserFrame extends JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(UserFrame.class.getName());
 
+    Double used;
     //공통 맴버 변수
     CardLayout cl;
     SqlSessionFactory factory;
@@ -45,6 +47,18 @@ public class UserFrame extends JFrame {
     // 내 정보 테이블을 갱신하기 위해 사용할 2차원 오브젝트 배열과 1차원 문자열 배열 선언
     Object[][] myinfo;
     String[] myinfo_cname = {"사번", "이름", "직급", "부서", "급여", "연락처", "이메일", "입사일"};
+
+    // 휴가 히스토리
+    Leave_historyVO lhvo;
+    int year;
+    double total;
+    double remin;
+    List<Leave_historyVO> history_List;
+    List<Leave_ofVO> Leave_info ;
+    String[] vac_colum = { "휴가 항목", "휴가 기간", "남은 휴가", "신청 날짜", "결재 상태"};
+    Object[][] vac_info;
+
+
     /**
      * Creates new form UserFrame
      */
@@ -52,7 +66,7 @@ public class UserFrame extends JFrame {
     //기본 생성자
     public UserFrame(EmpVO vo) { // LoginFrame 으로부터 로그인한 사원의 모든 정보를 받기 위해 기본 생성자에서 EmpVO 받기
         String ename = vo.getEname();
-        setTitle(ename+"님 환영합니다!");
+        setTitle(ename + "님 환영합니다!");
 
         this.vo = vo; // LoginFrame 으로부터 받아온 vo를 앞서 선언한 vo에 저장
 
@@ -151,15 +165,28 @@ public class UserFrame extends JFrame {
             }
         });
 
+
         //출퇴근 버튼
         bt_workInOut.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            WorkInOut workInOutWindow = new WorkInOut(UserFrame.this);
+                WorkInOut workInOutWindow = new WorkInOut(UserFrame.this);
             }
 
         });
+
+        //나의 휴가정보
+        bt_myVac.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cl.show(UserFrame.this.centerCard_p, "myVacCard");
+                setLabel();
+            }
+        });
+
+
     } //생성자의 끝
+
 
     //DB연결 함수
     private void initDB() {
@@ -177,7 +204,7 @@ public class UserFrame extends JFrame {
     }
 
     // 내 정보 수정 창에서 사원 정보를 수정했을 때 내 정보 테이블 갱신하는 함수
-    public void EditMyInfoTable(EmpVO vo){
+    public void EditMyInfoTable(EmpVO vo) {
         ss = factory.openSession();
         List<EmpVO> list = ss.selectList("emp.getMyInfo", this.vo.getEmpno());
         myinfo = new Object[list.size()][myinfo_cname.length];
@@ -204,6 +231,97 @@ public class UserFrame extends JFrame {
         ss.close();
     }
 
+    // 휴가 상태 레이블
+    private void setLabel() {
+        LocalDate now = LocalDate.now();
+        year = now.getYear();
+//        year_cb.setPreferredSize(new Dimension(20,50));
+        year_cb.setFont(new Font("나눔 고딕", Font.PLAIN, 15));
+
+
+        ss = factory.openSession();
+        try {
+            Map<String, Object> remain_Vac_map = new HashMap<>();
+            remain_Vac_map.put("empno", vo.getEmpno());
+            remain_Vac_map.put("year", year);
+
+            lhvo = ss.selectOne("history.remain_Vac", remain_Vac_map);
+            allVac_l.setText("총 휴가 :" + lhvo.getTotal_leave());
+
+            remainVac_l.setText("남은 휴가 :" + lhvo.getRemain_leave());
+
+
+            // 사용 휴가 계산
+            double total = Double.parseDouble(lhvo.getTotal_leave());
+            double remain = Double.parseDouble(lhvo.getRemain_leave());
+            used = total - remain;
+
+//            System.out.println(used);
+            usedVac_l.setText("사용 휴가 :" + used);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (ss != null) ss.close();
+        }
+        year_cb.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                vacTable();
+            }
+        });
+    }
+
+    // 휴가 상태 테이블
+    private void vacTable() {
+        String selectedYear = (String) year_cb.getSelectedItem();
+        System.out.println(selectedYear);
+
+        Map<String, String> map = new HashMap<>();
+        map.put("empno", vo.getEmpno());
+        map.put("year", selectedYear);
+
+        ss = null; // SqlSession 초기화
+        try {
+            ss = factory.openSession();
+            // 로그인한 사번의 근태 조회
+            Leave_info = ss.selectList("leave.yearsSearch", map); //
+            viewVacTable(Leave_info); // 이 메소드는 JTable을 업데이트합니다.
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        ss.close();
+    }
+
+    private void viewVacTable(List<Leave_ofVO> list) {
+       vac_info = new Object[list.size()][vac_colum.length];
+        int i = 0;
+        for (Leave_ofVO vo : list) {
+           vac_info[i][0] = vo.getLname();
+           vac_info[i][1] = vo.getLdate();
+           vac_info[i][2] = vo.getDuration();
+           vac_info[i][3] = vo.getLprocessed();
+           switch (vo.getLstatus()){
+               case "0":
+                   vac_info[i][4] = "신청";
+                   break;
+               case "1" :
+                   vac_info[i][4] = "승인";
+                   break;
+               case "2" :
+                   vac_info[i][4] = "반려";
+
+           }
+//           vac_info[i][4] = vo.getLstatus();
+
+            i++;
+        }//for종료
+        vacTable.setModel(new DefaultTableModel(vac_info,vac_colum));
+        vacTable.setDefaultEditor(Object.class, null); // 셀 편집 비활성화 하는 기능
+
+    }
 
     // 근태 조회(검색) 함수
     private void searchAttendance() {
@@ -216,7 +334,7 @@ public class UserFrame extends JFrame {
         }
 
         Map<String, String> map = new HashMap<>();
-        map.put("empno",vo.getEmpno());
+        map.put("empno", vo.getEmpno());
         map.put("year", selectedYear);
         map.put("month", selectedMonth);
 
@@ -237,7 +355,7 @@ public class UserFrame extends JFrame {
     private void All_searchAttendance() {
 
         Map<String, String> map = new HashMap<>();
-        map.put("empno",vo.getEmpno());
+        map.put("empno", vo.getEmpno());
 //        map.put("year", selectedYear);
 //        map.put("month", selectedMonth);
 
@@ -254,7 +372,7 @@ public class UserFrame extends JFrame {
     } // All_searchAttendanec 종료
 
 
-    private void viewAttendanceTable(List<CommuteVO> list){
+    private void viewAttendanceTable(List<CommuteVO> list) {
 
         //인자로 받은 List구조를 2차원 배열로 변환한 후 JTable에 표현!
         chk = new String[list.size()][date_name.length];
@@ -269,13 +387,16 @@ public class UserFrame extends JFrame {
             i++;
         }//for종료
         attTable.setModel(new DefaultTableModel(chk, date_name));
+        attTable.setDefaultEditor(Object.class, null); // 셀 편집 비활성화 하는 기능
     }
 
 
-     @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        allVac_l = new javax.swing.JLabel();
+        myVac_south_p = new javax.swing.JPanel();
         south_p = new JPanel();
         bt_exit = new JButton();
         west_p = new JPanel();
@@ -325,13 +446,12 @@ public class UserFrame extends JFrame {
         jsp_attTable = new JScrollPane();
         attTable = new JTable();
         myVac_p = new JPanel();
-        jPanel5 = new JPanel();
+        myVac_north_p = new JPanel();
         usedVac_l = new JLabel();
         remainVac_l = new JLabel();
         bt_addVac = new JButton();
         jsp_vacTable = new JScrollPane();
         vacTable = new JTable();
-
 
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -386,12 +506,12 @@ public class UserFrame extends JFrame {
         GroupLayout centerNorth_pLayout = new GroupLayout(centerNorth_p);
         centerNorth_p.setLayout(centerNorth_pLayout);
         centerNorth_pLayout.setHorizontalGroup(
-            centerNorth_pLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGap(0, 782, Short.MAX_VALUE)
+                centerNorth_pLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addGap(0, 782, Short.MAX_VALUE)
         );
         centerNorth_pLayout.setVerticalGroup(
-            centerNorth_pLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGap(0, 70, Short.MAX_VALUE)
+                centerNorth_pLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addGap(0, 70, Short.MAX_VALUE)
         );
 
         center_p.add(centerNorth_p, java.awt.BorderLayout.PAGE_START);
@@ -419,22 +539,22 @@ public class UserFrame extends JFrame {
         myInfo_p.add(myInfo_north_p, java.awt.BorderLayout.NORTH);
 
         table_myInfo.setModel(new DefaultTableModel(
-                new Object [][] {
+                new Object[][]{
                         {null, null, null, null, null, null, null, null},
                         {null, null, null, null, null, null, null, null},
                         {null, null, null, null, null, null, null, null},
                         {null, null, null, null, null, null, null, null}
                 },
-                new String [] {
+                new String[]{
                         "사번", "이름", "직급", "부서", "급여", "연락처", "이메일", "입사일"
                 }
         ) {
-            Class[] types = new Class [] {
+            Class[] types = new Class[]{
                     String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class
             };
 
             public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
+                return types[columnIndex];
             }
         });
         jsp_myInfo.setViewportView(table_myInfo);
@@ -452,7 +572,7 @@ public class UserFrame extends JFrame {
         search_l.setText("검색 필드 :");
         jPanel1.add(search_l);
 
-        search_cbox.setModel(new DefaultComboBoxModel<>(new String[] { "사원 번호", "이름", "직급", "부서", "전화번호", "이메일", "입사일" }));
+        search_cbox.setModel(new DefaultComboBoxModel<>(new String[]{"사원 번호", "이름", "직급", "부서", "전화번호", "이메일", "입사일"}));
         jPanel1.add(search_cbox);
 
         value_l.setText("값 입력 :");
@@ -464,12 +584,12 @@ public class UserFrame extends JFrame {
         GroupLayout empty_pLayout = new GroupLayout(empty_p);
         empty_p.setLayout(empty_pLayout);
         empty_pLayout.setHorizontalGroup(
-            empty_pLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGap(0, 374, Short.MAX_VALUE)
+                empty_pLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addGap(0, 374, Short.MAX_VALUE)
         );
         empty_pLayout.setVerticalGroup(
-            empty_pLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGap(0, 23, Short.MAX_VALUE)
+                empty_pLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addGap(0, 23, Short.MAX_VALUE)
         );
 
         jPanel1.add(empty_p);
@@ -480,22 +600,22 @@ public class UserFrame extends JFrame {
         searchEmp_p.add(jPanel1, java.awt.BorderLayout.PAGE_START);
 
         table_emp.setModel(new DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null}
-            },
-            new String [] {
-                "사원 번호", "이름", "직급", "부서", "전화번호", "이메일", "입사일"
-            }
+                new Object[][]{
+                        {null, null, null, null, null, null, null},
+                        {null, null, null, null, null, null, null},
+                        {null, null, null, null, null, null, null},
+                        {null, null, null, null, null, null, null}
+                },
+                new String[]{
+                        "사원 번호", "이름", "직급", "부서", "전화번호", "이메일", "입사일"
+                }
         ) {
-            Class[] types = new Class [] {
-                String.class, String.class, String.class, String.class, String.class, String.class, String.class
+            Class[] types = new Class[]{
+                    String.class, String.class, String.class, String.class, String.class, String.class, String.class
             };
 
             public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
+                return types[columnIndex];
             }
         });
         jsp_empTable.setViewportView(table_emp);
@@ -544,10 +664,10 @@ public class UserFrame extends JFrame {
         myAtt_north_p.setPreferredSize(new java.awt.Dimension(782, 50));
         myAtt_north_p.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 5, 15));
 
-        year_cb.setModel(new DefaultComboBoxModel<>(new String[] { "2025","2024","2023","2022","2021","2020","2019","2018","2017","2016","2015"}));
+        year_cb.setModel(new DefaultComboBoxModel<>(new String[]{"2025", "2024", "2023", "2022", "2021", "2020", "2019", "2018", "2017", "2016", "2015"}));
         myAtt_north_p.add(year_cb);
 
-        month_cb.setModel(new DefaultComboBoxModel<>(new String[] { "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12" }));
+        month_cb.setModel(new DefaultComboBoxModel<>(new String[]{"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"}));
         myAtt_north_p.add(month_cb);
 
         bt_find.setText("조회");
@@ -558,17 +678,15 @@ public class UserFrame extends JFrame {
         jsp_attTable.setBorder(BorderFactory.createEmptyBorder(1, 130, 1, 130));
 
         attTable.setModel(new DefaultTableModel(
-                chk,date_name
+                chk, date_name
 
-        )
-
-        {
-            Class[] types = new Class [] {
-                String.class, String.class, String.class, String.class, String.class
+        ) {
+            Class[] types = new Class[]{
+                    String.class, String.class, String.class, String.class, String.class
             };
 
             public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
+                return types[columnIndex];
             }
         });
 
@@ -579,51 +697,67 @@ public class UserFrame extends JFrame {
         centerCard_p.add(myAtt_p, "myAttCard");
         //
 
-        myVac_p.setBorder(BorderFactory.createEmptyBorder(1, 1, 30, 30));
+        myVac_p.setBorder(BorderFactory.createEmptyBorder(1, 30, 30, 30));
         myVac_p.setLayout(new java.awt.BorderLayout());
 
-        jPanel5.setPreferredSize(new java.awt.Dimension(782, 50));
-        jPanel5.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 10, 15));
+        myVac_north_p.setPreferredSize(new java.awt.Dimension(785, 50));
+        myVac_north_p.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 10, 15));
 
-        usedVac_l.setBackground(new java.awt.Color(255, 255, 255));
+        allVac_l.setBackground(new java.awt.Color(14, 180, 252));
+        allVac_l.setHorizontalAlignment(SwingConstants.CENTER); // 수평 가운데 정렬
+        allVac_l.setVerticalAlignment(SwingConstants.CENTER);   // 수직 가운데 정렬 추가
+        allVac_l.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(14, 180, 252)));
+        allVac_l.setOpaque(true);
+        allVac_l.setPreferredSize(new java.awt.Dimension(120, 30));
+        Font all_labelFont = new Font("맑은 고딕", Font.BOLD, 15);
+        allVac_l.setFont(all_labelFont);
+
+        year_cb = new JComboBox<>(new String[]{"2025", "2024", "2023", "2022"});
+        myVac_north_p.add(year_cb);
+        myVac_north_p.add(new JLabel("년"));
+        myVac_north_p.add(allVac_l);
+
+        usedVac_l.setBackground(new java.awt.Color(179, 110, 232));
         usedVac_l.setHorizontalAlignment(SwingConstants.CENTER);
-        usedVac_l.setBorder(BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        usedVac_l.setBorder(BorderFactory.createLineBorder(new java.awt.Color(179, 110, 232)));
         usedVac_l.setOpaque(true);
-        usedVac_l.setPreferredSize(new java.awt.Dimension(160, 22));
-        jPanel5.add(usedVac_l);
+        usedVac_l.setPreferredSize(new java.awt.Dimension(120, 30));
+        Font use_labelFont = new Font("맑은 고딕", Font.BOLD, 15);
+        usedVac_l.setFont(use_labelFont);
+        myVac_north_p.add(usedVac_l);
 
-        remainVac_l.setBackground(new java.awt.Color(255, 255, 255));
+        remainVac_l.setBackground(new java.awt.Color(252, 205, 14));
         remainVac_l.setHorizontalAlignment(SwingConstants.CENTER);
-        remainVac_l.setBorder(BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        remainVac_l.setBorder(BorderFactory.createLineBorder(new java.awt.Color(252, 205, 14)));
         remainVac_l.setOpaque(true);
-        remainVac_l.setPreferredSize(new java.awt.Dimension(160, 22));
-        jPanel5.add(remainVac_l);
+        remainVac_l.setPreferredSize(new java.awt.Dimension(120, 30));
+        Font reamin_labelFont = new Font("맑은 고딕", Font.BOLD, 15);
+        remainVac_l.setFont(reamin_labelFont);
+        myVac_north_p.add(remainVac_l);
+
+        myVac_south_p.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 30, 1, 30));
+        myVac_south_p.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 10));
 
         bt_addVac.setText("휴가 신청");
-        jPanel5.add(bt_addVac);
-
-        myVac_p.add(jPanel5, java.awt.BorderLayout.PAGE_START);
+        myVac_south_p.add(bt_addVac);
+        myVac_p.add(myVac_south_p, java.awt.BorderLayout.PAGE_END);
+        myVac_p.add(myVac_north_p, java.awt.BorderLayout.PAGE_START);
 
 
         vacTable.setModel(new DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
-            },
-            new String [] {
-                "휴가 종류", "휴가 시작일", "휴가 기간", "남은 휴가", "결재 상태", "결재 날짜"
-            }
+                vac_info,vac_colum
+
         ) {
-            Class[] types = new Class [] {
-                String.class, String.class, String.class, String.class, String.class, String.class
+            Class[] types = new Class[]{
+                    String.class, String.class, String.class, String.class, String.class, String.class
             };
 
             public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
+                return types[columnIndex];
             }
         });
+        vacTable.setDefaultEditor(Object.class, null);
+
         jsp_vacTable.setViewportView(vacTable);
 
         myVac_p.add(jsp_vacTable, java.awt.BorderLayout.CENTER);
@@ -663,6 +797,8 @@ public class UserFrame extends JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel allVac_l;
+    private javax.swing.JPanel myVac_south_p;
     private JTable attTable;
     private JButton bt_addVac;
     private JButton bt_adminMode;
@@ -687,7 +823,7 @@ public class UserFrame extends JFrame {
     private JLabel homeImage_l;
     private JPanel home_p;
     private JPanel jPanel1;
-    private JPanel jPanel5;
+    private JPanel myVac_north_p;
     private JScrollPane jsp_attTable;
     private JScrollPane jsp_empTable;
     private JScrollPane jsp_logList;
@@ -718,5 +854,6 @@ public class UserFrame extends JFrame {
     private JPanel workLog_north_p;
     private JPanel workLog_p;
     private JComboBox<String> year_cb;
+
 
 }

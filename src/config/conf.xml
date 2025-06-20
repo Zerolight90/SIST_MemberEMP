@@ -20,5 +20,9 @@
         <mapper resource="mapper/searchEmp.xml"/>
         <mapper resource="mapper/dept.xml"/>
         <mapper resource="mapper/docs.xml"/>
+        <mapper resource="mapper/leave_history.xml"/>
+        <mapper resource="mapper/leave_of.xml"/>
+
+
     </mappers>
 </configuration>
