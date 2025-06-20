@@ -48,6 +48,10 @@ public class UserFrame extends JFrame {
     Object[][] myinfo;
     String[] myinfo_cname = {"사번", "이름", "직급", "부서", "급여", "연락처", "이메일", "입사일"};
 
+    // 사원 조회 검색 테이블을 갱신할 때 사용할 2차원 배열과 1차원 배열 선언
+    Object[][] searchInfo;
+    String[] searchInfo_cname = {"사번", "이름", "직급", "부서", "전화번호", "이메일", "입사일"};
+
     // 휴가 히스토리
     Leave_historyVO lhvo;
     int year;
@@ -113,6 +117,14 @@ public class UserFrame extends JFrame {
         table_myInfo.getColumnModel().getColumn(6).setPreferredWidth(150);  // 이메일
         table_myInfo.getColumnModel().getColumn(7).setPreferredWidth(100);  // 입사일
 
+        // 홈 버튼 눌렀을 때 화면 변경
+        bt_home.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cl.show(UserFrame.this.centerCard_p, "homeCard");
+            }
+        });
+
         // 내 정보 버튼 눌렀을 때 화면 변경
         bt_myInfo.addActionListener(new ActionListener() {
             @Override
@@ -141,7 +153,170 @@ public class UserFrame extends JFrame {
         bt_search.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                int cnt = search_cbox.getSelectedIndex(); // 콤보박스에서 선택된 인덱스값 얻어내기
+                String str = value_tf.getText().trim(); // 검색창 텍스트필드에 입력된값 얻기
 
+                int i = 0; // 스위치문 안의 반복문에서 사용할 증가용 정수 선언
+                List<EmpVO> list; // 스위치문에서 사용할 EmpVO를 자료형으로 받는 리스트 선언
+
+                if (str.isEmpty() == false) {
+                    switch (cnt) { // 콤보박스에서 선택된 인덱스값이 무엇인지에 따라서 스위치문 진행
+                        case 0:
+                            ss = factory.openSession();
+                            list = ss.selectList("searchEmp.searchEmpno", str);
+                            searchInfo = new Object[list.size()][searchInfo_cname.length];
+
+                            i = 0;
+                            for (EmpVO vo : list) {
+                                searchInfo[i][0] = vo.getEmpno();
+                                searchInfo[i][1] = vo.getEname();
+                                searchInfo[i][2] = vo.getPosname();
+                                searchInfo[i][3] = vo.getDname();
+                                searchInfo[i][4] = vo.getPhone();
+                                searchInfo[i][5] = vo.getEmail();
+                                searchInfo[i][6] = vo.getHireDATE();
+                                i++;
+                            }
+                            table_emp.setModel(new DefaultTableModel(searchInfo, searchInfo_cname));
+                            ss.close();
+                            break;
+                        case 1:
+                            ss = factory.openSession();
+                            list = ss.selectList("searchEmp.searchEname", str);
+                            searchInfo = new Object[list.size()][searchInfo_cname.length];
+
+                            i = 0;
+                            for (EmpVO vo : list) {
+                                searchInfo[i][0] = vo.getEmpno();
+                                searchInfo[i][1] = vo.getEname();
+                                searchInfo[i][2] = vo.getPosname();
+                                searchInfo[i][3] = vo.getDname();
+                                searchInfo[i][4] = vo.getPhone();
+                                searchInfo[i][5] = vo.getEmail();
+                                searchInfo[i][6] = vo.getHireDATE();
+                                i++;
+                            }
+                            table_emp.setModel(new DefaultTableModel(searchInfo, searchInfo_cname));
+                            ss.close();
+                            break;
+                        case 2:
+                            ss = factory.openSession();
+                            list = ss.selectList("searchEmp.searchPos", str);
+                            searchInfo = new Object[list.size()][searchInfo_cname.length];
+
+                            i = 0;
+                            for (EmpVO vo : list) {
+                                searchInfo[i][0] = vo.getEmpno();
+                                searchInfo[i][1] = vo.getEname();
+                                searchInfo[i][2] = vo.getPosname();
+                                searchInfo[i][3] = vo.getDname();
+                                searchInfo[i][4] = vo.getPhone();
+                                searchInfo[i][5] = vo.getEmail();
+                                searchInfo[i][6] = vo.getHireDATE();
+                                i++;
+                            }
+                            table_emp.setModel(new DefaultTableModel(searchInfo, searchInfo_cname));
+                            ss.close();
+                            break;
+                        case 3:
+                            ss = factory.openSession();
+                            list = ss.selectList("searchEmp.searchEmp", str);
+                            searchInfo = new Object[list.size()][searchInfo_cname.length];
+
+                            i = 0;
+                            for (EmpVO vo : list) {
+                                searchInfo[i][0] = vo.getEmpno();
+                                searchInfo[i][1] = vo.getEname();
+                                searchInfo[i][2] = vo.getPosname();
+                                searchInfo[i][3] = vo.getDname();
+                                searchInfo[i][4] = vo.getPhone();
+                                searchInfo[i][5] = vo.getEmail();
+                                searchInfo[i][6] = vo.getHireDATE();
+                                i++;
+                            }
+                            table_emp.setModel(new DefaultTableModel(searchInfo, searchInfo_cname));
+                            ss.close();
+                            break;
+                        case 4:
+                            ss = factory.openSession();
+                            list = ss.selectList("searchEmp.searchPhone", str);
+                            searchInfo = new Object[list.size()][searchInfo_cname.length];
+
+                            i = 0;
+                            for (EmpVO vo : list) {
+                                searchInfo[i][0] = vo.getEmpno();
+                                searchInfo[i][1] = vo.getEname();
+                                searchInfo[i][2] = vo.getPosname();
+                                searchInfo[i][3] = vo.getDname();
+                                searchInfo[i][4] = vo.getPhone();
+                                searchInfo[i][5] = vo.getEmail();
+                                searchInfo[i][6] = vo.getHireDATE();
+                                i++;
+                            }
+                            table_emp.setModel(new DefaultTableModel(searchInfo, searchInfo_cname));
+                            ss.close();
+                            break;
+
+                        case 5:
+                            ss = factory.openSession();
+                            list = ss.selectList("searchEmp.searchEmail", str);
+                            searchInfo = new Object[list.size()][searchInfo_cname.length];
+
+                            i = 0;
+                            for (EmpVO vo : list) {
+                                searchInfo[i][0] = vo.getEmpno();
+                                searchInfo[i][1] = vo.getEname();
+                                searchInfo[i][2] = vo.getPosname();
+                                searchInfo[i][3] = vo.getDname();
+                                searchInfo[i][4] = vo.getPhone();
+                                searchInfo[i][5] = vo.getEmail();
+                                searchInfo[i][6] = vo.getHireDATE();
+                                i++;
+                            }
+                            table_emp.setModel(new DefaultTableModel(searchInfo, searchInfo_cname));
+                            ss.close();
+                            break;
+                        case 6:
+                            ss = factory.openSession();
+                            list = ss.selectList("searchEmp.searchHiredate", str);
+                            searchInfo = new Object[list.size()][searchInfo_cname.length];
+
+                            i = 0;
+                            for (EmpVO vo : list) {
+                                searchInfo[i][0] = vo.getEmpno();
+                                searchInfo[i][1] = vo.getEname();
+                                searchInfo[i][2] = vo.getPosname();
+                                searchInfo[i][3] = vo.getDname();
+                                searchInfo[i][4] = vo.getPhone();
+                                searchInfo[i][5] = vo.getEmail();
+                                searchInfo[i][6] = vo.getHireDATE();
+                                i++;
+                            }
+                            table_emp.setModel(new DefaultTableModel(searchInfo, searchInfo_cname));
+                            ss.close();
+                            break;
+                    }
+
+                } else {
+                    JOptionPane.showMessageDialog(UserFrame.this, "값을 입력하세요");
+                }
+
+            }
+        });
+
+        // 업무 일지 버튼 눌렀을 때 화면 변경
+        bt_workLog.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cl.show(UserFrame.this.centerCard_p,"workLogCard");
+            }
+        });
+
+        // 업무 일지 - 업무일지 작성 버튼 눌렀을 때 창 띄우기
+        bt_workLogWrite.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new docs();
             }
         });
 
@@ -165,6 +340,26 @@ public class UserFrame extends JFrame {
             }
         });
 
+        // 관리자 모드 버튼 눌렀을 시 관리자 인증 진행한 후
+        // 권한번호가 일정 번호라면 인증 성공해서 창 닫고 AdminFrame 열기
+        // 일정 번호가 안 된다면 인증 실패해서 메세지 띄우기
+        bt_adminMode.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (vo.getRole_num().equals("3")){
+                    UserFrame.this.dispose();
+
+                    try {
+                        new AdminFrame(vo);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+
+                } else {
+                    JOptionPane.showMessageDialog(UserFrame.this, "권한이 없습니다!");
+                }
+            }
+        });
 
         //출퇴근 버튼
         bt_workInOut.addActionListener(new ActionListener() {
@@ -184,6 +379,22 @@ public class UserFrame extends JFrame {
             }
         });
 
+        bt_logOut.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                UserFrame.this.dispose();
+
+                new LoginFrame().setVisible(true);
+            }
+        });
+
+        // 종료 버튼 누를 시 UserFrame 종료
+        bt_exit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                UserFrame.this.dispose();
+            }
+        });
 
     } //생성자의 끝
 
@@ -398,6 +609,7 @@ public class UserFrame extends JFrame {
         allVac_l = new javax.swing.JLabel();
         myVac_south_p = new javax.swing.JPanel();
         south_p = new JPanel();
+        bt_logOut = new javax.swing.JButton();
         bt_exit = new JButton();
         west_p = new JPanel();
         northImage_l = new JLabel();
@@ -461,6 +673,9 @@ public class UserFrame extends JFrame {
         south_p.setPreferredSize(new java.awt.Dimension(884, 80));
         south_p.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 30, 30));
 
+        bt_logOut.setText("로그아웃");
+        south_p.add(bt_logOut);
+
         bt_exit.setText("종료");
         south_p.add(bt_exit);
 
@@ -471,6 +686,10 @@ public class UserFrame extends JFrame {
         west_p.setLayout(new java.awt.GridLayout(9, 1, 0, 15));
 
         northImage_l.setHorizontalAlignment(SwingConstants.CENTER);
+        ImageIcon icon = new ImageIcon(getClass().getResource("/images/sist.png"));
+        Image img = icon.getImage().getScaledInstance(240, 60, Image.SCALE_SMOOTH);
+        northImage_l.setBorder(javax.swing.BorderFactory.createEmptyBorder(15, 1, 1, 1));
+        northImage_l.setIcon(new ImageIcon(img));
         west_p.add(northImage_l);
 
         bt_home.setText("홈");
@@ -807,6 +1026,7 @@ public class UserFrame extends JFrame {
     private JButton bt_exit;
     private JButton bt_find;
     private JButton bt_home;
+    private javax.swing.JButton bt_logOut;
     private JButton bt_myAtt;
     private JButton bt_myInfo;
     private JButton bt_myList;
