@@ -240,7 +240,7 @@ public class docs extends JFrame {
     private void init(){
         try {
             Reader r = Resources.getResourceAsReader(
-                    "comp/config/conf.xml"
+                    "config/conf.xml"
             );
 
             factory = new SqlSessionFactoryBuilder().build(r);
