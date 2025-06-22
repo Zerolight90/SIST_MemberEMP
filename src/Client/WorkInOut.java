@@ -94,7 +94,7 @@ public class WorkInOut extends JFrame {
             map.put("note", "출근");
         }
 
-        SqlSession ss = null; // SqlSession 변수를 try 블록 바깥에 선언
+
 
         try {
             ss = factory.openSession(); // factory는 SqlSessionFactory 객체로 가정
@@ -115,6 +115,7 @@ public class WorkInOut extends JFrame {
             ss = factory.openSession();
             status = ss.selectOne("commute.getStatus", loginedEmpno); // empno로 status 조회
             System.out.println(status);
+            System.out.println(loginedEmpno);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -129,7 +130,6 @@ public class WorkInOut extends JFrame {
             map.put("note", "정상 퇴근");
         }
 
-        SqlSession ss = null; // SqlSession 변수를 try 블록 바깥에 선언
 
         try {
             ss = factory.openSession();
