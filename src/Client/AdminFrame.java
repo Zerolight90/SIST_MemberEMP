@@ -6,16 +6,18 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import vo.AttendanceVO;
 import vo.EmpVO;
+import vo.Leave_ofVO;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.io.IOException;
 import java.io.Reader;
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,8 +31,15 @@ public class AdminFrame extends JFrame {
 
     // 사원조회테이블 컬럼명
     String[] e_name ={"사원번호","사원이름"};
+
     // 근태조회테이블 컬럼명
     String[] a_name = {"사원 번호", "사원 이름", "날짜", "출근 시간", "퇴근 시간", "근태"};
+
+    // 휴가테이블 컬럼명
+    String[] v_name = {"사원 번호", "사원 이름", "부서", "휴가 종류", "휴가 시작일",
+            "휴가 기간", "남은 휴가", "결재 상태", "휴가 코드"};
+
+    JTable vacTable;
 
     EmpVO vo;
     public AdminFrame(EmpVO vo) throws IOException {
@@ -172,6 +181,14 @@ public class AdminFrame extends JFrame {
             }
         });
 
+        // 홈 버튼 눌렀을 때 화면 변경
+        bt_home.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cl.show(centerCard_p, "home");
+            }
+        });
+
         // 근태조회 버튼을 눌렀을 때
         bt_adminAtt.addActionListener(new ActionListener() {
             @Override
@@ -221,7 +238,28 @@ public class AdminFrame extends JFrame {
                 bt_cfirmDeny.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
+                        ss = factory.openSession();
 
+                        List<Leave_ofVO> list = ss.selectList("leave_of.approvevac", vo.getDeptno());
+                        String[][] data = new String[list.size()][v_name.length];
+
+                        ViewvacTable(list);
+
+                        int i = 0;
+                        for(Leave_ofVO vo : list) {
+                            data[i][0] = vo.getEmpno();
+                            data[i][1] = vo.getEname();
+                            data[i][2] = vo.getDeptno();
+                            data[i][3] = vo.getLname();
+                            data[i][4] = vo.getLdate();
+                            data[i][5] = vo.getDuration();
+                            data[i][6] = vo.getRemain_leave();
+                            data[i][7] = vo.getLstatus();
+                            data[i][8] = vo.getLnum();
+                            i++;
+                        }
+                        vacTable.setModel(new DefaultTableModel(data, v_name));
+                        ss.close();
                     }
                 });
 
@@ -229,12 +267,140 @@ public class AdminFrame extends JFrame {
                 bt_cfirmDenyList.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
+                        ss = factory.openSession();
 
+                        List<Leave_ofVO> list = ss.selectList("leave_of.searchvac", vo.getDeptno());
+                        String[][] data = new String[list.size()][v_name.length];
+
+                        ViewvacTable(list);
+
+                        int i = 0;
+                        for(Leave_ofVO vo : list) {
+                            data[i][0] = vo.getEmpno();
+                            data[i][1] = vo.getEname();
+                            data[i][2] = vo.getDeptno();
+                            data[i][3] = vo.getLname();
+                            data[i][4] = vo.getLdate();
+                            data[i][5] = vo.getDuration();
+                            data[i][6] = vo.getRemain_leave();
+                            data[i][7] = vo.getLstatus();
+                            data[i][8] = vo.getLprocessed();
+                            i++;
+                        }
+                        vacTable.setModel(new DefaultTableModel(data, v_name));
+                        ss.close();
                     }
                 });
             }
         });
 
+        vacTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int cnt = e.getClickCount();
+                if (cnt == 2){
+                    int i = vacTable.getSelectedRow();
+                    String empno = vacTable.getValueAt(i, 0).toString();
+                    String lname = vacTable.getValueAt(i, 3).toString();
+                    String durationStr = vacTable.getValueAt(i, 5).toString();
+                    BigDecimal duration = new BigDecimal(durationStr);
+                    String ldateStr = vacTable.getValueAt(i, 4).toString();
+                    Date ldate = Date.valueOf(ldateStr); // java.sql.Date
+                    String lnum = vacTable.getValueAt(i, 8).toString();
+                    // System.out.println(lnum);
+
+                    int num = JOptionPane.showConfirmDialog(AdminFrame.this, "승인하시겠습니까?");
+                    if (num == 0){
+                        ss = factory.openSession();
+                        //String lnum = ss.selectOne("leave_of.getLnum", empno);
+                        //System.out.println(lnum);
+                        //Leave_ofVO lvo = ss.selectOne("leave_of.getOne", listvo);
+
+                        int update = ss.update("leave_of.statusUpdate", lnum);
+                        if (update == 0){
+                            ss.rollback();
+                            ss.close();
+                            return;
+                        }
+                        //ss.commit();
+
+                        List<Leave_ofVO> list = ss.selectList("leave_of.approvevac", vo.getDeptno());
+                        String[][] data = new String[list.size()][v_name.length];
+
+                        ViewvacTable(list);
+
+                        i = 0;
+                        for(Leave_ofVO vo : list) {
+                            data[i][0] = vo.getEmpno();
+                            data[i][1] = vo.getEname();
+                            data[i][2] = vo.getDeptno();
+                            data[i][3] = vo.getLname();
+                            data[i][4] = vo.getLdate();
+                            data[i][5] = vo.getDuration();
+                            data[i][6] = vo.getRemain_leave();
+                            data[i][7] = vo.getLstatus();
+                            data[i][8] = vo.getLnum();
+                            i++;
+                        }
+                        vacTable.setModel(new DefaultTableModel(data, v_name));
+
+                        // leave_of 테이블에서 얻은 값들
+
+                        //String lname = "가족행사";
+                        //String empno = "E001";
+
+                        int days = duration.intValue(); // 소수점은 버림. 2.5 → 2
+
+                        List<java.sql.Date> dates = new ArrayList<>();
+                        LocalDate startDate = ldate.toLocalDate();
+
+                        if (duration.compareTo(new BigDecimal("0.5")) == 0) {
+                            dates.add(java.sql.Date.valueOf(startDate));
+                        } else {
+                            for (int k = 0; k < days; k++) {
+                                dates.add(java.sql.Date.valueOf(startDate.plusDays(k)));
+                            }
+                        }
+
+                        System.out.println("lname: [" + lname + "]");
+                        System.out.println("dates: " + dates);
+                        for (java.sql.Date d : dates) {
+                            System.out.println(" date: " + d);
+                        }
+
+                        if (lname.equals("가족행사") || lname.equals("개인 사유 휴가") || lname.equals("경조사")) {
+                            Map<String, Object> map = new HashMap<>();
+                            map.put("empno", empno);
+                            map.put("dates", dates);
+                            map.put("lname", lname);
+                            ss.insert("leave_of.insertAttLeave", map);
+                        } else if (lname.equals("오전 반차")){
+                            Map<String, Object> map = new HashMap<>();
+                            map.put("empno", empno);
+                            map.put("dates", dates);
+                            map.put("lname", lname);
+                            ss.insert("leave_of.insertAttLeave3", map);
+                        } else if (lname.equals("오후 반차")){
+                            Map<String, Object> map = new HashMap<>();
+                            map.put("empno", empno);
+                            map.put("dates", dates);
+                            map.put("lname", lname);
+                            ss.insert("leave_of.insertAttLeave4", map);
+                        }
+
+                        Map<String, Object> map = new HashMap<>();
+                        map.put("empno", empno);
+                        map.put("duration", duration); // BigDecimal
+                        ss.update("leave_of.remainLeaveUpdate", map);
+
+                        ss.commit();
+                        ss.close();
+                    }
+                }
+            }
+        });
+
+        // 사용자 모드 버튼을 눌렀을 때
         bt_userMode.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -243,6 +409,23 @@ public class AdminFrame extends JFrame {
                 new UserFrame(vo).setVisible(true);
             }
         });
+    }
+
+    private void ViewvacTable(List<Leave_ofVO> list) {
+        String[][] data = new String[list.size()][v_name.length];
+        int i = 0;
+        for(Leave_ofVO vo : list) {
+            data[i][0] = vo.getEmpno();
+            data[i][1] = vo.getEname();
+            data[i][2] = vo.getDeptno();
+            data[i][3] = vo.getLname();
+            data[i][4] = vo.getLdate();
+            data[i][5] = vo.getDuration();
+            data[i][6] = vo.getRemain_leave();
+            data[i][7] = vo.getLstatus();
+            data[i][8] = vo.getLprocessed();
+            i++;
+        }
     }
 
     private void init() throws IOException {

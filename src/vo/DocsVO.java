@@ -4,6 +4,25 @@ public class DocsVO {
     private String docs_num, empno, deptno, title, visibility, logs_num, content, date, co_letter;
     private String ename;
     private String dname;
+    public DSharedVO dsvo;
+
+    public DSharedVO getDsvo() {
+        return dsvo;
+    }
+
+    public void setDsvo(DSharedVO dsvo) {
+        this.dsvo = dsvo;
+    }
+
+    public String getShare_id() {
+        return share_id;
+    }
+
+    public void setShare_id(String share_id) {
+        this.share_id = share_id;
+    }
+
+    private String share_id;
 
     public String getEname() {
         return ename;
