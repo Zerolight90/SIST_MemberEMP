@@ -58,9 +58,9 @@ public class UserFrame extends JFrame {
     double total;
     double remin;
     List<Leave_historyVO> history_List;
-    List<Leave_ofVO> Leave_info ;
+    List<Leave_ofVO> Leave_info;
     List<Leave_ofVO> Leave_now;
-    String[] vac_colum = { "휴가 항목", "휴가 기간", "남은 휴가", "신청 날짜", "결재 상태"};
+    String[] vac_colum = {"휴가 항목", "휴가 기간", "남은 휴가", "신청 날짜", "결재 상태"};
     Object[][] vac_info;
 
 
@@ -74,7 +74,6 @@ public class UserFrame extends JFrame {
         setTitle(ename + "님 환영합니다!");
 
         this.vo = vo; // LoginFrame 으로부터 받아온 vo를 앞서 선언한 vo에 저장
-
         cl = new CardLayout();
 
         // MyBatis 초기화
@@ -309,7 +308,7 @@ public class UserFrame extends JFrame {
         bt_workLog.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                cl.show(UserFrame.this.centerCard_p,"workLogCard");
+                cl.show(UserFrame.this.centerCard_p, "workLogCard");
             }
         });
 
@@ -344,7 +343,7 @@ public class UserFrame extends JFrame {
         bt_adminMode.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (vo.getRole_num().equals("3")){
+                if (vo.getRole_num().equals("3")) {
                     UserFrame.this.dispose();
 
                     try {
@@ -444,66 +443,98 @@ public class UserFrame extends JFrame {
 
     // 휴가 상태 레이블
     private void setLabel() {
-        LocalDate now = LocalDate.now();
-        year = now.getYear();
-//        year_cb.setPreferredSize(new Dimension(20,50));
-        year_cb.setFont(new Font("나눔 고딕", Font.PLAIN, 15));
+        year_cb.setFont(new Font("나눔 고딕", Font.PLAIN, 15)); // combox 폰트 셋팅
 
+        //1.콤보박스의 첫해 2025년도 값을 가져온다
+        String firstYear = (String) year_cb.getSelectedItem();
 
-        ss = factory.openSession();
         try {
+            ss = factory.openSession();
             Map<String, Object> remain_Vac_map = new HashMap<>();
             remain_Vac_map.put("empno", vo.getEmpno());
-            remain_Vac_map.put("year", year);
+            remain_Vac_map.put("year", firstYear); // 초기연도(2025년)로 기본 값을 설성 합니다.
 
+            // MY batis에서 실행 쿼리 결과를 lhvo(Leavo history vo) 객체 저장 한다.
             lhvo = ss.selectOne("history.remain_Vac", remain_Vac_map);
-            allVac_l.setText("총 휴가 :" + lhvo.getTotal_leave());
 
-            remainVac_l.setText("남은 휴가 :" + lhvo.getRemain_leave());
+            if (lhvo != null) {
+                allVac_l.setText("총 휴가 :" + lhvo.getTotal_leave());
+                remainVac_l.setText("남은 휴가 :" + lhvo.getRemain_leave());
 
-
-            // 사용 휴가 계산
-            double total = Double.parseDouble(lhvo.getTotal_leave());
-            double remain = Double.parseDouble(lhvo.getRemain_leave());
-            used = total - remain;
-
+                // 사용 휴가 계산
+                double total = Double.parseDouble(lhvo.getTotal_leave());
+                double remain = Double.parseDouble(lhvo.getRemain_leave());
+                used = total - remain;
 //            System.out.println(used);
-            usedVac_l.setText("사용 휴가 :" + used);
-
-
+                usedVac_l.setText("사용 휴가 :" + used);
+            } else {
+                allVac_l.setText("총 휴가 : 데이터 없음");
+                remainVac_l.setText("남은 휴기 : 데이터 없음");
+                usedVac_l.setText("사용 휴가 : 데이터 없음");
+            }
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            if (ss != null) ss.close();
         }
+        ss.close();
+
+        // 콤보박스로 해당년도 클릭하면 그해 데이터 조회 값을 가져와서 재 출력
         year_cb.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                vacTable(); // 사용한 휴가 상세 정보 테이블
+                //콤보 박스에서 사용자가 선택한 x년도를 가져와서 selecterd에 저장 한다.
+                String selected = (String) year_cb.getSelectedItem();
 
-                vacTable();
+                try {
+                    ss = factory.openSession();
+                    Map<String, Object> remain_Vac_map = new HashMap<>();
+                    remain_Vac_map.put("empno", vo.getEmpno());
+                    remain_Vac_map.put("year", selected); // 새로 선택한 연도를 파나메타로 사용한다
+
+                    //선택한 연도를 가지고 쿼리를 실행하여 lhvo에 값을 저장한다.
+                    lhvo = ss.selectOne("history.remain_Vac", remain_Vac_map);
+
+                    if (lhvo != null) {
+                        allVac_l.setText("총 휴가 :" + lhvo.getTotal_leave());
+                        remainVac_l.setText("남은 휴가 :" + lhvo.getRemain_leave());
+
+                        // 사용 휴가 계산
+                        double total = Double.parseDouble(lhvo.getTotal_leave());
+                        double remain = Double.parseDouble(lhvo.getRemain_leave());
+                        used = total - remain;
+    //                  System.out.println(used);
+                        usedVac_l.setText("사용 휴가 :" + used);
+                    } else {
+                        allVac_l.setText("총 휴가 : 데이터 없음");
+                        remainVac_l.setText("남은 휴기 : 데이터 없음");
+                        usedVac_l.setText("사용 휴가 : 데이터 없음");
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                ss.close();
+
             }
         });
     }
 
-    private void nowVac(){
+    private void nowVac() {
         String selectedYear = (String) year_cb.getSelectedItem();
         Map<String, String> map = new HashMap<>();
         map.put("empno", vo.getEmpno());
-//        map.put("year", selectedYear);
 
-        ss = null; // SqlSession 초기화
         try {
             ss = factory.openSession();
             // 로그인한 사번의 근태 조회
             Leave_info = ss.selectList("leave.vac_search", map); //
-            viewVacTable(Leave_info); // 이 메소드는 JTable을 업데이트합니다.
+            viewVacTable(Leave_info);
         } catch (Exception e) {
             e.printStackTrace();
         }
         ss.close();
     }
 
-    // 휴가 상태 테이블
+    // 휴가 성태 상세 정보 테이블
     private void vacTable() {
         String selectedYear = (String) year_cb.getSelectedItem();
         System.out.println(selectedYear);
@@ -511,8 +542,7 @@ public class UserFrame extends JFrame {
         Map<String, String> map = new HashMap<>();
         map.put("empno", vo.getEmpno());
         map.put("year", selectedYear);
-
-        ss = null; // SqlSession 초기화
+        
         try {
             ss = factory.openSession();
             // 로그인한 사번의 근태 조회
@@ -525,31 +555,30 @@ public class UserFrame extends JFrame {
     }
 
     private void viewVacTable(List<Leave_ofVO> list) {
-       vac_info = new Object[list.size()][vac_colum.length];
+
+        vac_info = new Object[list.size()][vac_colum.length];
         int i = 0;
         for (Leave_ofVO vo : list) {
-           vac_info[i][0] = vo.getLname();
-           vac_info[i][1] = vo.getLdate();
-           vac_info[i][2] = vo.getDuration();
-           vac_info[i][3] = vo.getLprocessed();
-           switch (vo.getLstatus()){
-               case "0":
-                   vac_info[i][4] = "신청";
-                   break;
-               case "1" :
-                   vac_info[i][4] = "승인";
-                   break;
-               case "2" :
-                   vac_info[i][4] = "반려";
+            vac_info[i][0] = vo.getLname();
+            vac_info[i][1] = vo.getLdate();
+            vac_info[i][2] = vo.getDuration();
+            vac_info[i][3] = vo.getLprocessed();
+            switch (vo.getLstatus()) {
+                case "0":
+                    vac_info[i][4] = "신청";
+                    break;
+                case "1":
+                    vac_info[i][4] = "승인";
+                    break;
+                case "2":
+                    vac_info[i][4] = "반려";
 
-           }
+            }
 //           vac_info[i][4] = vo.getLstatus();
-
             i++;
         }//for종료
-        vacTable.setModel(new DefaultTableModel(vac_info,vac_colum));
+        vacTable.setModel(new DefaultTableModel(vac_info, vac_colum));
         vacTable.setDefaultEditor(Object.class, null); // 셀 편집 비활성화 하는 기능
-
     }
 
     // 근태 조회(검색) 함수
@@ -567,12 +596,11 @@ public class UserFrame extends JFrame {
         map.put("year", selectedYear);
         map.put("month", selectedMonth);
 
-        ss = null; // SqlSession 초기화
         try {
             ss = factory.openSession();
             // 로그인한 사번의 근태 조회
-            commuteList = ss.selectList("commute.searchByYearMonth", map); //
-            viewAttendanceTable(commuteList); // 이 메소드는 JTable을 업데이트합니다.
+            commuteList = ss.selectList("commute.searchByYearMonth", map);
+            viewAttendanceTable(commuteList);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -588,7 +616,6 @@ public class UserFrame extends JFrame {
 //        map.put("year", selectedYear);
 //        map.put("month", selectedMonth);
 
-        ss = null; // SqlSession 초기화
         try {
             ss = factory.openSession();
             commuteList = ss.selectList("commute.login", map); //
@@ -939,10 +966,10 @@ public class UserFrame extends JFrame {
         myVac_north_p.setPreferredSize(new java.awt.Dimension(785, 50));
         myVac_north_p.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 10, 15));
 
-        allVac_l.setBackground(new java.awt.Color(14, 180, 252));
+        allVac_l.setBackground(new java.awt.Color(252, 205, 14));
         allVac_l.setHorizontalAlignment(SwingConstants.CENTER); // 수평 가운데 정렬
         allVac_l.setVerticalAlignment(SwingConstants.CENTER);   // 수직 가운데 정렬 추가
-        allVac_l.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(14, 180, 252)));
+        allVac_l.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(252, 205, 14)));
         allVac_l.setOpaque(true);
         allVac_l.setPreferredSize(new java.awt.Dimension(120, 30));
         Font all_labelFont = new Font("맑은 고딕", Font.BOLD, 15);
@@ -953,18 +980,18 @@ public class UserFrame extends JFrame {
         myVac_north_p.add(new JLabel("년"));
         myVac_north_p.add(allVac_l);
 
-        usedVac_l.setBackground(new java.awt.Color(179, 110, 232));
+        usedVac_l.setBackground(new java.awt.Color(102, 102, 102));
         usedVac_l.setHorizontalAlignment(SwingConstants.CENTER);
-        usedVac_l.setBorder(BorderFactory.createLineBorder(new java.awt.Color(179, 110, 232)));
+        usedVac_l.setBorder(BorderFactory.createLineBorder(new java.awt.Color(102, 102, 102)));
         usedVac_l.setOpaque(true);
         usedVac_l.setPreferredSize(new java.awt.Dimension(120, 30));
         Font use_labelFont = new Font("맑은 고딕", Font.BOLD, 15);
         usedVac_l.setFont(use_labelFont);
         myVac_north_p.add(usedVac_l);
 
-        remainVac_l.setBackground(new java.awt.Color(252, 205, 14));
+        remainVac_l.setBackground(new java.awt.Color(136, 85, 0));
         remainVac_l.setHorizontalAlignment(SwingConstants.CENTER);
-        remainVac_l.setBorder(BorderFactory.createLineBorder(new java.awt.Color(252, 205, 14)));
+        remainVac_l.setBorder(BorderFactory.createLineBorder(new java.awt.Color(136, 85, 0)));
         remainVac_l.setOpaque(true);
         remainVac_l.setPreferredSize(new java.awt.Dimension(120, 30));
         Font reamin_labelFont = new Font("맑은 고딕", Font.BOLD, 15);
@@ -981,7 +1008,7 @@ public class UserFrame extends JFrame {
 
 
         vacTable.setModel(new DefaultTableModel(
-                vac_info,vac_colum
+                vac_info, vac_colum
 
         ) {
             Class[] types = new Class[]{
