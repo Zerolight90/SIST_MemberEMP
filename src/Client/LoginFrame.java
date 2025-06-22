@@ -32,10 +32,19 @@ public class LoginFrame extends JFrame {
     public LoginFrame() {
         initComponents();
 
+        setBounds(770, 300, this.getWidth(), this.getHeight());
+
         bt_login.addActionListener(new ActionListener() { // 로그인 버튼 클릭시 login()함수 호출
             @Override
             public void actionPerformed(ActionEvent e) {
                 login();
+            }
+        });
+
+        bt_cancel.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                LoginFrame.this.dispose();
             }
         });
     }

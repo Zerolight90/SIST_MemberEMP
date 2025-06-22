@@ -42,7 +42,8 @@ public class UserFrame extends javax.swing.JFrame {
 
     // 로그인한 사원의 모든 정보를 LoginFrame 으로부터 받아올 변수 선언
     EmpVO vo;
-    ;
+    String ename; // 사원의 이름을 얻어내기 위한 문자열 변수 선언
+
     // 내 정보 테이블을 갱신하기 위해 사용할 2차원 오브젝트 배열과 1차원 문자열 배열 선언
     Object[][] myinfo;
     String[] myinfo_cname = {"사번", "이름", "직급", "부서", "급여", "연락처", "이메일", "입사일"};
@@ -55,7 +56,8 @@ public class UserFrame extends javax.swing.JFrame {
 
     //기본 생성자
     public UserFrame(EmpVO vo) { // LoginFrame 으로부터 로그인한 사원의 모든 정보를 받기 위해 기본 생성자에서 EmpVO 받기
-        String ename = vo.getEname();
+        // 위에서 선언한 변수를 이용해 로그인한 사원의 이름을 얻어 프레임 제목에 환영문구 띄우기
+        ename = vo.getEname();
         setTitle(ename+"님 환영합니다!");
 
         this.vo = vo; // LoginFrame 으로부터 받아온 vo를 앞서 선언한 vo에 저장
@@ -67,6 +69,8 @@ public class UserFrame extends javax.swing.JFrame {
 
         // 창 구성
         initComponents();
+
+        this.setBounds(410, 130, this.getWidth(), this.getHeight());
 
         // LoginFrame 으로부터 받아온 vo를 이용해 내 정보 테이블 갱신하기
         if (this.vo != null) {
@@ -302,7 +306,7 @@ public class UserFrame extends javax.swing.JFrame {
         bt_workLogWrite.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new docs();
+                new docs(vo);
             }
         });
 
@@ -322,6 +326,14 @@ public class UserFrame extends javax.swing.JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
 //                searchAttendance(); //
+            }
+        });
+
+        // 나의 휴가정보 버튼 눌렀을 때 화면 변경
+        bt_myVac.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cl.show(UserFrame.this.centerCard_p, "myVacCard");
             }
         });
 
@@ -346,7 +358,7 @@ public class UserFrame extends javax.swing.JFrame {
             }
         });
 
-        //출퇴근 버튼
+        // 출퇴근 버튼
         bt_workInOut.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -355,6 +367,7 @@ public class UserFrame extends javax.swing.JFrame {
 
         });
 
+        // 로그아웃 버튼 누를 시 창이 닫히고 LoginFrame 열기
         bt_logOut.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -467,6 +480,8 @@ public class UserFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        allVac_l = new javax.swing.JLabel();
+        myVac_south_p = new javax.swing.JPanel();
         south_p = new javax.swing.JPanel();
         bt_logOut = new javax.swing.JButton();
         bt_exit = new javax.swing.JButton();
@@ -517,7 +532,7 @@ public class UserFrame extends javax.swing.JFrame {
         jsp_attTable = new javax.swing.JScrollPane();
         attTable = new javax.swing.JTable();
         myVac_p = new javax.swing.JPanel();
-        jPanel5 = new javax.swing.JPanel();
+        myVac_north_p = new javax.swing.JPanel();
         usedVac_l = new javax.swing.JLabel();
         remainVac_l = new javax.swing.JLabel();
         bt_addVac = new javax.swing.JButton();
@@ -636,6 +651,7 @@ public class UserFrame extends javax.swing.JFrame {
                 return types [columnIndex];
             }
         });
+        table_myInfo.setDefaultEditor(Object.class, null);
         jsp_myInfo.setViewportView(table_myInfo);
 
         myInfo_p.add(jsp_myInfo, java.awt.BorderLayout.CENTER);
@@ -697,6 +713,7 @@ public class UserFrame extends javax.swing.JFrame {
                 return types [columnIndex];
             }
         });
+        table_emp.setDefaultEditor(Object.class, null);
         jsp_empTable.setViewportView(table_emp);
 
         searchEmp_p.add(jsp_empTable, java.awt.BorderLayout.CENTER);
@@ -781,27 +798,37 @@ public class UserFrame extends javax.swing.JFrame {
         myVac_p.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 30, 30));
         myVac_p.setLayout(new java.awt.BorderLayout());
 
-        jPanel5.setPreferredSize(new java.awt.Dimension(782, 50));
-        jPanel5.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 10, 15));
+        myVac_north_p.setPreferredSize(new java.awt.Dimension(782, 50));
+        myVac_north_p.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 10, 15));
+
+        allVac_l.setBackground(new java.awt.Color(255, 255, 255));
+        allVac_l.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        allVac_l.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        allVac_l.setOpaque(true);
+        allVac_l.setPreferredSize(new java.awt.Dimension(160, 22));
+        myVac_north_p.add(allVac_l);
 
         usedVac_l.setBackground(new java.awt.Color(255, 255, 255));
         usedVac_l.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         usedVac_l.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         usedVac_l.setOpaque(true);
         usedVac_l.setPreferredSize(new java.awt.Dimension(160, 22));
-        jPanel5.add(usedVac_l);
+        myVac_north_p.add(usedVac_l);
 
         remainVac_l.setBackground(new java.awt.Color(255, 255, 255));
         remainVac_l.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         remainVac_l.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         remainVac_l.setOpaque(true);
         remainVac_l.setPreferredSize(new java.awt.Dimension(160, 22));
-        jPanel5.add(remainVac_l);
+        myVac_north_p.add(remainVac_l);
 
+        myVac_south_p.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 1, 1, 1));
+        myVac_south_p.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 10));
         bt_addVac.setText("휴가 신청");
-        jPanel5.add(bt_addVac);
+        myVac_south_p.add(bt_addVac);
+        myVac_p.add(myVac_south_p, java.awt.BorderLayout.PAGE_END);
 
-        myVac_p.add(jPanel5, java.awt.BorderLayout.PAGE_START);
+        myVac_p.add(myVac_north_p, java.awt.BorderLayout.PAGE_START);
 
 
         vacTable.setModel(new DefaultTableModel(
@@ -823,6 +850,7 @@ public class UserFrame extends javax.swing.JFrame {
                 return types [columnIndex];
             }
         });
+        vacTable.setDefaultEditor(Object.class, null);
         jsp_vacTable.setViewportView(vacTable);
 
         myVac_p.add(jsp_vacTable, java.awt.BorderLayout.CENTER);
@@ -862,6 +890,8 @@ public class UserFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel allVac_l;
+    private javax.swing.JPanel myVac_south_p;
     private javax.swing.JTable attTable;
     private javax.swing.JButton bt_addVac;
     private javax.swing.JButton bt_adminMode;
@@ -887,7 +917,7 @@ public class UserFrame extends javax.swing.JFrame {
     private javax.swing.JLabel homeImage_l;
     private javax.swing.JPanel home_p;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel myVac_north_p;
     private javax.swing.JScrollPane jsp_attTable;
     private javax.swing.JScrollPane jsp_empTable;
     private javax.swing.JScrollPane jsp_logList;

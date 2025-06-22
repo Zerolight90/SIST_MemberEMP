@@ -71,6 +71,8 @@ public class EditMyinfoForm extends javax.swing.JDialog {
         initComponents();
         initdb();
 
+        this.setBounds(770, 200, this.getWidth(), this.getHeight());
+
         // 내 정보 수정 창에 1차적으로 내 정보 설정하기
         SqlSession ss = factory.openSession();
         EmpVO evo = ss.selectOne("emp.getMyInfoEdit", this.vo.getEmpno());

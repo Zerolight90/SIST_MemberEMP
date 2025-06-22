@@ -2,18 +2,42 @@ package vo;
 
 public class DocsVO {
     private String docs_num, empno, deptno, title, visibility, logs_num, content, date, co_letter;
-    private DeptVO dcvo;
+    private String ename;
+    private String dname;
 
-    public DeptVO getDcvo() {
-        return dcvo;
+    public String getEname() {
+        return ename;
     }
 
-    public DeptVO getDvo() {
-        return dcvo;
+    public void setEname(String ename) {
+        this.ename = ename;
     }
 
-    public void setDcvo(DeptVO dvo) {
-        this.dcvo = dvo;
+    public String getDname() {
+        return dname;
+    }
+
+    public void setDname(String dname) {
+        this.dname = dname;
+    }
+
+    private DeptVO dpvo;
+    private EmpVO evo;
+
+    public EmpVO getEvo() {
+        return evo;
+    }
+
+    public void setEvo(EmpVO evo) {
+        this.evo = evo;
+    }
+
+    public DeptVO getDpvo() {
+        return dpvo;
+    }
+
+    public void setDpvo(DeptVO dpvo) {
+        this.dpvo = dpvo;
     }
 
     public String getDocs_num() {

@@ -3,7 +3,8 @@ package vo;
 public class EmpVO {
     private String
             empno, deptno, role_num, ename, work_status, sal, hireDATE,
-            resign_DATE, phone, email, mgr, username, password, dname, posname;
+            resign_DATE, phone, email, mgr, username, password, dname, posname,
+            visibility;
 
     public String getEmpno() {
         return empno;
@@ -123,5 +124,21 @@ public class EmpVO {
 
     public void setPosname(String posname) {
         this.posname = posname;
+    }
+
+    public String getWork_status() {
+        return work_status;
+    }
+
+    public void setWork_status(String work_status) {
+        this.work_status = work_status;
+    }
+
+    public String getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(String visibility) {
+        this.visibility = visibility;
     }
 }

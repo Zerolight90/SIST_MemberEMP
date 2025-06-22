@@ -15,7 +15,9 @@ import java.awt.event.*;
 import java.io.IOException;
 import java.io.Reader;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class docs extends JFrame {
     JTextField title;
@@ -28,6 +30,7 @@ public class docs extends JFrame {
     JTable table;
     JLabel jl1, dateL;
     int i;
+    String docNum;
 
     DocsVO dvo;
     EmpVO evo;
@@ -35,7 +38,7 @@ public class docs extends JFrame {
     List<DocsVO> Docslist;
     SqlSessionFactory factory;
 
-    public docs(){
+    public docs(EmpVO vo){
         init();
         initComponents();
         dvo = new DocsVO();
@@ -47,8 +50,8 @@ public class docs extends JFrame {
                 String str = ta_workLogWrite.getText();
                 dvo.setTitle(title.getText());
                 dvo.setContent(ta_workLogWrite.getText());
-                dvo.setEmpno("1000");
-                dvo.setDeptno("10");
+                dvo.setEmpno(vo.getEmpno());
+                dvo.setDeptno(vo.getDeptno());
                 dvo.setVisibility("dept");
                 dvo.setDate(dateL.getText());
                 ss.insert("docs.insertDoc",dvo);
@@ -86,40 +89,64 @@ public class docs extends JFrame {
                     data[i][1] = doc.getTitle();
                     data[i][2] = doc.getContent();
 
-                    table.setModel(new DefaultTableModel(data, column){
-                        @Override
-                        public boolean isCellEditable(int row, int column) {
-                            return false;
-                        }
-                    });
+                    table.setModel(new DefaultTableModel(data, column));
+                    table.setDefaultEditor(Object.class, null);
 
                 }
                 ss.close();
 
-                table.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        int cnt = e.getClickCount();
-                        System.out.println("들어감");
-                        if (cnt == 2) {
-                            System.out.println("더블클릭");
-                            i = table.getSelectedRow();
-                            String[] select_m = {"열람", "공유"};
-                            JOptionPane.showOptionDialog(docs.this, "선택", "타이틀", 0, 0, null, select_m, select_m[0]);
-
-
-                        }
-
-
-
-                    }
-                });
-
                 JScrollPane scrollPane = new JScrollPane(table);
                 JOptionPane.showMessageDialog(docs.this, scrollPane, "부서 문서 목록", JOptionPane.INFORMATION_MESSAGE);
-
             }
         });
+
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int cnt = e.getClickCount();
+                if (cnt == 2) {
+                    i = table.getSelectedRow();
+                    docNum = table.getValueAt(i, 0).toString();
+
+                    String[] select_m = {"열람", "공유"};
+                    int select_op = JOptionPane.showOptionDialog(docs.this, "선택", "타이틀", 0, 0, null, select_m, select_m[0]);
+                    if (select_op == 0) {
+                        showdocs(docNum);
+                    } else {
+                        share_docs();
+                    }
+
+                }
+            }
+        });
+    }
+
+    //
+    private void showdocs(String docNum){
+        init();
+        SqlSession ss = factory.openSession();
+        DocsVO dvo = ss.selectOne("docs.getDoc", docNum);
+        if (dvo == null) {
+            JOptionPane.showMessageDialog(this, "문서를 찾을 수 없습니다.");
+            ss.close();
+            return;
+        }
+        String message = String.format("제목: %s\n내용: %s\n작성일: %s\n작성자: %s\n부서명:%s", dvo.getTitle(), dvo.getContent(), dvo.getDate(), dvo.getEname(), dvo.getDname());
+        JOptionPane.showMessageDialog(this, message, "문서 열람", JOptionPane.INFORMATION_MESSAGE);
+        ss.close();
+    }
+
+    private void share_docs(){
+        SqlSession ss = factory.openSession();
+        List<DeptVO> deptlist = ss.selectList("docs.allDept");
+        JPanel cb_p = new JPanel(new GridLayout(deptlist.size(), 1));
+        Map<JCheckBox, String> cbMap = new HashMap<>();
+
+        for(DeptVO dpvo : deptlist){
+            JCheckBox dept_cb = new JCheckBox(dpvo.getDname());
+            cbMap.put(dept_cb, dpvo.getDeptno());
+            cb_p.add(dept_cb);
+        }
 
     }
 
@@ -190,10 +217,5 @@ public class docs extends JFrame {
         });
 
         pack();
-    }
-
-    public static void main(String[] args) throws IOException {
-        new docs();
-
     }
 }

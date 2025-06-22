@@ -3,13 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="docs">
-    <resultMap id="map1" type="vo.DocsVO">
-        <association property="dvo" javaType="vo.DeptVO" select="dept.getDept" column="deptno">
-        </association>
-    </resultMap>
-    <select id="all" resultMap="map1">
-        select * from documents
-    </select>
+
     <select id="search_dept" resultType="vo.DocsVO" parameterType="String">
         SELECT * FROM documents
         WHERE deptno = #{no}
@@ -29,12 +23,23 @@
 
     <select id="reDocs" parameterType="string" resultType="vo.DocsVO">
         SELECT d.docs_num, d.title, d.content, d.empno, d.deptno,
-        e.ename AS writerName, dp.dname AS deptName
+        e.ename, dp.dname
         FROM documents d INNER JOIN docs_shared ds
         ON d.docs_num = ds.docs_num
         INNER JOIN emp e ON d.empno = e.empno
         INNER JOIN dept dp ON d.deptno = dp.deptno
         WHERE ds.deptno = #{deptno}
+    </select>
+    <select id="allDept" resultType="vo.DeptVO">
+        SELECT * FROM dept
+    </select>
+
+    <select id="getDoc" parameterType="String" resultType="vo.DocsVO">
+        SELECT d.docs_num, d.title, d.content, d.date,
+        e.ename, dp.dname FROM documents d
+        INNER JOIN emp e ON d.empno = e.empno
+        INNER JOIN dept dp ON d.deptno = dp.deptno
+        WHERE d.docs_num = #{docs_num}
     </select>
 
 </mapper>
