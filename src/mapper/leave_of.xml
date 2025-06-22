@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="leave">
+    <select id="vac_search" resultType="vo.Leave_ofVO" parameterType="map">
+<!--        select * from attendance a inner join emp e on a.empno = e.empno -->
+
+        select lname,ldate,duration,lprocessed,lstatus
+        from leave_of
+        where empno = #{empno} and date_format(ldate, '%Y') = 2025
+
+    </select>
+
+    <select id="yearsSearch" parameterType="map" resultType="vo.Leave_ofVO">
+        select lname,ldate,duration,lprocessed,lstatus
+        from leave_of
+        where empno = #{empno} and date_format(ldate, '%Y') = #{year}
+    </select>
+</mapper>
