@@ -159,11 +159,12 @@ public class AdminFrame extends JFrame {
         adminVac_north_p.add(bt_cfirmDenyList);
         adminVac_p.add(adminVac_north_p, BorderLayout.NORTH);
 
-        JTable vacTable = new JTable(new javax.swing.table.DefaultTableModel(
+        vacTable = new JTable(new javax.swing.table.DefaultTableModel(
                 new Object[4][9],
                 new String[]{"사원 번호", "사원 이름", "부서", "휴가 종류", "휴가 시작일", "휴가 기간", "남은 휴가", "결재 상태", "결재 날짜"}
         ));
         JScrollPane jsp_vacTable = new JScrollPane(vacTable);
+        vacTable.setDefaultEditor(Object.class, null);
         adminVac_p.add(jsp_vacTable, BorderLayout.CENTER);
         centerCard_p.add(adminVac_p, "adminVacCard");
 
@@ -185,7 +186,7 @@ public class AdminFrame extends JFrame {
         bt_home.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                cl.show(centerCard_p, "home");
+                cl.show(centerCard_p, "adminCard");
             }
         });
 
