@@ -1,7 +1,5 @@
 package Client;
 
-import com.mysql.cj.xdevapi.Table;
-import vo.DSharedVO;
 import vo.DeptVO;
 import vo.DocsVO;
 import vo.EmpVO;
@@ -17,36 +15,34 @@ import java.awt.event.*;
 import java.io.IOException;
 import java.io.Reader;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class docs extends JFrame {
     JTextField title;
-    JScrollPane jsp_workLogWrite, select_pane, save_p;
-    JTextArea ta_workLogWrite, select_ta;
+    JScrollPane jsp_workLogWrite, save_p;
+    JTextArea ta_workLogWrite;
     JMenuBar bar;
     JMenu menu;
     JMenuItem menuItem, view_menu, saveview;
     JPanel north_p;
     JTable table, stable;
     JLabel jl1, dateL;
-    int i,j;
-
+    int i, j;
+    String docNum;
 
     DocsVO dvo;
     EmpVO evo;
     DeptVO dpvo;
-    DSharedVO dsvo;
     List<DocsVO> Docslist;
     SqlSessionFactory factory;
 
-    public docs(){
-        //factory
+    public docs(EmpVO vo){
+        evo = vo;
+
         init();
 
-        //화면생성
         initComponents();
 
         //문서저장
@@ -98,12 +94,7 @@ public class docs extends JFrame {
                     data[i][1] = dvo.getTitle();
                     data[i][2] = dvo.getContent();
 
-                    table.setModel(new DefaultTableModel(data, column) {
-                        @Override
-                        public boolean isCellEditable(int row, int column) {
-                            return false;
-                        }
-                    });
+                    table.setModel(new DefaultTableModel(data, column));
 
                 }
                 ss.close();
@@ -134,7 +125,7 @@ public class docs extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 SqlSession ss = factory.openSession();
-                Docslist = ss.selectList("reDocs", "20");//dvo.getDeptno());
+                Docslist = ss.selectList("reDocs", vo.getDeptno());//dvo.getDeptno());
                 String[] scolumn = {"공유문서번호", "문서번호", "제목", "내용", "부서명"};
                 String[][] sdata = new String[Docslist.size()][scolumn.length];
                 for (int i = 0; i < Docslist.size(); i++) {
@@ -144,15 +135,10 @@ public class docs extends JFrame {
                     sdata[i][2] = dvo.getTitle();
                     sdata[i][3] = dvo.getContent();
                     sdata[i][4] = dvo.getDname();
-
-
                 }
-                stable.setModel(new DefaultTableModel(sdata, scolumn) {
-                    @Override
-                    public boolean isCellEditable(int row, int column) {
-                        return false;
-                    }
-                });
+
+                stable.setModel(new DefaultTableModel(sdata, scolumn));
+
                 save_p = new JScrollPane(stable);
                 JOptionPane.showMessageDialog(docs.this, save_p, "부서 문서 목록", JOptionPane.INFORMATION_MESSAGE);
 
@@ -169,8 +155,8 @@ public class docs extends JFrame {
         dvo = new DocsVO();
         dvo.setTitle(title.getText());
         dvo.setContent(ta_workLogWrite.getText());
-        dvo.setEmpno("1000"); //evo.getEmpno());
-        dvo.setDeptno("10");//evo.getDeptno());
+        dvo.setEmpno(evo.getEmpno()); //evo.getEmpno());
+        dvo.setDeptno(evo.getDeptno());//evo.getDeptno());
         dvo.setVisibility("dept");
         dvo.setDate(dateL.getText());
         ss.insert("docs.insertDoc",dvo);
@@ -269,7 +255,9 @@ public class docs extends JFrame {
         stable = new JTable();
         saveview = new JMenuItem();
 
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        table.setDefaultEditor(Object.class, null);
+        stable.setDefaultEditor(Object.class, null);
+
         setTitle("업무 일지 작성");
 
         jsp_workLogWrite.setPreferredSize(new Dimension(410, 521));
@@ -288,7 +276,7 @@ public class docs extends JFrame {
         menuItem.setText("저장");
         menu.add(menuItem);
 
-        view_menu.setText("조회");
+        view_menu.setText("공유");
         menu.add(view_menu);
 
         saveview.setText("받은 문서 조회");
@@ -303,15 +291,10 @@ public class docs extends JFrame {
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                System.exit(0);
+                docs.this.dispose();
             }
         });
 
         pack();
-    }
-
-    public static void main(String[] args) throws IOException {
-        new docs();
-
     }
 }

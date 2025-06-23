@@ -2,8 +2,10 @@ package vo;
 
 public class EmpVO {
     private String
-            empno, deptno, role_num, ename, work_status, sal, hireDATE,
-            resign_DATE, phone, email, mgr, username, password, dname, posname;
+            empno, deptno, role_num, ename, work_status, sal, hireDATE,hiredate,
+            resign_date, resign_DATE, phone, email, mgr, username, password,
+            dname, posname, visibility;
+    private String dept_name,role_name,mgr_name; // 부서명
 
     public String getEmpno() {
         return empno;
@@ -123,5 +125,61 @@ public class EmpVO {
 
     public void setPosname(String posname) {
         this.posname = posname;
+    }
+
+    public String getHiredate() {
+        return hiredate;
+    }
+
+    public void setHiredate(String hiredate) {
+        this.hiredate = hiredate;
+    }
+
+    public String getResign_date() {
+        return resign_date;
+    }
+
+    public void setResign_date(String resign_date) {
+        this.resign_date = resign_date;
+    }
+
+    public String getWork_status() {
+        return work_status;
+    }
+
+    public void setWork_status(String work_status) {
+        this.work_status = work_status;
+    }
+
+    public String getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(String visibility) {
+        this.visibility = visibility;
+    }
+
+    public String getDept_name() {
+        return dept_name;
+    }
+
+    public void setDept_name(String dept_name) {
+        this.dept_name = dept_name;
+    }
+
+    public String getRole_name() {
+        return role_name;
+    }
+
+    public void setRole_name(String role_name) {
+        this.role_name = role_name;
+    }
+
+    public String getMgr_name() {
+        return mgr_name;
+    }
+
+    public void setMgr_name(String mgr_name) {
+        this.mgr_name = mgr_name;
     }
 }

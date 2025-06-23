@@ -28,3 +28,4 @@ public class DSharedVO {
         this.deptno = deptno;
     }
 }
+

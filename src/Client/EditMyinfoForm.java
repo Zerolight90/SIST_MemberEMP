@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.List;
 
 public class EditMyinfoForm extends JDialog {
 
@@ -69,6 +70,8 @@ public class EditMyinfoForm extends JDialog {
 
         initComponents();
         initdb();
+
+        this.setBounds(770, 200, this.getWidth(), this.getHeight());
 
         // 내 정보 수정 창에 1차적으로 내 정보 설정하기
         SqlSession ss = factory.openSession();

@@ -34,7 +34,8 @@ public class WorkInOut extends JFrame {
     private JPanel north_p;
     private String user_name;
     private String loginedEmpno; // 로그인한 사번을 저장할 변수
-    private int status; // handleClockOut에서 쓰일 status값 저장소
+    private String status; // handleClockOut에서 쓰일 status값 저장소
+    private CommuteVO commuteVO;
 
     //DB관련 변수
     SqlSessionFactory factory;
@@ -47,6 +48,7 @@ public class WorkInOut extends JFrame {
         //UseerFrame에 있는 enmpno를 가져 오기 위해 변수를 선언한다.
         user_name = userFrame.vo.getEname();
         loginedEmpno = userFrame.vo.getEmpno();
+
         initComponents();
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         System.out.println(userFrame.vo.getEmpno());
@@ -58,7 +60,24 @@ public class WorkInOut extends JFrame {
         bt_in.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                handleClockIn();
+                //if 만들자
+
+                   //현재 로그인 한 EMP에서 정보를 가져와서 전달
+                ss = factory.openSession();
+               commuteVO = ss.selectOne("commute.member_search", loginedEmpno);
+//                System.out.println(commuteVO.getEmpno());
+//                System.out.println(commuteVO.getAttend_status());
+                if (commuteVO == null){
+
+                    handleClockIn();
+
+                } else if (commuteVO.getChkin() != null) {
+                    JOptionPane.showMessageDialog(WorkInOut.this, "이미 출근도장을 찍으셨습니다.");
+
+                } else {
+                    updateclockIN();
+                }
+
                 dispose();
             }
 
@@ -74,7 +93,7 @@ public class WorkInOut extends JFrame {
         });
     }//기본 생성자의 끝
 
-    public void handleClockIn() {
+    private void handleClockIn() {
         LocalTime now = LocalTime.now(); // LocalTime -> java에서 현재 시간 가져오는 함수
         LocalTime lateTime = LocalTime.of(9, 10); // 지각 기준 시간 (9시 10분)
 
@@ -85,16 +104,13 @@ public class WorkInOut extends JFrame {
         map.put("empno", loginedEmpno);
 
         if (now.isAfter(lateTime)) {
-
             map.put("status", "5");
             map.put("note", "지각");
-
-        } else {
+        }
+        else {
             map.put("status", "0");
             map.put("note", "출근");
         }
-
-        SqlSession ss = null; // SqlSession 변수를 try 블록 바깥에 선언
 
         try {
             ss = factory.openSession(); // factory는 SqlSessionFactory 객체로 가정
@@ -104,8 +120,37 @@ public class WorkInOut extends JFrame {
             e.printStackTrace();
         }
                 ss.close(); // 세션 닫기
+
     }
 
+    private  void updateclockIN(){
+        LocalTime now = LocalTime.now(); // LocalTime -> java에서 현재 시간 가져오는 함수
+        LocalTime lateTime = LocalTime.of(13, 10); // 지각 기준 시간 (13시 10분)
+
+        JOptionPane.showMessageDialog(WorkInOut.this,
+                user_name+"님 출근을 환영합니다.");
+
+        Map<String, String> map = new HashMap<>();
+        map.put("empno", loginedEmpno);
+
+        if (now.isAfter(lateTime)) {
+            map.put("note", "반차인데 지각?? 너 해고");
+        }
+        else {
+            map.put("note", "(반차)출근");
+        }
+
+        try {
+            ss = factory.openSession(); // factory는 SqlSessionFactory 객체로 가정
+            ss.update("commute.upchkin", map);
+            ss.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        ss.close(); // 세션 닫기
+
+
+    }
 
     private void handleClockOut() {
         JOptionPane.showMessageDialog(WorkInOut.this,
@@ -115,23 +160,16 @@ public class WorkInOut extends JFrame {
             ss = factory.openSession();
             status = ss.selectOne("commute.getStatus", loginedEmpno); // empno로 status 조회
             System.out.println(status);
+            System.out.println(loginedEmpno);
         }catch (Exception e){
             e.printStackTrace();
         }
 
         Map<String, String> map = new HashMap<>();
         map.put("empno", loginedEmpno);
-        map.put("status", "1");
 
-        if (status == 5) {
-            map.put("note", "지각");
-       } else if (status == 0) {
-            map.put("note", "정상 퇴근");
-        }
 
-        SqlSession ss = null; // SqlSession 변수를 try 블록 바깥에 선언
-
-        try {
+            try {
             ss = factory.openSession();
             ss.update("commute.chkout", map);
             ss.commit();
