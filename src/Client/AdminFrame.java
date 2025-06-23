@@ -26,29 +26,32 @@ public class AdminFrame extends JFrame {
 
     EmpVO testadmin = new EmpVO(); // 테스트용 관리자
 
+    // DB 연결을 위한 팩토리와 세션 선언
     SqlSessionFactory factory;
     SqlSession ss;
 
-    // 사원조회테이블 컬럼명
+    // 사원 조회 테이블 컬럼명
     String[] e_name = {"사원번호", "사원이름", "부서명", "직급명", "급여", "재직상태", "입사일", "관리자"};
 
-    // 근태조회테이블 컬럼명
+    // 근태 조회 테이블 컬럼명
     String[] a_name = {"사원 번호", "사원 이름", "날짜", "출근 시간", "퇴근 시간", "근태"};
 
-    // 휴가테이블 컬럼명
+    // 휴가 테이블 컬럼명
     String[] v_name = {"사원 번호", "사원 이름", "부서", "휴가 종류", "휴가 시작일",
             "휴가 기간", "남은 휴가", "결재 상태", "휴가 코드"};
 
+    // 휴가 관리 테이블
     JTable vacTable;
 
+    // 사원 관리 테이블
     JTable empTable; // 클래스 필드로 선언
 
+    // 로그인한 사원의 모든 정보를 LoginFrame 으로부터 받아올 변수 선언
     EmpVO vo;
-    public AdminFrame(EmpVO vo) throws IOException {
-        this.vo = vo;
 
-        testadmin.setEmpno("1001"); // 사번이 1001인 관리자 테스트용으로 임시 지정
-        testadmin.setDeptno("10");
+    // 기본 생성자
+    public AdminFrame(EmpVO vo) throws IOException { // UserFrame 으로부터 로그인한 사원의 모든 정보를 받기 위해 기본 생성자에서 EmpVO 받기
+        this.vo = vo; // UserFrame 으로부터 받아온 vo를 앞서 선언한 vo에 저장
 
         setTitle("관리자 모드");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -223,13 +226,15 @@ public class AdminFrame extends JFrame {
                 bt_find.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
+                        ss = factory.openSession();
+
                         // 각각 검색할 연도, 월 받아와 맵구조에 저장
                         String year = year_cb.getSelectedItem().toString();
                         String mon = month_cb.getSelectedItem().toString();
                         Map<String, String> attsearchmap = new HashMap<>();
                         attsearchmap.put("year", year);
                         attsearchmap.put("mon", mon);
-                        // 해당부서장과 동일한 부서원들을 특정하기 위해 deptno받아오기
+                        // 해당 부서장과 동일한 부서원들을 특정하기 위해 deptno 받아오기
                         attsearchmap.put("deptno", testadmin.getDeptno());
 
                         // 우리 부서 근태 조회하기
@@ -248,6 +253,7 @@ public class AdminFrame extends JFrame {
                         }
                         attTable.setModel(new DefaultTableModel(data, a_name));
 
+                        ss.close();
                     }
                 }); // 근태조회 카드에서의 조회 버튼 끝
             }
