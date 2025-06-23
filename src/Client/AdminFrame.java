@@ -228,12 +228,13 @@ public class AdminFrame extends JFrame {
                     public void actionPerformed(ActionEvent e) {
                         ss = factory.openSession();
 
-                        // 각각 검색할 연도, 월 받아와 맵구조에 저장
+                        // 각각 검색할 연도, 월 받아와 맵 구조에 저장
                         String year = year_cb.getSelectedItem().toString();
                         String mon = month_cb.getSelectedItem().toString();
                         Map<String, String> attsearchmap = new HashMap<>();
                         attsearchmap.put("year", year);
                         attsearchmap.put("mon", mon);
+
                         // 해당 부서장과 동일한 부서원들을 특정하기 위해 deptno 받아오기
                         attsearchmap.put("deptno", testadmin.getDeptno());
 
@@ -265,12 +266,13 @@ public class AdminFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 cl.show(centerCard_p, "adminVacCard");
 
-                // 승인/반려 버튼 이벤트
+                // 승인/반려 버튼을 눌렀을 때
                 bt_cfirmDeny.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         ss = factory.openSession();
 
+                        // 로그인한 사원의 부서번호를 얻어내 같은 부서인 사람들의 휴가 정보인 Leave_ofVO를 리스트 형태로 저장
                         List<Leave_ofVO> list = ss.selectList("leave_of.approvevac", vo.getDeptno());
                         String[][] data = new String[list.size()][v_name.length];
 
@@ -450,6 +452,7 @@ public class AdminFrame extends JFrame {
         EmpTableClick(empTable);
     } // 생성자 끝
 
+    // 휴가 테이블 갱신해서 출력하는 함수
     private void ViewvacTable(List<Leave_ofVO> list) {
         String[][] data = new String[list.size()][v_name.length];
         int i = 0;
