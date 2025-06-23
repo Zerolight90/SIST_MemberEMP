@@ -464,11 +464,9 @@ public class AdminFrame extends JFrame {
     private void loadEmpData() {
         try (SqlSession ss = factory.openSession()) {
             List<EmpVO> list = ss.selectList("adminemp.getALLemp");
-            System.out.println("조회된 사원 수: " + list.size()); // 디버깅용
 
             DefaultTableModel model = new DefaultTableModel(null, e_name);
             for (EmpVO vo : list) {
-                System.out.println("사번: " + vo.getEmpno() + ", 이름: " + vo.getEname()); // 디버깅용
                 model.addRow(new Object[]{
                         vo.getEmpno(),
                         vo.getEname(),
