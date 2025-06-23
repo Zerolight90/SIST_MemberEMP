@@ -43,7 +43,26 @@ public class LoginFrame extends JFrame {
                 login();
             }
         });
+        //각 텍스트 필드에 KeyLIstener를 추가
 
+        //bt_logint.addKeyListener로 하게 되면, 키보드 포커스를 가진 컴포넌트만 이벤트가 발생한다
+        //즉, 로그인 버튼이 아닌 아이디나 비밀번호 입력  필드에 커서가 있을 때 Enter 키를 누르므로, 버튼에 추가된 `KeyListener`는 실행되지 않습니다.
+        //따라서, 사용자가 아이디와 비밀번호를 입력할 때는 `id_tf` (JTextField) 또는 `pw_pf` (JPasswordField)가 포커스를 가지고 있습니다.
+        //따라서 `bt_login` 버튼에 `KeyListener`를 추가해도, 정작 Enter 키를 누르는 시점에는
+        //버튼이 포커스를 갖고 있지 않아 `keyPressed` 이벤트가 발생하지 않는 것입니다.
+
+        //Enter key 이벤트 정의
+        KeyAdapter enterKeyListener = new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    login();
+                }
+            }
+        };
+
+        id_tf.addKeyListener(enterKeyListener);
+        pw_pf.addKeyListener(enterKeyListener);
 
         bt_cancel.addActionListener(new ActionListener() {
             @Override
