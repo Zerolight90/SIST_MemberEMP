@@ -124,14 +124,17 @@ public class WorkInOut extends JFrame {
         map.put("empno", loginedEmpno);
         map.put("status", "1");
 
+
         if (status == 5) {
             map.put("note", "지각");
        } else if (status == 0) {
             map.put("note", "정상 퇴근");
+        } else if (status == 3){
+            map.put("note", "오전 반차");
         }
 
 
-        try {
+            try {
             ss = factory.openSession();
             ss.update("commute.chkout", map);
             ss.commit();
