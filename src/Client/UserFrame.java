@@ -26,11 +26,13 @@ public class UserFrame extends javax.swing.JFrame {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(UserFrame.class.getName());
 
     Double used;
+
     //공통 맴버 변수
     CardLayout cl;
     SqlSessionFactory factory;
     List<CommuteVO> commuteList;
     SqlSession ss;
+
     //근태 상태 맴버 변수
     String[] date_name = {"사번", "날짜", "출근", "퇴근", "상태"};
     String[][] chk;
@@ -65,7 +67,7 @@ public class UserFrame extends javax.swing.JFrame {
 
         this.vo = vo; // LoginFrame 으로부터 받아온 vo를 앞서 선언한 vo에 저장
 
-        cl = new CardLayout();
+        cl = new CardLayout(); // 앞서 선언했던 카드레이아웃 생성
 
         // MyBatis 초기화
         initDB();
@@ -73,9 +75,10 @@ public class UserFrame extends javax.swing.JFrame {
         // 창 구성
         initComponents();
 
+        // 창 열릴 때 위치 조정
         this.setBounds(410, 130, this.getWidth(), this.getHeight());
 
-        // LoginFrame 으로부터 받아온 vo를 이용해 내 정보 테이블 갱신하기
+        // LoginFrame 으로부터 받아온 vo와 emp 매퍼의 getMyInfo 쿼리를 이용해 내 정보 테이블 갱신하기
         if (this.vo != null) {
             ss = factory.openSession();
             List<EmpVO> list = ss.selectList("emp.getMyInfo", this.vo.getEmpno());
@@ -94,13 +97,16 @@ public class UserFrame extends javax.swing.JFrame {
             table_myInfo.setModel(new DefaultTableModel(myinfo, myinfo_cname));
             ss.close();
         } else {
-            System.out.println("사번 확인 불가"); // 사번이 넘어왔는지 확인용 출력문
+            // 사번이 넘어오지 않는 경우 에러 출력
+            JOptionPane.showMessageDialog(this, "사번이 확인되지 않습니다!");
         }
 
+        // 홈 패널 중앙에 들어갈 이미지 설정
         ImageIcon icon = new ImageIcon(getClass().getResource("/images/empOffice.png"));
         Image img = icon.getImage().getScaledInstance(750, 580, Image.SCALE_SMOOTH);
         homeImage_l.setIcon(new ImageIcon(img));
 
+        // 내 정보 테이블의 컬럼들의 열 간격 조정
         table_myInfo.getColumnModel().getColumn(0).setPreferredWidth(50);   // 사번
         table_myInfo.getColumnModel().getColumn(1).setPreferredWidth(80);   // 이름
         table_myInfo.getColumnModel().getColumn(2).setPreferredWidth(100);  // 직급
@@ -387,7 +393,7 @@ public class UserFrame extends javax.swing.JFrame {
                 UserFrame.this.dispose();
             }
         });
-    } //생성자의 끝
+    } // 생성자의 끝
 
     // 내 정보 수정 창에서 사원 정보를 수정했을 때 내 정보 테이블 갱신하는 함수
     public void EditMyInfoTable(EmpVO vo){
@@ -417,13 +423,11 @@ public class UserFrame extends javax.swing.JFrame {
         ss.close();
     }
 
-    // 휴가 상태 레이블
+    // 휴가 상태 레이블 설정하는 함수
     private void setLabel() {
         LocalDate now = LocalDate.now();
         year = now.getYear();
-//        year_cb.setPreferredSize(new Dimension(20,50));
         year_cb.setFont(new Font("나눔 고딕", Font.PLAIN, 15));
-
 
         ss = factory.openSession();
         try {
@@ -436,15 +440,12 @@ public class UserFrame extends javax.swing.JFrame {
 
             remainVac_l.setText("남은 휴가 :" + lhvo.getRemain_leave());
 
-
             // 사용 휴가 계산
             double total = Double.parseDouble(lhvo.getTotal_leave());
             double remain = Double.parseDouble(lhvo.getRemain_leave());
             used = total - remain;
 
-//            System.out.println(used);
             usedVac_l.setText("사용 휴가 :" + used);
-
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -460,11 +461,12 @@ public class UserFrame extends javax.swing.JFrame {
         });
     }
 
+    // (함수 설명)
     private void nowVac(){
         String selectedYear = (String) year_cb.getSelectedItem();
         Map<String, String> map = new HashMap<>();
         map.put("empno", vo.getEmpno());
-//        map.put("year", selectedYear);
+        // map.put("year", selectedYear);
 
         ss = null; // SqlSession 초기화
         try {
@@ -478,7 +480,7 @@ public class UserFrame extends javax.swing.JFrame {
         ss.close();
     }
 
-    // 휴가 상태 테이블
+    // 휴가 상태 테이블 설정하는 함수
     private void vacTable() {
         String selectedYear = (String) year_cb.getSelectedItem();
         System.out.println(selectedYear);
@@ -499,6 +501,7 @@ public class UserFrame extends javax.swing.JFrame {
         ss.close();
     }
 
+    // 휴가 테이블 갱신시켜 보여주는 함수
     private void viewVacTable(List<Leave_ofVO> list) {
         vac_info = new Object[list.size()][vac_colum.length];
         int i = 0;
@@ -518,9 +521,9 @@ public class UserFrame extends javax.swing.JFrame {
                     vac_info[i][4] = "반려";
 
             }
-//           vac_info[i][4] = vo.getLstatus();
+            // vac_info[i][4] = vo.getLstatus();
             i++;
-        }//for종료
+        } // for문 종료
         vacTable.setModel(new DefaultTableModel(vac_info,vac_colum));
         vacTable.setDefaultEditor(Object.class, null); // 셀 편집 비활성화 하는 기능
     }
@@ -550,15 +553,15 @@ public class UserFrame extends javax.swing.JFrame {
             e.printStackTrace();
         }
         ss.close();
-    } // searchAttendanec 종료
+    } // searchAttendance 함수 종료
 
-    //나의 전체 년도 월 조회
+    // 나의 전체 년도 월 조회
     private void All_searchAttendance() {
 
         Map<String, String> map = new HashMap<>();
         map.put("empno", vo.getEmpno());
-//        map.put("year", selectedYear);
-//        map.put("month", selectedMonth);
+        // map.put("year", selectedYear);
+        // map.put("month", selectedMonth);
 
         ss = null; // SqlSession 초기화
         try {
@@ -570,11 +573,12 @@ public class UserFrame extends javax.swing.JFrame {
         }
         ss.close();
 
-    } // All_searchAttendanec 종료
+    } // All_searchAttendanece 종료
 
+    // 근태 테이블 갱신시켜 보여주는 함수
     private void viewAttendanceTable(List<CommuteVO> list) {
 
-        //인자로 받은 List구조를 2차원 배열로 변환한 후 JTable에 표현!
+        // 인자로 받은 List 구조를 2차원 배열로 변환한 후 JTable에 표현!
         chk = new String[list.size()][date_name.length];
         int i = 0;
         for (CommuteVO vo : list) {
@@ -585,19 +589,19 @@ public class UserFrame extends javax.swing.JFrame {
             chk[i][4] = vo.getAttend_note();
 
             i++;
-        }//for종료
+        } // for문 종료
         attTable.setModel(new DefaultTableModel(chk, date_name));
         attTable.setDefaultEditor(Object.class, null); // 셀 편집 비활성화 하는 기능
     }
 
-    //DB연결 함수
+    // DB 연결하는 함수 (한 번만 수행)
     private void initDB() {
         try {
             Reader r = Resources.getResourceAsReader("config/conf.xml"); // MyBatis 설정 파일 경로
             factory = new SqlSessionFactoryBuilder().build(r);
             r.close();
 
-            System.out.println("DB연결 완료");
+            System.out.println("DB 연결 완료");
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -665,8 +669,6 @@ public class UserFrame extends javax.swing.JFrame {
         bt_addVac = new javax.swing.JButton();
         jsp_vacTable = new javax.swing.JScrollPane();
         vacTable = new javax.swing.JTable();
-
-
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMaximumSize(new java.awt.Dimension(1000, 1000));
@@ -748,17 +750,16 @@ public class UserFrame extends javax.swing.JFrame {
 
         centerCard_p.add(home_p, "homeCard");
 
+        // 내 정보 패널 설정
         myInfo_p.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 30, 30));
         myInfo_p.setLayout(new java.awt.BorderLayout());
-
         myInfo_north_p.setPreferredSize(new java.awt.Dimension(606, 50));
         myInfo_north_p.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 30, 12));
 
+        // 내 정보 - 내 정보 수정 설정
         bt_editMyInfo.setText("내 정보 수정");
         myInfo_north_p.add(bt_editMyInfo);
-
         myInfo_p.add(myInfo_north_p, java.awt.BorderLayout.NORTH);
-
         table_myInfo.setModel(new DefaultTableModel(
                 new Object [][] {
                         {null, null, null, null, null, null, null, null},
@@ -780,29 +781,22 @@ public class UserFrame extends javax.swing.JFrame {
         });
         table_myInfo.setDefaultEditor(Object.class, null);
         jsp_myInfo.setViewportView(table_myInfo);
-
         myInfo_p.add(jsp_myInfo, java.awt.BorderLayout.CENTER);
-
         centerCard_p.add(myInfo_p, "myInfoCard");
 
+        // 사원 조회 패널 설정
         searchEmp_p.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 30, 30));
         searchEmp_p.setLayout(new java.awt.BorderLayout());
-
         jPanel1.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 30, 1));
         jPanel1.setLayout(new java.awt.GridLayout(3, 2, 0, 5));
-
         search_l.setText("검색 필드 :");
         jPanel1.add(search_l);
-
         search_cbox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "사원 번호", "이름", "직급", "부서", "전화번호", "이메일", "입사일" }));
         jPanel1.add(search_cbox);
-
         value_l.setText("값 입력 :");
         jPanel1.add(value_l);
         jPanel1.add(value_tf);
-
         empty_p.setPreferredSize(new java.awt.Dimension(391, 10));
-
         javax.swing.GroupLayout empty_pLayout = new javax.swing.GroupLayout(empty_p);
         empty_p.setLayout(empty_pLayout);
         empty_pLayout.setHorizontalGroup(
@@ -813,14 +807,10 @@ public class UserFrame extends javax.swing.JFrame {
             empty_pLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 23, Short.MAX_VALUE)
         );
-
         jPanel1.add(empty_p);
-
         bt_search.setText("검색");
         jPanel1.add(bt_search);
-
         searchEmp_p.add(jPanel1, java.awt.BorderLayout.PAGE_START);
-
         table_emp.setModel(new DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null, null},
@@ -842,11 +832,10 @@ public class UserFrame extends javax.swing.JFrame {
         });
         table_emp.setDefaultEditor(Object.class, null);
         jsp_empTable.setViewportView(table_emp);
-
         searchEmp_p.add(jsp_empTable, java.awt.BorderLayout.CENTER);
-
         centerCard_p.add(searchEmp_p, "searchEmpCard");
 
+        // 업무 일지 패널 설정
         workLog_p.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 30, 30));
         workLog_p.setLayout(new java.awt.BorderLayout());
 
@@ -878,6 +867,7 @@ public class UserFrame extends javax.swing.JFrame {
 
         centerCard_p.add(workLog_p, "workLogCard");
 
+        // 나의 근태정보 패널 설정
         myAtt_p.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 30, 30));
         myAtt_p.setLayout(new java.awt.BorderLayout());
 
@@ -917,8 +907,8 @@ public class UserFrame extends javax.swing.JFrame {
 
         myAtt_p.add(jsp_attTable, java.awt.BorderLayout.CENTER);
         centerCard_p.add(myAtt_p, "myAttCard");
-        //
-
+        
+        // 나의 휴가정보 패널 설정
         myVac_p.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 30, 30));
         myVac_p.setLayout(new java.awt.BorderLayout());
 
@@ -992,19 +982,17 @@ public class UserFrame extends javax.swing.JFrame {
 
         centerCard_p.add(myVac_p, "myVacCard");
 
+        //
         center_p.add(centerCard_p, java.awt.BorderLayout.CENTER);
 
         getContentPane().add(center_p, java.awt.BorderLayout.CENTER);
 
         pack();
-    }// </editor-fold>//GEN-END:initComponents
+    }
 
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
-         */
+
+        // Swing GUI 테마를 바꾸는 구문
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -1015,13 +1003,11 @@ public class UserFrame extends javax.swing.JFrame {
         } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
             logger.log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new LoginFrame().setVisible(true));
+        // 프로그램 시작할 때 자동으로 로그인 프레임 창이 열리도록 하기
+        new LoginFrame().setVisible(true);
     }
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel workLogCenter_p;
     private javax.swing.JLabel allVac_l;
     private javax.swing.JPanel myVac_south_p;
@@ -1079,5 +1065,4 @@ public class UserFrame extends javax.swing.JFrame {
     private javax.swing.JPanel workLog_north_p;
     private javax.swing.JPanel workLog_p;
     private javax.swing.JComboBox<String> year_cb;
-    // End of variables declaration//GEN-END:variables
 }

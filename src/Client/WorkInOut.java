@@ -12,6 +12,7 @@ import vo.CommuteVO;
 import vo.EmpVO;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -162,6 +163,9 @@ public class WorkInOut extends JFrame {
         bt_in = new JButton();
         bt_out = new JButton();
         inOutImage_l = new JLabel();
+        ImageIcon icon = new ImageIcon(getClass().getResource("/images/outImage.jpg"));
+        Image img = icon.getImage().getScaledInstance(400, 300, Image.SCALE_SMOOTH);
+        inOutImage_l.setIcon(new ImageIcon(img));
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setTitle("출 / 퇴근");

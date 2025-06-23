@@ -215,10 +215,10 @@ public class docs extends JFrame {
                     map.put("deptno", entry.getValue()); // 선택한 부서의 deptno로 저장
                     ss.insert("docs.share_Docs", map);
                     ss.commit();
-                    JOptionPane.showMessageDialog(docs.this, "공유 완료");
                 }
             }
         }
+        JOptionPane.showMessageDialog(docs.this, "공유 완료");
         ss.close();
 
     }
