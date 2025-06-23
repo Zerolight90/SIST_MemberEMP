@@ -5,13 +5,13 @@
 
 <mapper namespace="history">
 
-<!--    <select id="remain_Vac" parameterType="map" resultType="vo.Leave_historyVO">-->
+    <select id="math_Vac" parameterType="map" resultType="vo.Leave_historyVO">
 
-<!--        SELECT * FROM team_db.leave_history-->
-<!--        where-->
-<!--        empno = #{empno} and year = #{year}-->
+        SELECT * FROM team_db.leave_history
+        where
+        empno = #{empno} and year = #{year}
 
-<!--    </select>-->
+    </select>
 
 
     <select id="remain_Vac" parameterType="String" resultType="vo.Leave_historyVO">

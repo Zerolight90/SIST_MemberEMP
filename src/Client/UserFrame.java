@@ -466,7 +466,7 @@ public class UserFrame extends JFrame {
             remain_Vac_map.put("year", firstYear); // 초기연도(2025년)로 기본 값을 설성 합니다.
 
             // MY batis에서 실행 쿼리 결과를 lhvo(Leavo history vo) 객체 저장 한다.
-            lhvo = ss.selectOne("history.remain_Vac", remain_Vac_map);
+            lhvo = ss.selectOne("history.math_Vac", remain_Vac_map);
 
             if (lhvo != null) {
                 allVac_l.setText("총 휴가 :" + lhvo.getTotal_leave());
@@ -503,7 +503,7 @@ public class UserFrame extends JFrame {
                     remain_Vac_map.put("year", selected); // 새로 선택한 연도를 파나메타로 사용한다
 
                     //선택한 연도를 가지고 쿼리를 실행하여 lhvo에 값을 저장한다.
-                    lhvo = ss.selectOne("history.remain_Vac", remain_Vac_map);
+                    lhvo = ss.selectOne("history.math_Vac", remain_Vac_map);
 
                     if (lhvo != null) {
                         allVac_l.setText("총 휴가 :" + lhvo.getTotal_leave());

@@ -36,12 +36,10 @@
         and year = date_format(ldate, '%Y')
     </select>
 
-    <select id="getLnum" resultType="String" parameterType="String">
+    <select id="getLnum" resultType="vo.Leave_ofVO" parameterType="Map">
         select l.lnum from leave_of l inner join emp e
         on l.empno = e.empno
-        where l.empno = #{empno}
-        ORDER BY l.ldate DESC
-        LIMIT 1
+        where l.empno = #{empno} and l.ldate = #{ldate}
     </select>
 
     <select id="getOne" resultType="vo.Leave_ofVO" parameterType="String">
@@ -50,20 +48,16 @@
         where l.lnum = #{lnum}
     </select>
 
+    <update id="statusUpdate" parameterType="String">
+        UPDATE leave_of
+        SET lstatus = 1
+        WHERE lnum = #{lnum}
+    </update>
+
     <!-- 0623 추가 -->
     <update id="processedUpdate" parameterType="String">
         UPDATE leave_of
         SET lprocessed = date_format(now(), '%Y-%m-%d')
-        WHERE lnum = #{lnum}
-    </update>
-
-    <select id="getLname" resultType="vo.Leave_ofVO" parameterType="String">
-        select l.
-    </select>
-
-    <update id="statusUpdate" parameterType="String">
-        UPDATE leave_of
-        SET lstatus = 1
         WHERE lnum = #{lnum}
     </update>
 
