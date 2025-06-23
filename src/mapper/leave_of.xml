@@ -50,6 +50,13 @@
         where l.lnum = #{lnum}
     </select>
 
+    <!-- 0623 추가 -->
+    <update id="processedUpdate" parameterType="String">
+        UPDATE leave_of
+        SET lprocessed = date_format(now(), '%Y-%m-%d')
+        WHERE lnum = #{lnum}
+    </update>
+
     <select id="getLname" resultType="vo.Leave_ofVO" parameterType="String">
         select l.
     </select>
