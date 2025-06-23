@@ -26,6 +26,7 @@ public class LoginFrame extends JFrame {
     private SqlSessionFactory factory; // DB 연결용 팩토리
 
     EmpVO vo; // UserFrame 에 로그인된 계정의 모든 정보를 넘겨주기 위한 EmpVO 변수 선언
+    SqlSession ss;
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(LoginFrame.class.getName());
 
@@ -148,7 +149,7 @@ public class LoginFrame extends JFrame {
             return; // 이전 창으로 돌아가기 위해 return
         }
 
-        SqlSession ss = null; // sqlsession 변수 선언 (혹시 몰라 null로 초기화)
+
         try {
             Reader r = Resources.getResourceAsReader(
                     "config/conf.xml"
