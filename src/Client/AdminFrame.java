@@ -30,7 +30,7 @@ public class AdminFrame extends JFrame {
     SqlSession ss;
 
     // 사원조회테이블 컬럼명
-    String[] e_name ={"사원번호","사원이름"};
+    String[] e_name = {"사원번호", "사원이름", "부서명", "직급명", "급여", "재직상태", "입사일", "관리자"};
 
     // 근태조회테이블 컬럼명
     String[] a_name = {"사원 번호", "사원 이름", "날짜", "출근 시간", "퇴근 시간", "근태"};
@@ -107,11 +107,9 @@ public class AdminFrame extends JFrame {
         adminEmp_north_p.add(bt_addEmp);
         adminEmp_p.add(adminEmp_north_p, BorderLayout.NORTH);
 
-        // 사원관리 테이블
-        JTable empTable = new JTable(new javax.swing.table.DefaultTableModel(
-                null,
-                e_name
-        ));
+        empTable = new JTable(new DefaultTableModel(null, e_name));
+        empTable.setDefaultEditor(Object.class, null);
+
         JScrollPane jsp_empTable = new JScrollPane(empTable);
         adminEmp_p.add(jsp_empTable, BorderLayout.CENTER);
         centerCard_p.add(adminEmp_p, "adminEmpCard");
@@ -124,20 +122,13 @@ public class AdminFrame extends JFrame {
         JComboBox<String> year_cb = new JComboBox<>(new String[]{"2022", "2023", "2024", "2025"});
         JComboBox<String> month_cb = new JComboBox<>(new String[]{"01", "02", "03", "04", "05", "06", "07",
                 "08", "09", "10", "11", "12"});
-//        JSpinner spin = new JSpinner(new SpinnerDateModel());
-//        spin.setEditor(new JSpinner.DateEditor(spin,"yyyy.M"));
-//        JComboBox<String> day_cb = new JComboBox<>(new String[]{"01", "02", "03", "04", "05", "06", "07",
-//                "08", "09", "10", "11", "12", "13", "14", "15,", "16", "17", "18", "19", "20", "21", "22",
-//                 "23", "24", "25", "26", "27", "29", "30", "31"});
+
         JButton bt_find = new JButton("조회");
 
         adminAtt_north_p.add(year_cb);
         adminAtt_north_p.add(new JLabel("년"));
         adminAtt_north_p.add(month_cb);
         adminAtt_north_p.add(new JLabel("월"));
-//        adminAtt_north_p.add(day_cb);
-//        adminAtt_north_p.add(new JLabel("일"));
-//        adminAtt_north_p.add(spin);
         adminAtt_north_p.add(bt_find);
         adminAtt_p.add(adminAtt_north_p, BorderLayout.NORTH);
 
@@ -189,6 +180,37 @@ public class AdminFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 cl.show(centerCard_p, "adminCard");
+            }
+        });
+
+        //사원 관리 클릭시
+        bt_adminEmp.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cl.show(centerCard_p,"adminEmpCard");
+            }
+        });
+
+        //상세 조회
+        bt_dsearch.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new EmpSearchDialog(AdminFrame.this).setVisible(true);
+            }
+        });
+
+        //사원 추가
+        bt_addEmp.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                EmpAddDialog dialog = new EmpAddDialog(AdminFrame.this, factory);
+                dialog.setEmpAddedListener(new EmpAddDialog.EmpAddedListener() {
+                    @Override
+                    public void onEmpAdded() {
+                        loadEmpData(); // 테이블 리로드
+                    }
+                });
+                dialog.setVisible(true);
             }
         });
 
@@ -274,7 +296,6 @@ public class AdminFrame extends JFrame {
 
                         List<Leave_ofVO> list = ss.selectList("leave_of.searchvac", vo.getDeptno());
                         String[][] data = new String[list.size()][v_name.length];
-
                         ViewvacTable(list);
 
                         int i = 0;
@@ -418,7 +439,10 @@ public class AdminFrame extends JFrame {
                 new UserFrame(vo).setVisible(true);
             }
         });
-    }
+
+        loadEmpData();
+        EmpTableClick(empTable);
+    } // 생성자 끝
 
     private void ViewvacTable(List<Leave_ofVO> list) {
         String[][] data = new String[list.size()][v_name.length];
@@ -437,6 +461,50 @@ public class AdminFrame extends JFrame {
         }
     }
 
+    private void loadEmpData() {
+        try (SqlSession ss = factory.openSession()) {
+            List<EmpVO> list = ss.selectList("adminemp.getALLemp");
+            System.out.println("조회된 사원 수: " + list.size()); // 디버깅용
+
+            DefaultTableModel model = new DefaultTableModel(null, e_name);
+            for (EmpVO vo : list) {
+                System.out.println("사번: " + vo.getEmpno() + ", 이름: " + vo.getEname()); // 디버깅용
+                model.addRow(new Object[]{
+                        vo.getEmpno(),
+                        vo.getEname(),
+                        vo.getDept_name(),
+                        vo.getPosname(),
+                        vo.getSal(),
+                        "0".equals(vo.getWork_status()) ? "재직" : "퇴직",
+                        vo.getHireDATE(),
+                        vo.getMgr_name() == null ? "-" : vo.getMgr_name()
+                });
+            }
+            empTable.setModel(model);
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "데이터 불러오기 실패!");
+        }
+    }
+
+    private void EmpTableClick(JTable empTable){
+        empTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    int row = empTable.getSelectedRow();
+                    if(row == -1) return;
+
+                    Long empno = Long.parseLong(empTable.getValueAt(row,0).toString());
+                    EmpVO vo = ss.selectOne("adminemp.getEmpByEmpno", empno);
+                    if(vo == null) return;
+
+                    new EmpEditDialog(AdminFrame.this, vo, ss, () -> loadEmpData());
+                }
+            }
+        });
+    }
+
     private void init() throws IOException {
         // 스트림 생성
         Reader r = Resources.getResourceAsReader(
@@ -448,8 +516,4 @@ public class AdminFrame extends JFrame {
         // sql세션 열기
         ss = factory.openSession();
     }
-
-    //public static void main(String[] args) throws IOException {
-        //new AdminFrame();
-    //}
 }

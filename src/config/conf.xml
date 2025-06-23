@@ -23,5 +23,6 @@
         <mapper resource="mapper/docs.xml"/>
         <mapper resource="mapper/leave_history.xml"/>
         <mapper resource="mapper/leave_of.xml"/>
+        <mapper resource="mapper/adminemp.xml"/>
     </mappers>
 </configuration>
