@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.List;
 
-public class EditMyinfoForm extends javax.swing.JDialog {
+public class EditMyinfoForm extends JDialog {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(EditMyinfoForm.class.getName());
 
@@ -24,40 +24,40 @@ public class EditMyinfoForm extends javax.swing.JDialog {
     SqlSessionFactory factory;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel att_l;
-    private javax.swing.JPanel att_p;
-    private javax.swing.JTextField att_tf;
-    private javax.swing.JButton bt_cancel;
-    private javax.swing.JButton bt_edit;
-    private javax.swing.JPanel center_p;
-    private javax.swing.JLabel dname_l;
-    private javax.swing.JPanel dname_p;
-    private javax.swing.JTextField dname_tf;
-    private javax.swing.JLabel email_l;
-    private javax.swing.JPanel email_p;
-    private javax.swing.JTextField email_tf;
-    private javax.swing.JLabel empno_l;
-    private javax.swing.JPanel empno_p;
-    private javax.swing.JTextField empno_tf;
-    private javax.swing.JLabel ename_l;
-    private javax.swing.JPanel ename_p;
-    private javax.swing.JTextField ename_tf;
-    private javax.swing.JLabel hiredate_l;
-    private javax.swing.JPanel hiredate_p;
-    private javax.swing.JTextField hiredate_tf;
-    private javax.swing.JLabel mgr_l;
-    private javax.swing.JPanel mgr_p;
-    private javax.swing.JTextField mgr_tf;
-    private javax.swing.JLabel phone_l;
-    private javax.swing.JPanel phone_p;
-    private javax.swing.JTextField phone_tf;
-    private javax.swing.JLabel pos_l;
-    private javax.swing.JPanel pos_p;
-    private javax.swing.JTextField pos_tf;
-    private javax.swing.JLabel sal_l;
-    private javax.swing.JPanel sal_p;
-    private javax.swing.JTextField sal_tf;
-    private javax.swing.JPanel south_p;
+    private JLabel att_l;
+    private JPanel att_p;
+    private JTextField att_tf;
+    private JButton bt_cancel;
+    private JButton bt_edit;
+    private JPanel center_p;
+    private JLabel dname_l;
+    private JPanel dname_p;
+    private JTextField dname_tf;
+    private JLabel email_l;
+    private JPanel email_p;
+    private JTextField email_tf;
+    private JLabel empno_l;
+    private JPanel empno_p;
+    private JTextField empno_tf;
+    private JLabel ename_l;
+    private JPanel ename_p;
+    private JTextField ename_tf;
+    private JLabel hiredate_l;
+    private JPanel hiredate_p;
+    private JTextField hiredate_tf;
+    private JLabel mgr_l;
+    private JPanel mgr_p;
+    private JTextField mgr_tf;
+    private JLabel phone_l;
+    private JPanel phone_p;
+    private JTextField phone_tf;
+    private JLabel pos_l;
+    private JPanel pos_p;
+    private JTextField pos_tf;
+    private JLabel sal_l;
+    private JPanel sal_p;
+    private JTextField sal_tf;
+    private JPanel south_p;
 
     /**
      * Creates new form EditMyinfoForm
@@ -70,6 +70,8 @@ public class EditMyinfoForm extends javax.swing.JDialog {
 
         initComponents();
         initdb();
+
+        this.setBounds(770, 200, this.getWidth(), this.getHeight());
 
         // 내 정보 수정 창에 1차적으로 내 정보 설정하기
         SqlSession ss = factory.openSession();
@@ -160,42 +162,42 @@ public class EditMyinfoForm extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        south_p = new javax.swing.JPanel();
-        bt_edit = new javax.swing.JButton();
-        bt_cancel = new javax.swing.JButton();
-        center_p = new javax.swing.JPanel();
-        empno_p = new javax.swing.JPanel();
-        empno_l = new javax.swing.JLabel();
-        empno_tf = new javax.swing.JTextField();
-        ename_p = new javax.swing.JPanel();
-        ename_l = new javax.swing.JLabel();
-        ename_tf = new javax.swing.JTextField();
-        pos_p = new javax.swing.JPanel();
-        pos_l = new javax.swing.JLabel();
-        pos_tf = new javax.swing.JTextField();
-        dname_p = new javax.swing.JPanel();
-        dname_l = new javax.swing.JLabel();
-        dname_tf = new javax.swing.JTextField();
-        sal_p = new javax.swing.JPanel();
-        sal_l = new javax.swing.JLabel();
-        sal_tf = new javax.swing.JTextField();
-        hiredate_p = new javax.swing.JPanel();
-        hiredate_l = new javax.swing.JLabel();
-        hiredate_tf = new javax.swing.JTextField();
-        email_p = new javax.swing.JPanel();
-        email_l = new javax.swing.JLabel();
-        email_tf = new javax.swing.JTextField();
-        phone_p = new javax.swing.JPanel();
-        phone_l = new javax.swing.JLabel();
-        phone_tf = new javax.swing.JTextField();
-        att_p = new javax.swing.JPanel();
-        att_l = new javax.swing.JLabel();
-        att_tf = new javax.swing.JTextField();
-        mgr_p = new javax.swing.JPanel();
-        mgr_l = new javax.swing.JLabel();
-        mgr_tf = new javax.swing.JTextField();
+        south_p = new JPanel();
+        bt_edit = new JButton();
+        bt_cancel = new JButton();
+        center_p = new JPanel();
+        empno_p = new JPanel();
+        empno_l = new JLabel();
+        empno_tf = new JTextField();
+        ename_p = new JPanel();
+        ename_l = new JLabel();
+        ename_tf = new JTextField();
+        pos_p = new JPanel();
+        pos_l = new JLabel();
+        pos_tf = new JTextField();
+        dname_p = new JPanel();
+        dname_l = new JLabel();
+        dname_tf = new JTextField();
+        sal_p = new JPanel();
+        sal_l = new JLabel();
+        sal_tf = new JTextField();
+        hiredate_p = new JPanel();
+        hiredate_l = new JLabel();
+        hiredate_tf = new JTextField();
+        email_p = new JPanel();
+        email_l = new JLabel();
+        email_tf = new JTextField();
+        phone_p = new JPanel();
+        phone_l = new JLabel();
+        phone_tf = new JTextField();
+        att_p = new JPanel();
+        att_l = new JLabel();
+        att_tf = new JTextField();
+        mgr_p = new JPanel();
+        mgr_l = new JLabel();
+        mgr_tf = new JTextField();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("내 정보 수정");
 
         south_p.setPreferredSize(new java.awt.Dimension(355, 50));
@@ -211,7 +213,7 @@ public class EditMyinfoForm extends javax.swing.JDialog {
 
         center_p.setLayout(new java.awt.GridLayout(10, 1));
 
-        empno_p.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 10));
+        empno_p.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 10));
         empno_p.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 5, 12));
 
         empno_l.setText("사원 번호 :");
@@ -223,7 +225,7 @@ public class EditMyinfoForm extends javax.swing.JDialog {
 
         center_p.add(empno_p);
 
-        ename_p.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 10));
+        ename_p.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 10));
         ename_p.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 5, 12));
 
         ename_l.setText("사원 이름 :");
@@ -234,7 +236,7 @@ public class EditMyinfoForm extends javax.swing.JDialog {
 
         center_p.add(ename_p);
 
-        pos_p.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 10));
+        pos_p.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 10));
         pos_p.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 5, 12));
 
         pos_l.setText("직급 :");
@@ -246,7 +248,7 @@ public class EditMyinfoForm extends javax.swing.JDialog {
 
         center_p.add(pos_p);
 
-        dname_p.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 10));
+        dname_p.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 10));
         dname_p.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 5, 12));
 
         dname_l.setText("부서 :");
@@ -258,7 +260,7 @@ public class EditMyinfoForm extends javax.swing.JDialog {
 
         center_p.add(dname_p);
 
-        sal_p.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 10));
+        sal_p.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 10));
         sal_p.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 5, 12));
 
         sal_l.setText("급여 :");
@@ -270,7 +272,7 @@ public class EditMyinfoForm extends javax.swing.JDialog {
 
         center_p.add(sal_p);
 
-        hiredate_p.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 10));
+        hiredate_p.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 10));
         hiredate_p.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 5, 12));
 
         hiredate_l.setText("입사일 :");
@@ -282,7 +284,7 @@ public class EditMyinfoForm extends javax.swing.JDialog {
 
         center_p.add(hiredate_p);
 
-        email_p.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 10));
+        email_p.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 10));
         email_p.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 5, 12));
 
         email_l.setText("이메일 :");
@@ -293,7 +295,7 @@ public class EditMyinfoForm extends javax.swing.JDialog {
 
         center_p.add(email_p);
 
-        phone_p.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 10));
+        phone_p.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 10));
         phone_p.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 5, 12));
 
         phone_l.setText("연락처 :");
@@ -304,7 +306,7 @@ public class EditMyinfoForm extends javax.swing.JDialog {
 
         center_p.add(phone_p);
 
-        att_p.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 10));
+        att_p.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 10));
         att_p.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 5, 12));
 
         att_l.setText("재직 상태 :");
@@ -316,7 +318,7 @@ public class EditMyinfoForm extends javax.swing.JDialog {
 
         center_p.add(att_p);
 
-        mgr_p.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 10));
+        mgr_p.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 10));
         mgr_p.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 5, 12));
 
         mgr_l.setText("관리자 번호 :");

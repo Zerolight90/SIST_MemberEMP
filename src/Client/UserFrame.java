@@ -316,7 +316,7 @@ public class UserFrame extends JFrame {
         bt_workLogWrite.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new docs();
+                new docs(vo);
             }
         });
 
@@ -661,10 +661,11 @@ public class UserFrame extends JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        allVac_l = new javax.swing.JLabel();
-        myVac_south_p = new javax.swing.JPanel();
+        workLogCenter_p = new JPanel();
+        allVac_l = new JLabel();
+        myVac_south_p = new JPanel();
         south_p = new JPanel();
-        bt_logOut = new javax.swing.JButton();
+        bt_logOut = new JButton();
         bt_exit = new JButton();
         west_p = new JPanel();
         northImage_l = new JLabel();
@@ -722,11 +723,11 @@ public class UserFrame extends JFrame {
 
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setMaximumSize(new java.awt.Dimension(1000, 1000));
-        setMinimumSize(new java.awt.Dimension(100, 100));
+        setMaximumSize(new Dimension(1000, 1000));
+        setMinimumSize(new Dimension(100, 100));
 
-        south_p.setPreferredSize(new java.awt.Dimension(884, 80));
-        south_p.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 30, 30));
+        south_p.setPreferredSize(new Dimension(884, 80));
+        south_p.setLayout(new FlowLayout(FlowLayout.RIGHT, 30, 30));
 
         bt_logOut.setText("로그아웃");
         south_p.add(bt_logOut);
@@ -734,16 +735,16 @@ public class UserFrame extends JFrame {
         bt_exit.setText("종료");
         south_p.add(bt_exit);
 
-        getContentPane().add(south_p, java.awt.BorderLayout.PAGE_END);
+        getContentPane().add(south_p, BorderLayout.PAGE_END);
 
         west_p.setBorder(BorderFactory.createEmptyBorder(1, 30, 1, 30));
-        west_p.setPreferredSize(new java.awt.Dimension(300, 591));
-        west_p.setLayout(new java.awt.GridLayout(9, 1, 0, 15));
+        west_p.setPreferredSize(new Dimension(300, 591));
+        west_p.setLayout(new GridLayout(9, 1, 0, 15));
 
         northImage_l.setHorizontalAlignment(SwingConstants.CENTER);
         ImageIcon icon = new ImageIcon(getClass().getResource("/images/sist.png"));
         Image img = icon.getImage().getScaledInstance(240, 60, Image.SCALE_SMOOTH);
-        northImage_l.setBorder(javax.swing.BorderFactory.createEmptyBorder(15, 1, 1, 1));
+        northImage_l.setBorder(BorderFactory.createEmptyBorder(15, 1, 1, 1));
         northImage_l.setIcon(new ImageIcon(img));
         west_p.add(northImage_l);
 
@@ -771,11 +772,11 @@ public class UserFrame extends JFrame {
         bt_workInOut.setText("출 / 퇴근");
         west_p.add(bt_workInOut);
 
-        getContentPane().add(west_p, java.awt.BorderLayout.LINE_START);
+        getContentPane().add(west_p, BorderLayout.LINE_START);
 
-        center_p.setLayout(new java.awt.BorderLayout());
+        center_p.setLayout(new BorderLayout());
 
-        centerNorth_p.setPreferredSize(new java.awt.Dimension(606, 70));
+        centerNorth_p.setPreferredSize(new Dimension(606, 70));
 
         GroupLayout centerNorth_pLayout = new GroupLayout(centerNorth_p);
         centerNorth_p.setLayout(centerNorth_pLayout);
@@ -788,29 +789,29 @@ public class UserFrame extends JFrame {
                         .addGap(0, 70, Short.MAX_VALUE)
         );
 
-        center_p.add(centerNorth_p, java.awt.BorderLayout.PAGE_START);
+        center_p.add(centerNorth_p, BorderLayout.PAGE_START);
 
         // 카드레이아웃 지정
         centerCard_p.setLayout(cl);
 
-        home_p.setLayout(new java.awt.BorderLayout());
+        home_p.setLayout(new BorderLayout());
 
         homeImage_l.setHorizontalAlignment(SwingConstants.CENTER);
-        homeImage_l.setPreferredSize(new java.awt.Dimension(400, 400));
-        home_p.add(homeImage_l, java.awt.BorderLayout.CENTER);
+        homeImage_l.setPreferredSize(new Dimension(400, 400));
+        home_p.add(homeImage_l, BorderLayout.CENTER);
 
         centerCard_p.add(home_p, "homeCard");
 
         myInfo_p.setBorder(BorderFactory.createEmptyBorder(1, 1, 30, 30));
-        myInfo_p.setLayout(new java.awt.BorderLayout());
+        myInfo_p.setLayout(new BorderLayout());
 
-        myInfo_north_p.setPreferredSize(new java.awt.Dimension(606, 50));
-        myInfo_north_p.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 30, 12));
+        myInfo_north_p.setPreferredSize(new Dimension(606, 50));
+        myInfo_north_p.setLayout(new FlowLayout(FlowLayout.RIGHT, 30, 12));
 
         bt_editMyInfo.setText("내 정보 수정");
         myInfo_north_p.add(bt_editMyInfo);
 
-        myInfo_p.add(myInfo_north_p, java.awt.BorderLayout.NORTH);
+        myInfo_p.add(myInfo_north_p, BorderLayout.NORTH);
 
         table_myInfo.setModel(new DefaultTableModel(
                 new Object[][]{
@@ -833,15 +834,15 @@ public class UserFrame extends JFrame {
         });
         jsp_myInfo.setViewportView(table_myInfo);
 
-        myInfo_p.add(jsp_myInfo, java.awt.BorderLayout.CENTER);
+        myInfo_p.add(jsp_myInfo, BorderLayout.CENTER);
 
         centerCard_p.add(myInfo_p, "myInfoCard");
 
         searchEmp_p.setBorder(BorderFactory.createEmptyBorder(1, 1, 30, 30));
-        searchEmp_p.setLayout(new java.awt.BorderLayout());
+        searchEmp_p.setLayout(new BorderLayout());
 
         jPanel1.setBorder(BorderFactory.createEmptyBorder(1, 1, 30, 1));
-        jPanel1.setLayout(new java.awt.GridLayout(3, 2, 0, 5));
+        jPanel1.setLayout(new GridLayout(3, 2, 0, 5));
 
         search_l.setText("검색 필드 :");
         jPanel1.add(search_l);
@@ -853,7 +854,7 @@ public class UserFrame extends JFrame {
         jPanel1.add(value_l);
         jPanel1.add(value_tf);
 
-        empty_p.setPreferredSize(new java.awt.Dimension(391, 10));
+        empty_p.setPreferredSize(new Dimension(391, 10));
 
         GroupLayout empty_pLayout = new GroupLayout(empty_p);
         empty_p.setLayout(empty_pLayout);
@@ -871,7 +872,7 @@ public class UserFrame extends JFrame {
         bt_search.setText("검색");
         jPanel1.add(bt_search);
 
-        searchEmp_p.add(jPanel1, java.awt.BorderLayout.PAGE_START);
+        searchEmp_p.add(jPanel1, BorderLayout.PAGE_START);
 
         table_emp.setModel(new DefaultTableModel(
                 new Object[][]{
@@ -894,49 +895,47 @@ public class UserFrame extends JFrame {
         });
         jsp_empTable.setViewportView(table_emp);
 
-        searchEmp_p.add(jsp_empTable, java.awt.BorderLayout.CENTER);
+        searchEmp_p.add(jsp_empTable, BorderLayout.CENTER);
 
         centerCard_p.add(searchEmp_p, "searchEmpCard");
 
-        workLog_p.setBorder(BorderFactory.createEmptyBorder(1, 1, 30, 30));
+        // 업무 일지 패널 설정
+        workLog_p.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 30, 30));
         workLog_p.setLayout(new java.awt.BorderLayout());
 
         workLog_north_p.setPreferredSize(new java.awt.Dimension(782, 40));
         workLog_north_p.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 5, 8));
 
+        workLogCenter_p.setBorder(javax.swing.BorderFactory.createEmptyBorder(70, 70, 70, 70));
+        workLogCenter_p.setLayout(new java.awt.GridLayout(3, 1, 0, 60));
+
         bt_workLogWrite.setText("업무일지 작성");
-        workLog_north_p.add(bt_workLogWrite);
+        workLogCenter_p.add(bt_workLogWrite);
 
         bt_myList.setText("내 목록 조회");
-        workLog_north_p.add(bt_myList);
+        workLogCenter_p.add(bt_myList);
 
         bt_dept.setText("부서 조회");
-        workLog_north_p.add(bt_dept);
+        workLogCenter_p.add(bt_dept);
+
+        workLog_p.add(workLogCenter_p, java.awt.BorderLayout.CENTER);
 
         workLog_p.add(workLog_north_p, java.awt.BorderLayout.PAGE_START);
 
-        jsp_logList.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 10));
+        jsp_logList.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 10));
 
         logList.setPreferredSize(new java.awt.Dimension(300, 95));
         jsp_logList.setViewportView(logList);
 
         workLog_p.add(jsp_logList, java.awt.BorderLayout.LINE_START);
 
-        jsp_logRead.setBorder(null);
-
-        ta_logRead.setColumns(20);
-        ta_logRead.setRows(5);
-        jsp_logRead.setViewportView(ta_logRead);
-
-        workLog_p.add(jsp_logRead, java.awt.BorderLayout.CENTER);
-
         centerCard_p.add(workLog_p, "workLogCard");
 
         myAtt_p.setBorder(BorderFactory.createEmptyBorder(1, 1, 30, 30));
-        myAtt_p.setLayout(new java.awt.BorderLayout());
+        myAtt_p.setLayout(new BorderLayout());
 
-        myAtt_north_p.setPreferredSize(new java.awt.Dimension(782, 50));
-        myAtt_north_p.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 5, 15));
+        myAtt_north_p.setPreferredSize(new Dimension(782, 50));
+        myAtt_north_p.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 15));
 
         year_cb.setModel(new DefaultComboBoxModel<>(new String[]{"2025", "2024", "2023", "2022", "2021", "2020", "2019", "2018", "2017", "2016", "2015"}));
         myAtt_north_p.add(year_cb);
@@ -947,7 +946,7 @@ public class UserFrame extends JFrame {
         bt_find.setText("조회");
         myAtt_north_p.add(bt_find);
 
-        myAtt_p.add(myAtt_north_p, java.awt.BorderLayout.PAGE_START);
+        myAtt_p.add(myAtt_north_p, BorderLayout.PAGE_START);
 
         jsp_attTable.setBorder(BorderFactory.createEmptyBorder(1, 130, 1, 130));
 
@@ -967,22 +966,22 @@ public class UserFrame extends JFrame {
         jsp_attTable.setViewportView(attTable);
 
 
-        myAtt_p.add(jsp_attTable, java.awt.BorderLayout.CENTER);
+        myAtt_p.add(jsp_attTable, BorderLayout.CENTER);
         centerCard_p.add(myAtt_p, "myAttCard");
         //
 
         myVac_p.setBorder(BorderFactory.createEmptyBorder(1, 30, 30, 30));
-        myVac_p.setLayout(new java.awt.BorderLayout());
+        myVac_p.setLayout(new BorderLayout());
 
-        myVac_north_p.setPreferredSize(new java.awt.Dimension(785, 50));
-        myVac_north_p.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 10, 15));
+        myVac_north_p.setPreferredSize(new Dimension(785, 50));
+        myVac_north_p.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 15));
 
-        allVac_l.setBackground(new java.awt.Color(252, 205, 14));
+        allVac_l.setBackground(new Color(252, 205, 14));
         allVac_l.setHorizontalAlignment(SwingConstants.CENTER); // 수평 가운데 정렬
         allVac_l.setVerticalAlignment(SwingConstants.CENTER);   // 수직 가운데 정렬 추가
-        allVac_l.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(252, 205, 14)));
+        allVac_l.setBorder(BorderFactory.createLineBorder(new Color(252, 205, 14)));
         allVac_l.setOpaque(true);
-        allVac_l.setPreferredSize(new java.awt.Dimension(120, 30));
+        allVac_l.setPreferredSize(new Dimension(120, 30));
         Font all_labelFont = new Font("맑은 고딕", Font.BOLD, 15);
         allVac_l.setFont(all_labelFont);
 
@@ -991,31 +990,31 @@ public class UserFrame extends JFrame {
         myVac_north_p.add(new JLabel("년"));
         myVac_north_p.add(allVac_l);
 
-        usedVac_l.setBackground(new java.awt.Color(102, 102, 102));
+        usedVac_l.setBackground(new Color(102, 102, 102));
         usedVac_l.setHorizontalAlignment(SwingConstants.CENTER);
-        usedVac_l.setBorder(BorderFactory.createLineBorder(new java.awt.Color(102, 102, 102)));
+        usedVac_l.setBorder(BorderFactory.createLineBorder(new Color(102, 102, 102)));
         usedVac_l.setOpaque(true);
-        usedVac_l.setPreferredSize(new java.awt.Dimension(120, 30));
+        usedVac_l.setPreferredSize(new Dimension(120, 30));
         Font use_labelFont = new Font("맑은 고딕", Font.BOLD, 15);
         usedVac_l.setFont(use_labelFont);
         myVac_north_p.add(usedVac_l);
 
-        remainVac_l.setBackground(new java.awt.Color(136, 85, 0));
+        remainVac_l.setBackground(new Color(136, 85, 0));
         remainVac_l.setHorizontalAlignment(SwingConstants.CENTER);
-        remainVac_l.setBorder(BorderFactory.createLineBorder(new java.awt.Color(136, 85, 0)));
+        remainVac_l.setBorder(BorderFactory.createLineBorder(new Color(136, 85, 0)));
         remainVac_l.setOpaque(true);
-        remainVac_l.setPreferredSize(new java.awt.Dimension(120, 30));
+        remainVac_l.setPreferredSize(new Dimension(120, 30));
         Font reamin_labelFont = new Font("맑은 고딕", Font.BOLD, 15);
         remainVac_l.setFont(reamin_labelFont);
         myVac_north_p.add(remainVac_l);
 
-        myVac_south_p.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 30, 1, 30));
-        myVac_south_p.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 10));
+        myVac_south_p.setBorder(BorderFactory.createEmptyBorder(20, 30, 1, 30));
+        myVac_south_p.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 10));
 
         bt_addVac.setText("휴가 신청");
         myVac_south_p.add(bt_addVac);
-        myVac_p.add(myVac_south_p, java.awt.BorderLayout.PAGE_END);
-        myVac_p.add(myVac_north_p, java.awt.BorderLayout.PAGE_START);
+        myVac_p.add(myVac_south_p, BorderLayout.PAGE_END);
+        myVac_p.add(myVac_north_p, BorderLayout.PAGE_START);
 
 
         vacTable.setModel(new DefaultTableModel(
@@ -1034,13 +1033,13 @@ public class UserFrame extends JFrame {
 
         jsp_vacTable.setViewportView(vacTable);
 
-        myVac_p.add(jsp_vacTable, java.awt.BorderLayout.CENTER);
+        myVac_p.add(jsp_vacTable, BorderLayout.CENTER);
 
         centerCard_p.add(myVac_p, "myVacCard");
 
-        center_p.add(centerCard_p, java.awt.BorderLayout.CENTER);
+        center_p.add(centerCard_p, BorderLayout.CENTER);
 
-        getContentPane().add(center_p, java.awt.BorderLayout.CENTER);
+        getContentPane().add(center_p, BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -1067,12 +1066,13 @@ public class UserFrame extends JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new LoginFrame().setVisible(true));
+        EventQueue.invokeLater(() -> new LoginFrame().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel allVac_l;
-    private javax.swing.JPanel myVac_south_p;
+    private  JPanel workLogCenter_p;
+    private JLabel allVac_l;
+    private JPanel myVac_south_p;
     private JTable attTable;
     private JButton bt_addVac;
     private JButton bt_adminMode;
@@ -1081,7 +1081,7 @@ public class UserFrame extends JFrame {
     private JButton bt_exit;
     private JButton bt_find;
     private JButton bt_home;
-    private javax.swing.JButton bt_logOut;
+    private JButton bt_logOut;
     private JButton bt_myAtt;
     private JButton bt_myInfo;
     private JButton bt_myList;
