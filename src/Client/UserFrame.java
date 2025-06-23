@@ -425,7 +425,7 @@ public class UserFrame extends javax.swing.JFrame {
 
     // 휴가 상태 레이블 설정하는 함수
     private void setLabel() {
-        year_cb.setFont(new Font("나눔 고딕", Font.PLAIN, 15)); // combox 폰트 셋팅
+        year_cb.setFont(new Font("나눔 고딕", Font.PLAIN, 15)); // combo box 폰트 셋팅
 
         //1.콤보박스의 첫해 2025년도 값을 가져온다
         String firstYear = (String) year_cb.getSelectedItem();
@@ -849,6 +849,8 @@ public class UserFrame extends javax.swing.JFrame {
         bt_search.setText("검색");
         jPanel1.add(bt_search);
         searchEmp_p.add(jPanel1, java.awt.BorderLayout.PAGE_START);
+
+        // 사원 조회 테이블 설정
         table_emp.setModel(new DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null, null},

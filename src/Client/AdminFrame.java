@@ -238,7 +238,7 @@ public class AdminFrame extends JFrame {
                         attsearchmap.put("mon", mon);
 
                         // 해당 부서장과 동일한 부서원들을 특정하기 위해 deptno 받아오기
-                        attsearchmap.put("deptno", testadmin.getDeptno());
+                        attsearchmap.put("deptno", vo.getDeptno());
 
                         // 우리 부서 근태 조회하기
                         List<AttendanceVO> list = ss.selectList("attendance.search",

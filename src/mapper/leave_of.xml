@@ -48,10 +48,6 @@
         where l.lnum = #{lnum}
     </select>
 
-    <select id="getLname" resultType="vo.Leave_ofVO" parameterType="String">
-        select l.
-    </select>
-
     <update id="statusUpdate" parameterType="String">
         UPDATE leave_of
         SET lstatus = 1
