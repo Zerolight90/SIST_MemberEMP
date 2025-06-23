@@ -631,6 +631,7 @@ public class UserFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        workLogCenter_p = new javax.swing.JPanel();
         allVac_l = new javax.swing.JLabel();
         myVac_south_p = new javax.swing.JPanel();
         south_p = new javax.swing.JPanel();
@@ -673,8 +674,6 @@ public class UserFrame extends javax.swing.JFrame {
         bt_dept = new javax.swing.JButton();
         jsp_logList = new javax.swing.JScrollPane();
         logList = new javax.swing.JList<>();
-        jsp_logRead = new javax.swing.JScrollPane();
-        ta_logRead = new javax.swing.JTextArea();
         myAtt_p = new javax.swing.JPanel();
         myAtt_north_p = new javax.swing.JPanel();
         year_cb = new javax.swing.JComboBox<>();
@@ -877,14 +876,19 @@ public class UserFrame extends javax.swing.JFrame {
         workLog_north_p.setPreferredSize(new java.awt.Dimension(782, 40));
         workLog_north_p.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 5, 8));
 
+        workLogCenter_p.setBorder(javax.swing.BorderFactory.createEmptyBorder(70, 70, 70, 70));
+        workLogCenter_p.setLayout(new java.awt.GridLayout(3, 1, 0, 60));
+
         bt_workLogWrite.setText("업무일지 작성");
-        workLog_north_p.add(bt_workLogWrite);
+        workLogCenter_p.add(bt_workLogWrite);
 
         bt_myList.setText("내 목록 조회");
-        workLog_north_p.add(bt_myList);
+        workLogCenter_p.add(bt_myList);
 
         bt_dept.setText("부서 조회");
-        workLog_north_p.add(bt_dept);
+        workLogCenter_p.add(bt_dept);
+
+        workLog_p.add(workLogCenter_p, java.awt.BorderLayout.CENTER);
 
         workLog_p.add(workLog_north_p, java.awt.BorderLayout.PAGE_START);
 
@@ -894,14 +898,6 @@ public class UserFrame extends javax.swing.JFrame {
         jsp_logList.setViewportView(logList);
 
         workLog_p.add(jsp_logList, java.awt.BorderLayout.LINE_START);
-
-        jsp_logRead.setBorder(null);
-
-        ta_logRead.setColumns(20);
-        ta_logRead.setRows(5);
-        jsp_logRead.setViewportView(ta_logRead);
-
-        workLog_p.add(jsp_logRead, java.awt.BorderLayout.CENTER);
 
         centerCard_p.add(workLog_p, "workLogCard");
 
@@ -1052,6 +1048,7 @@ public class UserFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel workLogCenter_p;
     private javax.swing.JLabel allVac_l;
     private javax.swing.JPanel myVac_south_p;
     private javax.swing.JTable attTable;
@@ -1083,7 +1080,6 @@ public class UserFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jsp_attTable;
     private javax.swing.JScrollPane jsp_empTable;
     private javax.swing.JScrollPane jsp_logList;
-    private javax.swing.JScrollPane jsp_logRead;
     private javax.swing.JScrollPane jsp_myInfo;
     private javax.swing.JScrollPane jsp_vacTable;
     private javax.swing.JList<String> logList;
@@ -1099,7 +1095,6 @@ public class UserFrame extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> search_cbox;
     private javax.swing.JLabel search_l;
     private javax.swing.JPanel south_p;
-    private javax.swing.JTextArea ta_logRead;
     private javax.swing.JTable table_emp;
     private javax.swing.JTable table_myInfo;
     private javax.swing.JLabel usedVac_l;

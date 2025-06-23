@@ -41,6 +41,8 @@ public class AdminFrame extends JFrame {
 
     JTable vacTable;
 
+    JTable empTable; // 클래스 필드로 선언
+
     EmpVO vo;
     public AdminFrame(EmpVO vo) throws IOException {
         this.vo = vo;
@@ -295,35 +297,41 @@ public class AdminFrame extends JFrame {
             }
         });
 
+        // 휴가 관리 - 승인/반려 테이블에서 특정 휴가 신청을 승인했을 경우 수행하는 감지자
         vacTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 int cnt = e.getClickCount();
-                if (cnt == 2){
-                    int i = vacTable.getSelectedRow();
-                    String empno = vacTable.getValueAt(i, 0).toString();
-                    String lname = vacTable.getValueAt(i, 3).toString();
+                if (cnt == 2){ // 테이블에서 더블클릭을 했다면
+                    int i = vacTable.getSelectedRow(); // 정수형 변수 i에 선택된 열의 인덱스값을 저장
+                    String empno = vacTable.getValueAt(i, 0).toString(); // 선택된 열의 사번 저장
+                    String lname = vacTable.getValueAt(i, 3).toString(); // 선택된 열의 휴가 유형 저장
+
+                    // 선택된 열의 휴가 기간 저장
                     String durationStr = vacTable.getValueAt(i, 5).toString();
                     BigDecimal duration = new BigDecimal(durationStr);
+
+                    // 선택된 열의 휴가 시작일 저장
                     String ldateStr = vacTable.getValueAt(i, 4).toString();
                     Date ldate = Date.valueOf(ldateStr); // java.sql.Date
-                    String lnum = vacTable.getValueAt(i, 8).toString();
-                    // System.out.println(lnum);
 
+                    String lnum = vacTable.getValueAt(i, 8).toString();
+
+                    // 컨펌 다얄로그를 띄우고 승인할지를 물어봄
                     int num = JOptionPane.showConfirmDialog(AdminFrame.this, "승인하시겠습니까?");
-                    if (num == 0){
+                    if (num == 0){ // 승인을 했다면
                         ss = factory.openSession();
                         //String lnum = ss.selectOne("leave_of.getLnum", empno);
                         //System.out.println(lnum);
                         //Leave_ofVO lvo = ss.selectOne("leave_of.getOne", listvo);
 
+                        // 해당하는 휴가코드를 가지는 leave_of 테이블의 레코드의 휴가상태를 1 (휴가 승인) 으로 업데이트
                         int update = ss.update("leave_of.statusUpdate", lnum);
-                        if (update == 0){
+                        if (update == 0){ // 변경된 사항이 없다면 롤백시키고 돌아가기
                             ss.rollback();
                             ss.close();
                             return;
                         }
-                        //ss.commit();
 
                         List<Leave_ofVO> list = ss.selectList("leave_of.approvevac", vo.getDeptno());
                         String[][] data = new String[list.size()][v_name.length];
@@ -345,30 +353,28 @@ public class AdminFrame extends JFrame {
                         }
                         vacTable.setModel(new DefaultTableModel(data, v_name));
 
-                        // leave_of 테이블에서 얻은 값들
-
-                        //String lname = "가족행사";
-                        //String empno = "E001";
-
+                        //
                         int days = duration.intValue(); // 소수점은 버림. 2.5 → 2
-
-                        List<java.sql.Date> dates = new ArrayList<>();
+                        List<Date> dates = new ArrayList<>();
                         LocalDate startDate = ldate.toLocalDate();
 
+                        // 휴가 기간을 비교해서 0.5라면 반차이므로 근태 테이블에 레코드를 하나만 추가하고
+                        // 그 외의 경우라면 연차이므로 앞서 얻어낸 휴가 기간의 수만큼 날짜를 얻어내 dates 리스트에 저장
                         if (duration.compareTo(new BigDecimal("0.5")) == 0) {
-                            dates.add(java.sql.Date.valueOf(startDate));
+                            dates.add(Date.valueOf(startDate));
                         } else {
                             for (int k = 0; k < days; k++) {
-                                dates.add(java.sql.Date.valueOf(startDate.plusDays(k)));
+                                dates.add(Date.valueOf(startDate.plusDays(k)));
                             }
                         }
 
                         System.out.println("lname: [" + lname + "]");
                         System.out.println("dates: " + dates);
-                        for (java.sql.Date d : dates) {
+                        for (Date d : dates) {
                             System.out.println(" date: " + d);
                         }
 
+                        // 승인된 휴가가 각각 연차, 오전 반차, 오후 반차일 경우를 구분해 근태 태이블에 레코드를 인서트하는 쿼리
                         if (lname.equals("가족행사") || lname.equals("개인 사유 휴가") || lname.equals("경조사")) {
                             Map<String, Object> map = new HashMap<>();
                             map.put("empno", empno);
@@ -389,11 +395,13 @@ public class AdminFrame extends JFrame {
                             ss.insert("leave_of.insertAttLeave4", map);
                         }
 
+                        // leave_history 테이블에서 남은 휴가를 사용한 휴가 기간만큼 빼는 쿼리
                         Map<String, Object> map = new HashMap<>();
                         map.put("empno", empno);
                         map.put("duration", duration); // BigDecimal
                         ss.update("leave_of.remainLeaveUpdate", map);
 
+                        // DB 상에서 변경된 모든 내용을 커밋해서 반영하고 세션 닫기
                         ss.commit();
                         ss.close();
                     }
