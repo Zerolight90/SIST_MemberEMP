@@ -388,15 +388,6 @@ public class UserFrame extends JFrame {
             }
         });
 
-        bt_logOut.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                UserFrame.this.dispose();
-
-                new LoginFrame().setVisible(true);
-            }
-        });
-
         // 종료 버튼 누를 시 UserFrame 종료
         bt_exit.addActionListener(new ActionListener() {
             @Override

@@ -492,6 +492,8 @@ public class AdminFrame extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
+                    ss = factory.openSession();
+
                     int row = empTable.getSelectedRow();
                     if(row == -1) return;
 
@@ -500,6 +502,7 @@ public class AdminFrame extends JFrame {
                     if(vo == null) return;
 
                     new EmpEditDialog(AdminFrame.this, vo, ss, () -> loadEmpData());
+                    ss.close();
                 }
             }
         });
