@@ -10,8 +10,7 @@ import vo.Leave_historyVO;
 import vo.Leave_ofVO;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.io.IOException;
 import java.io.Reader;
 import java.time.LocalDate;
@@ -60,6 +59,11 @@ public class UserFrame extends javax.swing.JFrame {
     List<Leave_ofVO> Leave_now;
     String[] vac_colum = { "휴가 항목", "휴가 기간", "남은 휴가", "신청 날짜", "결재 상태"};
     Object[][] vac_info;
+
+    //문서
+    viewdocs view_d;
+    sharedocs share_d;
+    savedocs save_d;
 
     /**
      * Creates new form UserFrame
@@ -317,7 +321,30 @@ public class UserFrame extends javax.swing.JFrame {
         bt_workLogWrite.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new docs();
+                new savedocs();
+            }
+        });
+
+        bt_myList.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (view_d == null) {
+                    view_d = new viewdocs(UserFrame.this, table); // ✅ 인스턴스 저장!
+                } else {
+                    view_d.viewList(table);// ✅ 이미 있으면 리스트만 다시 조회
+                }
+
+            }
+        });
+
+        bt_dept.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (share_d == null) {
+                    share_d = new sharedocs(table); // ✅ 인스턴스 저장!
+                } else {
+                    share_d.viewShare(table);// ✅ 이미 있으면 리스트만 다시 조회
+                }
             }
         });
 
@@ -397,6 +424,8 @@ public class UserFrame extends javax.swing.JFrame {
             }
         });
     } //생성자의 끝
+
+
 
     // 내 정보 수정 창에서 사원 정보를 수정했을 때 내 정보 테이블 갱신하는 함수
     public void EditMyInfoTable(EmpVO vo){
@@ -669,7 +698,6 @@ public class UserFrame extends javax.swing.JFrame {
         bt_myList = new javax.swing.JButton();
         bt_dept = new javax.swing.JButton();
         jsp_logList = new javax.swing.JScrollPane();
-        logList = new javax.swing.JList<>();
         myAtt_p = new javax.swing.JPanel();
         myAtt_north_p = new javax.swing.JPanel();
         year_cb = new javax.swing.JComboBox<>();
@@ -863,7 +891,6 @@ public class UserFrame extends javax.swing.JFrame {
         jsp_empTable.setViewportView(table_emp);
 
         searchEmp_p.add(jsp_empTable, java.awt.BorderLayout.CENTER);
-
         centerCard_p.add(searchEmp_p, "searchEmpCard");
 
         workLog_p.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 30, 30));
@@ -878,22 +905,33 @@ public class UserFrame extends javax.swing.JFrame {
         bt_workLogWrite.setText("업무일지 작성");
         workLogCenter_p.add(bt_workLogWrite);
 
-        bt_myList.setText("내 목록 조회");
+        bt_myList.setText("부서 문서 조회");
         workLogCenter_p.add(bt_myList);
 
-        bt_dept.setText("부서 조회");
+        bt_dept.setText("받은 문서 조회");
         workLogCenter_p.add(bt_dept);
 
         workLog_p.add(workLogCenter_p, java.awt.BorderLayout.CENTER);
 
         workLog_p.add(workLog_north_p, java.awt.BorderLayout.PAGE_START);
 
+        JPanel backgroundPanel = new JPanel(new BorderLayout());
+        backgroundPanel.setBackground(Color.LIGHT_GRAY);
         jsp_logList.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 10));
-
-        logList.setPreferredSize(new java.awt.Dimension(300, 95));
-        jsp_logList.setViewportView(logList);
-
-        workLog_p.add(jsp_logList, java.awt.BorderLayout.LINE_START);
+        String[] col = {};
+        String[][] empty = new String[0][col.length];
+        DefaultTableModel emptyt = new DefaultTableModel(empty, col) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        JTable table = new JTable(emptyt);
+        table.setBackground(Color.WHITE);
+        this.table = table;
+        jsp_logList.setViewportView(table);
+        backgroundPanel.add(jsp_logList, BorderLayout.CENTER);
+        workLog_p.add(backgroundPanel, java.awt.BorderLayout.LINE_START);
 
         centerCard_p.add(workLog_p, "workLogCard");
 
@@ -1058,7 +1096,7 @@ public class UserFrame extends javax.swing.JFrame {
     private javax.swing.JButton bt_logOut;
     private javax.swing.JButton bt_myAtt;
     private javax.swing.JButton bt_myInfo;
-    private javax.swing.JButton bt_myList;
+    public javax.swing.JButton bt_myList;
     private javax.swing.JButton bt_myVac;
     private javax.swing.JButton bt_search;
     private javax.swing.JButton bt_searchEmp;
@@ -1078,7 +1116,6 @@ public class UserFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jsp_logList;
     private javax.swing.JScrollPane jsp_myInfo;
     private javax.swing.JScrollPane jsp_vacTable;
-    private javax.swing.JList<String> logList;
     private javax.swing.JComboBox<String> month_cb;
     private javax.swing.JPanel myAtt_north_p;
     private javax.swing.JPanel myAtt_p;
@@ -1101,5 +1138,7 @@ public class UserFrame extends javax.swing.JFrame {
     private javax.swing.JPanel workLog_north_p;
     private javax.swing.JPanel workLog_p;
     private javax.swing.JComboBox<String> year_cb;
+    private JTable table;
+    private String viewMode = "";
     // End of variables declaration//GEN-END:variables
 }
