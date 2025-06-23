@@ -373,6 +373,7 @@ public class UserFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 cl.show(UserFrame.this.centerCard_p, "myVacCard");
                 nowVac();
+
                 setLabel();
             }
         });
@@ -591,7 +592,7 @@ public class UserFrame extends JFrame {
             return;
         }
 
-        Map<String, String> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
         map.put("empno", vo.getEmpno());
         map.put("year", selectedYear);
         map.put("month", selectedMonth);
