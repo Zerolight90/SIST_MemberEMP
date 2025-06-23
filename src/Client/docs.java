@@ -34,7 +34,7 @@ public class docs extends JFrame {
     JLabel jl1, dateL;
     int i,j;
 
-
+    UserFrame u_frame;
     DocsVO dvo;
     EmpVO evo;
     DeptVO dpvo;
