@@ -104,18 +104,13 @@ public class WorkInOut extends JFrame {
         map.put("empno", loginedEmpno);
 
         if (now.isAfter(lateTime)) {
-
             map.put("status", "5");
             map.put("note", "지각");
-
         }
         else {
-
             map.put("status", "0");
             map.put("note", "출근");
-
         }
-
 
         try {
             ss = factory.openSession(); // factory는 SqlSessionFactory 객체로 가정
@@ -130,26 +125,20 @@ public class WorkInOut extends JFrame {
 
     private  void updateclockIN(){
         LocalTime now = LocalTime.now(); // LocalTime -> java에서 현재 시간 가져오는 함수
-        LocalTime lateTime = LocalTime.of(12, 10); // 지각 기준 시간 (13시 10분)
+        LocalTime lateTime = LocalTime.of(13, 10); // 지각 기준 시간 (13시 10분)
 
         JOptionPane.showMessageDialog(WorkInOut.this,
                 user_name+"님 출근을 환영합니다.");
-
 
         Map<String, String> map = new HashMap<>();
         map.put("empno", loginedEmpno);
 
         if (now.isAfter(lateTime)) {
-
-            map.put("note", "반차인데 지각?? 너 퇴사");
-
+            map.put("note", "반차인데 지각?? 너 해고");
         }
         else {
-
             map.put("note", "(반차)출근");
-
         }
-
 
         try {
             ss = factory.openSession(); // factory는 SqlSessionFactory 객체로 가정

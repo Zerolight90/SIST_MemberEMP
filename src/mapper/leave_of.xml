@@ -110,4 +110,11 @@
             )
         </foreach>
     </insert>
+
+    <insert id="requestVac" parameterType="vo.Leave_ofVO">
+        INSERT INTO leave_of (empno, lname, ldate, duration, lstatus)
+        VALUES (#{empno}, #{lname}, #{ldate}, #{duration}, #{lstatus})
+
+    </insert>
+
 </mapper>

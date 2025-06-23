@@ -373,8 +373,15 @@ public class UserFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 cl.show(UserFrame.this.centerCard_p, "myVacCard");
                 nowVac();
-
                 setLabel();
+            }
+        });
+
+        // 휴가 신청 버튼을 눌렀을 때
+        bt_addVac.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                VacAdd dialog = new VacAdd(factory, vo, UserFrame.this);
             }
         });
 
@@ -388,14 +395,7 @@ public class UserFrame extends JFrame {
             }
         });
 
-        bt_logOut.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                UserFrame.this.dispose();
 
-                new LoginFrame().setVisible(true);
-            }
-        });
 
         // 종료 버튼 누를 시 UserFrame 종료
         bt_exit.addActionListener(new ActionListener() {
@@ -546,10 +546,11 @@ public class UserFrame extends JFrame {
     }
 
     // 휴가 성태 상세 정보 테이블
-    private void vacTable() {
-        String selectedYear = (String) year_cb.getSelectedItem();
+    public void vacTable() {
+        // 연도 콤보 박스에서 선택한 값을 String으로 형변환 후 selectedYear에 저장 한다.
+        String selectedYear = (String) year_cb.getSelectedItem(); 
         System.out.println(selectedYear);
-
+        
         Map<String, String> map = new HashMap<>();
         map.put("empno", vo.getEmpno());
         map.put("year", selectedYear);
@@ -565,6 +566,7 @@ public class UserFrame extends JFrame {
         ss.close();
     }
 
+    //휴가 조회시트 테이블
     private void viewVacTable(List<Leave_ofVO> list) {
 
         vac_info = new Object[list.size()][vac_colum.length];
