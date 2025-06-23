@@ -425,38 +425,77 @@ public class UserFrame extends javax.swing.JFrame {
 
     // 휴가 상태 레이블 설정하는 함수
     private void setLabel() {
-        LocalDate now = LocalDate.now();
-        year = now.getYear();
-        year_cb.setFont(new Font("나눔 고딕", Font.PLAIN, 15));
+        year_cb.setFont(new Font("나눔 고딕", Font.PLAIN, 15)); // combox 폰트 셋팅
 
-        ss = factory.openSession();
+        //1.콤보박스의 첫해 2025년도 값을 가져온다
+        String firstYear = (String) year_cb.getSelectedItem();
+
         try {
+            ss = factory.openSession();
             Map<String, Object> remain_Vac_map = new HashMap<>();
             remain_Vac_map.put("empno", vo.getEmpno());
-            remain_Vac_map.put("year", year);
+            remain_Vac_map.put("year", firstYear); // 초기연도(2025년)로 기본 값을 설성 합니다.
 
+            // MY batis에서 실행 쿼리 결과를 lhvo(Leavo history vo) 객체 저장 한다.
             lhvo = ss.selectOne("history.remain_Vac", remain_Vac_map);
-            allVac_l.setText("총 휴가 :" + lhvo.getTotal_leave());
 
-            remainVac_l.setText("남은 휴가 :" + lhvo.getRemain_leave());
+            if (lhvo != null) {
+                allVac_l.setText("총 휴가 :" + lhvo.getTotal_leave());
+                remainVac_l.setText("남은 휴가 :" + lhvo.getRemain_leave());
 
-            // 사용 휴가 계산
-            double total = Double.parseDouble(lhvo.getTotal_leave());
-            double remain = Double.parseDouble(lhvo.getRemain_leave());
-            used = total - remain;
-
-            usedVac_l.setText("사용 휴가 :" + used);
-
+                // 사용 휴가 계산
+                double total = Double.parseDouble(lhvo.getTotal_leave());
+                double remain = Double.parseDouble(lhvo.getRemain_leave());
+                used = total - remain;
+//            System.out.println(used);
+                usedVac_l.setText("사용 휴가 :" + used);
+            } else {
+                allVac_l.setText("총 휴가 : 데이터 없음");
+                remainVac_l.setText("남은 휴기 : 데이터 없음");
+                usedVac_l.setText("사용 휴가 : 데이터 없음");
+            }
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            if (ss != null) ss.close();
         }
+        ss.close();
+
+        // 콤보박스로 해당년도 클릭하면 그해 데이터 조회 값을 가져와서 재 출력
         year_cb.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                vacTable(); // 사용한 휴가 상세 정보 테이블
+                //콤보 박스에서 사용자가 선택한 x년도를 가져와서 selecterd에 저장 한다.
+                String selected = (String) year_cb.getSelectedItem();
 
-                vacTable();
+                try {
+                    ss = factory.openSession();
+                    Map<String, Object> remain_Vac_map = new HashMap<>();
+                    remain_Vac_map.put("empno", vo.getEmpno());
+                    remain_Vac_map.put("year", selected); // 새로 선택한 연도를 파나메타로 사용한다
+
+                    //선택한 연도를 가지고 쿼리를 실행하여 lhvo에 값을 저장한다.
+                    lhvo = ss.selectOne("history.remain_Vac", remain_Vac_map);
+
+                    if (lhvo != null) {
+                        allVac_l.setText("총 휴가 :" + lhvo.getTotal_leave());
+                        remainVac_l.setText("남은 휴가 :" + lhvo.getRemain_leave());
+
+                        // 사용 휴가 계산
+                        double total = Double.parseDouble(lhvo.getTotal_leave());
+                        double remain = Double.parseDouble(lhvo.getRemain_leave());
+                        used = total - remain;
+                        //                  System.out.println(used);
+                        usedVac_l.setText("사용 휴가 :" + used);
+                    } else {
+                        allVac_l.setText("총 휴가 : 데이터 없음");
+                        remainVac_l.setText("남은 휴기 : 데이터 없음");
+                        usedVac_l.setText("사용 휴가 : 데이터 없음");
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                ss.close();
+
             }
         });
     }
@@ -468,11 +507,10 @@ public class UserFrame extends javax.swing.JFrame {
         map.put("empno", vo.getEmpno());
         // map.put("year", selectedYear);
 
-        ss = null; // SqlSession 초기화
         try {
             ss = factory.openSession();
             // 로그인한 사번의 근태 조회
-            Leave_info = ss.selectList("leave_of.vac_search", map); //
+            Leave_info = ss.selectList("leave.vac_search", map); //
             viewVacTable(Leave_info); // 이 메소드는 JTable을 업데이트합니다.
         } catch (Exception e) {
             e.printStackTrace();
@@ -874,7 +912,7 @@ public class UserFrame extends javax.swing.JFrame {
         myAtt_north_p.setPreferredSize(new java.awt.Dimension(782, 50));
         myAtt_north_p.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 5, 15));
 
-        year_cb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "2015","2016","2017","2018","2019","2020","2021","2022","2023","2024","2025" }));
+        year_cb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "2025", "2024", "2023", "2022", "2021", "2020", "2019", "2018", "2017", "2016", "2015" }));
         myAtt_north_p.add(year_cb);
 
         month_cb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12" }));

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="leave_of">
+<mapper namespace="leave">
     <select id="vac_search" resultType="vo.Leave_ofVO" parameterType="map">
         <!--        select * from attendance a inner join emp e on a.empno = e.empno -->
 
@@ -36,12 +36,10 @@
         and year = date_format(ldate, '%Y')
     </select>
 
-    <select id="getLnum" resultType="String" parameterType="String">
+    <select id="getLnum" resultType="vo.Leave_ofVO" parameterType="Map">
         select l.lnum from leave_of l inner join emp e
         on l.empno = e.empno
-        where l.empno = #{empno}
-        ORDER BY l.ldate DESC
-        LIMIT 1
+        where l.empno = #{empno} and l.ldate = #{ldate}
     </select>
 
     <select id="getOne" resultType="vo.Leave_ofVO" parameterType="String">
@@ -57,6 +55,12 @@
     <update id="statusUpdate" parameterType="String">
         UPDATE leave_of
         SET lstatus = 1
+        WHERE lnum = #{lnum}
+    </update>
+
+    <update id="processedUpdate" parameterType="String">
+        UPDATE leave_of
+        SET lprocessed = date_format(now(), '%Y-%m-%d')
         WHERE lnum = #{lnum}
     </update>
 
