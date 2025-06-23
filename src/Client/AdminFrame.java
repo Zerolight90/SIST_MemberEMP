@@ -186,7 +186,7 @@ public class AdminFrame extends JFrame {
             }
         });
 
-        //사원 관리 클릭시
+        // 사원 관리 클릭 시 화면 변경
         bt_adminEmp.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -194,7 +194,7 @@ public class AdminFrame extends JFrame {
             }
         });
 
-        //상세 조회
+        // 사원 관리 - 상세 조회
         bt_dsearch.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -202,7 +202,7 @@ public class AdminFrame extends JFrame {
             }
         });
 
-        //사원 추가
+        // 사원 관리 - 사원 추가
         bt_addEmp.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -217,7 +217,7 @@ public class AdminFrame extends JFrame {
             }
         });
 
-        // 근태조회 버튼을 눌렀을 때
+        // 근태조회 버튼을 눌렀을 때 화면 변경
         bt_adminAtt.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
