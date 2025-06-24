@@ -115,7 +115,7 @@ public class sharedocs extends Component {
     //문서 삭제
     private void del(String sdocNum){
         String[] select_d = {"예", "아니오"};
-        int select_del = JOptionPane.showOptionDialog(sharedocs.this, "삭제하시겠습니까?", "공유문서도 사라집니다!", 0, JOptionPane.ERROR_MESSAGE, null, select_d, select_d[0]);
+        int select_del = JOptionPane.showOptionDialog(sharedocs.this, "삭제하시겠습니까?", "삭제합니다!", 0, JOptionPane.ERROR_MESSAGE, null, select_d, select_d[0]);
         SqlSession ss = factory.openSession();
         if(select_del == 0){
             int cnt = ss.delete("docs.sdel_Docs", sdocNum);
