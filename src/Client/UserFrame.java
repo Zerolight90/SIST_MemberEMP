@@ -972,13 +972,14 @@ public class UserFrame extends JFrame {
         myVac_north_p.setPreferredSize(new Dimension(785, 50));
         myVac_north_p.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 15));
 
-        allVac_l.setBackground(new Color(252, 205, 14));
+        allVac_l.setBackground(new Color(255, 193, 7));
         allVac_l.setHorizontalAlignment(SwingConstants.CENTER); // 수평 가운데 정렬
         allVac_l.setVerticalAlignment(SwingConstants.CENTER);   // 수직 가운데 정렬 추가
-        allVac_l.setBorder(BorderFactory.createLineBorder(new Color(252, 205, 14)));
+        allVac_l.setBorder(BorderFactory.createLineBorder(new Color(255, 193, 7)));
         allVac_l.setOpaque(true);
         allVac_l.setPreferredSize(new Dimension(120, 30));
-        Font all_labelFont = new Font("맑은 고딕", Font.BOLD, 15);
+        allVac_l.setForeground(new Color(33,33,33));
+        Font all_labelFont = new Font("맑은  고딕", Font.BOLD, 15);
         allVac_l.setFont(all_labelFont);
 
         year_cb = new JComboBox<>(new String[]{"2025", "2024", "2023", "2022"});
@@ -986,21 +987,24 @@ public class UserFrame extends JFrame {
         myVac_north_p.add(new JLabel("년"));
         myVac_north_p.add(allVac_l);
 
-        usedVac_l.setBackground(new Color(102, 102, 102));
+        usedVac_l.setBackground(new Color(144, 164, 174));
         usedVac_l.setHorizontalAlignment(SwingConstants.CENTER);
-        usedVac_l.setBorder(BorderFactory.createLineBorder(new Color(102, 102, 102)));
+        usedVac_l.setBorder(BorderFactory.createLineBorder(new Color(144, 164, 174)));
         usedVac_l.setOpaque(true);
         usedVac_l.setPreferredSize(new Dimension(120, 30));
         Font use_labelFont = new Font("맑은 고딕", Font.BOLD, 15);
+        usedVac_l.setForeground(new Color(255,255,255));
+//        setVisible(true);
         usedVac_l.setFont(use_labelFont);
         myVac_north_p.add(usedVac_l);
 
-        remainVac_l.setBackground(new Color(136, 85, 0));
+        remainVac_l.setBackground(new Color(109, 76, 65));
         remainVac_l.setHorizontalAlignment(SwingConstants.CENTER);
-        remainVac_l.setBorder(BorderFactory.createLineBorder(new Color(136, 85, 0)));
+        remainVac_l.setBorder(BorderFactory.createLineBorder(new Color(109, 76, 65)));
         remainVac_l.setOpaque(true);
         remainVac_l.setPreferredSize(new Dimension(120, 30));
         Font reamin_labelFont = new Font("맑은 고딕", Font.BOLD, 15);
+        remainVac_l.setForeground(new Color(255,243,224));
         remainVac_l.setFont(reamin_labelFont);
         myVac_north_p.add(remainVac_l);
 
