@@ -94,7 +94,7 @@ public class viewdocs extends JFrame {
                         System.out.println("더블클릭");
                         i = table.getSelectedRow();
                         String docNum = table.getValueAt(i, 0).toString();
-                        String[] select_m = {"열람", "공유"};
+                        String[] select_m = {"열람", "공유", "삭제"};
                         int select_op = JOptionPane.showOptionDialog(viewdocs.this, "선택", "타이틀", 0, JOptionPane.INFORMATION_MESSAGE, null, select_m, select_m[0]);
 
                         if (select_op == 0) {
@@ -103,7 +103,10 @@ public class viewdocs extends JFrame {
                         } else if (select_op == 1) {
                             //공유 선택 함수
                             share_docs(docNum);
+                        } else if (select_op == 2) {
+                            del(docNum, table);
                         }
+
 
                     }
 
@@ -149,7 +152,21 @@ public class viewdocs extends JFrame {
         ss.close();
 
     }
+    private void del(String docNum, JTable table){
+        SqlSession ss = factory.openSession();
+        int cnt = ss.delete("docs.del_Docs", docNum);
+        if(cnt > 0){
+            ss.commit();
+            JOptionPane.showMessageDialog(u_frame, "삭제완료!", "삭제", JOptionPane.INFORMATION_MESSAGE);
+        }
+        else{
+            ss.rollback();
+            JOptionPane.showMessageDialog(u_frame, "삭제실패!", "삭제", JOptionPane.INFORMATION_MESSAGE);
+        }
+        viewList(table);
+        ss.close();
 
+    }
     private void init(){
         try {
             Reader r = Resources.getResourceAsReader(

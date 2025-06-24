@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class sharedocs {
+public class sharedocs extends Component {
     JTextField title;
     JScrollPane jsp_workLogWrite, select_pane, save_p;
     JTextArea ta_workLogWrite, select_ta;
@@ -80,7 +80,15 @@ public class sharedocs {
                         System.out.println("더블클릭");
                         j = stable.getSelectedRow();
                         String docNum = stable.getValueAt(j, 1).toString();
-                        showdocs(docNum);
+                        String sdocNum = stable.getValueAt(j, 0).toString();
+                        String[] select_m = {"열람", "삭제"};
+                        int select_op = JOptionPane.showOptionDialog(sharedocs.this, "선택", "타이틀", 0, JOptionPane.INFORMATION_MESSAGE, null, select_m, select_m[0]);
+                        if (select_op == 0) {
+                            //열람 선택 함수
+                            showdocs(docNum);
+                        } else if (select_op == 1) {
+                            del(sdocNum, stable);
+                        }
                     }
 
                 }
@@ -100,6 +108,21 @@ public class sharedocs {
         }
         String message = String.format("제목: %s\n내용: %s\n작성일: %s\n작성자: %s\n부서명:%s", dvo.getTitle(), dvo.getContent(), dvo.getDate(), dvo.getEname(), dvo.getDname());
         JOptionPane.showMessageDialog(u_frame, message, "문서 열람", JOptionPane.INFORMATION_MESSAGE);
+        ss.close();
+    }
+
+    private void del(String sdocNum, JTable stable){
+        SqlSession ss = factory.openSession();
+        int cnt = ss.delete("docs.sdel_Docs", sdocNum);
+        if(cnt > 0){
+            ss.commit();
+            JOptionPane.showMessageDialog(u_frame, "삭제완료!", "삭제", JOptionPane.INFORMATION_MESSAGE);
+        }
+        else{
+            ss.rollback();
+            JOptionPane.showMessageDialog(u_frame, "삭제실패!", "삭제", JOptionPane.INFORMATION_MESSAGE);
+        }
+        viewShare(stable);
         ss.close();
     }
 

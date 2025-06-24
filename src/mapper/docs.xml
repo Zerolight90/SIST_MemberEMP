@@ -20,6 +20,18 @@
         VALUES (#{docs_num}, #{deptno})
     </insert>
 
+    <!--공유 받은 문서 삭제-->
+    <delete id="sdel_Docs" parameterType="String">
+        DELETE FROM docs_shared
+        WHERE share_id = #{share_id}
+    </delete>
+
+    <!-- 문서 삭제-->
+    <delete id="del_Docs" parameterType="String">
+        DELETE FROM documents
+        WHERE docs_num = #{docs_num}
+    </delete>
+
     <!--공유 받은 문서 조회-->
     <select id="reDocs" parameterType="string" resultType="vo.DocsVO">
         SELECT ds.share_id, d.docs_num, d.title, d.content, d.empno, d.deptno, e.ename, dp.dname
