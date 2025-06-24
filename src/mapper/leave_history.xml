@@ -5,6 +5,7 @@
 
 <mapper namespace="history">
 
+    <!-- 사번과 년도가 같은 경우의 모든 leave_history 요소들을 가져오는 쿼리 -->
 
     <select id="remain_Vac" parameterType="Map" resultType="vo.Leave_historyVO">
 

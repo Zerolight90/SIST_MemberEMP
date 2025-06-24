@@ -85,8 +85,9 @@ public class docs extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 SqlSession ss = factory.openSession();
-                Docslist = ss.selectList("docs.Docs_Dept", "10"); //dvo.getDeptno());
+                Docslist = ss.selectList("docs.Docs_Dept", vo.getDeptno());
                 String[] column = {"문서번호", "제목", "내용"};
+
                 String[][] data = new String[Docslist.size()][column.length];
                 for (int i = 0; i < Docslist.size(); i++) {
                     DocsVO dvo = Docslist.get(i);
