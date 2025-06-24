@@ -37,15 +37,16 @@ public class sharedocs extends Component {
     SqlSessionFactory factory;
     private boolean mouse = false;
 
-    public sharedocs(JTable stable){
+    public sharedocs(EmpVO evo, JTable stable){
         init();
-        this.table = stable;
+        this.evo = evo;        // 필드에 저장
+        this.stable = stable;
         viewShare(stable);
 
     }
     public void viewShare(JTable stable){
         SqlSession ss = factory.openSession();
-        Docslist = ss.selectList("reDocs", "20");//dvo.getDeptno());
+        Docslist = ss.selectList("reDocs", evo.getDeptno());
         String[] scolumn = {"공유문서번호", "문서번호", "제목", "내용", "부서명"};
         String[][] sdata = new String[Docslist.size()][scolumn.length];
         for (int i = 0; i < Docslist.size(); i++) {
@@ -87,7 +88,7 @@ public class sharedocs extends Component {
                             //열람 선택 함수
                             showdocs(docNum);
                         } else if (select_op == 1) {
-                            del(sdocNum, stable);
+                            del(sdocNum);
                         }
                     }
 
@@ -111,18 +112,25 @@ public class sharedocs extends Component {
         ss.close();
     }
 
-    private void del(String sdocNum, JTable stable){
+    //문서 삭제
+    private void del(String sdocNum){
+        String[] select_d = {"예", "아니오"};
+        int select_del = JOptionPane.showOptionDialog(sharedocs.this, "삭제하시겠습니까?", "공유문서도 사라집니다!", 0, JOptionPane.ERROR_MESSAGE, null, select_d, select_d[0]);
         SqlSession ss = factory.openSession();
-        int cnt = ss.delete("docs.sdel_Docs", sdocNum);
-        if(cnt > 0){
-            ss.commit();
-            JOptionPane.showMessageDialog(u_frame, "삭제완료!", "삭제", JOptionPane.INFORMATION_MESSAGE);
+        if(select_del == 0){
+            int cnt = ss.delete("docs.sdel_Docs", sdocNum);
+            if(cnt > 0){
+                ss.commit();
+                JOptionPane.showMessageDialog(u_frame, "삭제완료!", "삭제", JOptionPane.INFORMATION_MESSAGE);
+                viewShare(stable);
+            }
+            else{
+                ss.rollback();
+                JOptionPane.showMessageDialog(u_frame, "삭제실패!", "삭제", JOptionPane.INFORMATION_MESSAGE);
+            }
         }
-        else{
-            ss.rollback();
-            JOptionPane.showMessageDialog(u_frame, "삭제실패!", "삭제", JOptionPane.INFORMATION_MESSAGE);
-        }
-        viewShare(stable);
+
+
         ss.close();
     }
 

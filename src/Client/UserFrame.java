@@ -324,7 +324,7 @@ public class UserFrame extends javax.swing.JFrame {
         bt_workLogWrite.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new savedocs();
+                new savedocs(vo);
             }
         });
 
@@ -333,7 +333,7 @@ public class UserFrame extends javax.swing.JFrame {
             public void actionPerformed(ActionEvent e) {
                 card_l.show(card_p,"viewCard");
                 if (view_d == null) {
-                    view_d = new viewdocs(UserFrame.this, table); // 인스턴스 저장!
+                    view_d = new viewdocs(vo, table); // 인스턴스 저장!
                 } else {
                     view_d.viewList(table);// 이미 있으면 리스트만 다시 조회
                 }
@@ -347,7 +347,7 @@ public class UserFrame extends javax.swing.JFrame {
             public void actionPerformed(ActionEvent e) {
                 card_l.show(card_p,"sharedCard");
                 if (share_d == null) {
-                    share_d = new sharedocs(stable); // 인스턴스 저장!
+                    share_d = new sharedocs(vo, stable); // 인스턴스 저장!
                 } else {
                     share_d.viewShare(stable);// 이미 있으면 리스트만 다시 조회
                 }

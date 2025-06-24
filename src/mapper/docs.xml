@@ -26,10 +26,15 @@
         WHERE share_id = #{share_id}
     </delete>
 
+    <!--공유 한 문서 삭제-->
+    <delete id="redel_Docs" parameterType="String">
+        DELETE FROM docs_shared WHERE docs_num = #{value}
+    </delete>
+
     <!-- 문서 삭제-->
     <delete id="del_Docs" parameterType="String">
         DELETE FROM documents
-        WHERE docs_num = #{docs_num}
+        WHERE docs_num = #{value}
     </delete>
 
     <!--공유 받은 문서 조회-->
