@@ -352,6 +352,7 @@ public class UserFrame extends javax.swing.JFrame {
                     share_d.viewShare(stable);// 이미 있으면 리스트만 다시 조회
                 }
             }
+
         });
 
         // 나의 근태정보 버튼 눌렀을 때 화면 변경
