@@ -45,6 +45,8 @@ public class VacAdd extends JFrame {
         this.frame = frame;
 
         initComponents();
+
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         this.setVisible(true);
         this.setLocationRelativeTo(null);
     }
@@ -82,7 +84,7 @@ public class VacAdd extends JFrame {
         bt_add = new JButton();
         bt_cancel = new JButton();
 
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+//        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setTitle("휴가 신청");
         setPreferredSize(new java.awt.Dimension(300, 364));
         getContentPane().setLayout(new java.awt.GridLayout(6, 1));

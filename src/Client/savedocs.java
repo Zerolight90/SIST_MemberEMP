@@ -39,6 +39,7 @@ public class savedocs extends JFrame {
         init();
         //화면생성
         initComponents();
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
         //문서저장
         menuItem.addActionListener(new ActionListener() {
