@@ -2,8 +2,8 @@ package vo;
 
 public class EmpVO {
     private String
-            empno, deptno, role_num, ename, work_status, sal, hireDATE,hiredate,
-            resign_date, resign_DATE, phone, email, mgr, username, password,
+            empno, deptno, role_num, ename, work_status, sal, hireDATE,
+             resign_DATE, phone, email, mgr, username, password,
             dname, posname, visibility;
     private String dept_name,role_name,mgr_name; // 부서명
 
@@ -125,22 +125,6 @@ public class EmpVO {
 
     public void setPosname(String posname) {
         this.posname = posname;
-    }
-
-    public String getHiredate() {
-        return hiredate;
-    }
-
-    public void setHiredate(String hiredate) {
-        this.hiredate = hiredate;
-    }
-
-    public String getResign_date() {
-        return resign_date;
-    }
-
-    public void setResign_date(String resign_date) {
-        this.resign_date = resign_date;
     }
 
     public String getWork_status() {

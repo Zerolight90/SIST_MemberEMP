@@ -4,10 +4,8 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="commute">
 
-    <select id="member_search" resultType="vo.CommuteVO" parameterType="String">
+    <select id="member_search" resultType="vo.CommuteVO">
         SELECT * FROM team_db.attendance
-        WHERE empno = #{empno}
-        AND date = date_format(now(), '%Y%m%d')
     </select>
 
     <select id="login" parameterType="Map" resultType="vo.CommuteVO">
@@ -29,27 +27,15 @@
 
     <insert id="chkin" parameterType="Map">
 
-        INSERT INTO attendance (empno, date, chkin, chkout, attend_status,attend_note)
+        INSERT INTO attendance (empno, date, chkin, chkout, attend_status, attend_note)
         VALUES
-       (#{empno}, DATE(NOW()), TIME(NOW()), NULL,#{status},  #{note})
+        (#{empno}, DATE(NOW()), TIME(NOW()), NULL, #{status}, #{note})
 
     </insert>
 
-    <update id="upchkin" parameterType="Map">
-
-        UPDATE attendance
-        SET
-        chkin = TIME(NOW()),
-        attend_note = #{note}
-        WHERE
-        empno = #{empno}
-        AND date = DATE(NOW());
-
-    </update>
-
     <select id="getStatus" parameterType="String" resultType="int" >
         <!-- 특정 사번의 퇴근 시간이 없는 오늘 상태 키값을 가져온다 -->
-         SELECT attend_status FROM team_db.attendance
+        SELECT attend_status FROM team_db.attendance
         where empno = #{empno} AND date = DATE(NOW()) AND chkout is null
 
     </select>
@@ -57,8 +43,9 @@
     <update id="chkout" parameterType="Map">
         UPDATE attendance
         SET
-        chkout = TIME(NOW())
-<!--        attend_note = #{note}-->
+        chkout = TIME(NOW()),
+        attend_status = 1,
+        attend_note = #{note}
         WHERE
         empno = #{empno}
         AND date = DATE(NOW());

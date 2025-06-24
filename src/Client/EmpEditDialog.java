@@ -15,16 +15,17 @@ import java.util.Map;
 public class EmpEditDialog extends JDialog {
     private EmpVO emp;
     private SqlSession ss;
-    private Runnable refresh; //thread 대신 runable함수 사용함 근데 바꾸려면 바꿀수 있긴함
+    private Runnable refresh; //listner 대신 runable함수 사용한거
 
     private JTextField tfEname, tfSal, tfHire, tfResign, tfEmail, tfPhone, tfUsername, tfPassword;
     private JComboBox<DeptItem> cbDept;
-    private JComboBox<String> cbStatus, cbMgr, cbPos;
+    private JComboBox<String> cbStatus, cbMgr, cbPos;//cb는 콤보박스를 의미
 
     private final List<String> statusOptions = Arrays.asList("재직", "퇴직");
     private final List<String> posOptions = Arrays.asList("사원", "대리", "팀장");
+    String[] allPositions = {"사원", "대리", "팀장"};//role_num이 3 즉 사장 or 인사부 팀장이면 사용할 String리스트이고
+    String[] limitedPositions = {"사원", "대리"};//role_num이 2 즉 일반 팀장들이 사용할 예정
     private final Map<String, String> mgrMap = new HashMap<>(); //관리자 가져오기위함 Map
-
 
     // 부서 항목을 담는 함수
     static class DeptItem {
@@ -43,9 +44,11 @@ public class EmpEditDialog extends JDialog {
     }
 
     //생성자
-    public EmpEditDialog(JFrame parent, EmpVO vo, SqlSession ss, Runnable refresh) {
+    //Runnable refresh는 AdminFrame에서 Runnable에서 인자로 보낸걸 refresh라는 이름으로 정한거
+    public EmpEditDialog(JFrame parent, EmpVO targetEmp, EmpVO loginAdmin, SqlSession ss, Runnable refresh)
+    {
         super(parent, "사원 정보 수정", true);
-        this.emp = vo;
+        this.emp = targetEmp;
         this.ss = ss;
         this.refresh = refresh;
 
@@ -72,14 +75,20 @@ public class EmpEditDialog extends JDialog {
         }
 
         // 직급명 콤보박스
-        cbPos = new JComboBox<>(posOptions.toArray(new String[0]));
-        String cleanPos = emp.getPosname() == null ? "" : emp.getPosname().trim();//자바 삼항 연산자 null이면 공백 처리 아니면 posname가져오기
-        if (posOptions.contains(cleanPos)) {
-            cbPos.setSelectedItem(cleanPos);
-        } else {
-            cbPos.setSelectedIndex(0);
-        }
+        // 현재 로그인한 관리자 권한에 따라 직급 선택지 설정
+        //System.out.println(vo.getRole_num());
+        String[] roleBasedPositions = loginAdmin.getRole_num().equals("3") ? allPositions : limitedPositions;
 
+        cbPos = new JComboBox<>(roleBasedPositions);
+        if(emp.getRole_num().equals("3")){
+            if(emp.getPosname().equals("사장")){
+                cbPos = new JComboBox<>(new String[] {"사장"});
+            }
+            if(emp.getPosname().equals("팀장")){
+                cbPos = new JComboBox<>(new String[] {"팀장"});
+            }
+            cbPos.disable();
+        }
         tfSal = new JTextField(emp.getSal());
 
         cbStatus = new JComboBox<>(statusOptions.toArray(new String[0]));
@@ -96,21 +105,32 @@ public class EmpEditDialog extends JDialog {
         List<EmpVO> mgrList = ss.selectList("adminemp.getAllMgrCandidates");
 
         // 맵에 사번과 이름을 저장하고 콤보박스  사용 예정
+        // 콤보박스에 먼저 없음 항목 추가
+        cbMgr = new JComboBox<>();
+        cbMgr.addItem("없음");  // 첫 번째 항목
+
+        // 맵에 사번과 이름을 저장하고 콤보박스 추가
         for (EmpVO mgr : mgrList) {
             mgrMap.put(mgr.getEname(), String.valueOf(mgr.getEmpno()));
+            cbMgr.addItem(mgr.getEname());
         }
 
-        cbMgr = new JComboBox<>(mgrMap.keySet().toArray(new String[0]));
-
-        // 현재 사원의 관리자 이름으로 나오게함
+        // 현재 사원의 관리자 이름을 선택 (없음 가능)
         String currentMgrName = emp.getMgr_name();
         if (currentMgrName != null && mgrMap.containsKey(currentMgrName)) {
             cbMgr.setSelectedItem(currentMgrName);
         } else {
-            cbMgr.setSelectedIndex(0); // 기본값
+            cbMgr.setSelectedItem("없음");
         }
+
+
+        //저장할 때
         String mgrName = (String) cbMgr.getSelectedItem();
-        emp.setMgr(mgrMap.get(mgrName)); // DB에 들어갈 사번 세팅!
+        if ("없음".equals(mgrName)) {
+            emp.setMgr(null);
+        } else {
+            emp.setMgr(mgrMap.get(mgrName));
+        }
 
         tfEmail = new JTextField(emp.getEmail());
         tfPhone = new JTextField(emp.getPhone());
@@ -142,6 +162,49 @@ public class EmpEditDialog extends JDialog {
         save.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
+                //퇴직인 상태인 사람을 수정 할때
+                if (emp.getWork_status().equals("1")){
+                    JOptionPane.showMessageDialog(EmpEditDialog.this,"퇴직자는 수정 할 수 없습니다.");
+                    return;
+                }
+                // 팀장에서 하위 직급으로 강등되면 평사원들의 관리자에서 내려주기
+               if(!emp.getPosname().equals(cbPos.getSelectedItem()) || emp.getWork_status().equals("1")) {
+                   int cnt = ss.update("adminemp.updateMGR",emp.getEmpno());
+                   emp.setRole_num("1");
+                   if(cnt != 0)
+                       ss.commit();//이 커밋은 관리자를 최신화 하고 커밋
+                   else
+                       ss.rollback();
+                }
+
+               //직급 변경했을때 팀장 이미 존재하면 변경 불가
+                String newPos = (String) cbPos.getSelectedItem();//새롭게 선택하는 팀장
+                String originalPos = emp.getPosname();//기존의 팀장
+
+                if (!"팀장".equals(originalPos) && "팀장".equals(newPos)) {
+                    // 부서 내 기존 팀장 존재 여부 검사
+                    Map<String, String> checkMap = new HashMap<>();
+                    checkMap.put("deptno", emp.getDeptno());
+                    checkMap.put("empno", emp.getEmpno()); // 자기 자신 제외
+
+                    int existingTeamLeadCount = ss.selectOne("adminemp.changeTeamLeader", checkMap);
+                    if (existingTeamLeadCount > 0) {
+                        JOptionPane.showMessageDialog(EmpEditDialog.this, "이미 이 부서에 팀장이 존재합니다.");
+                        return; // 저장 중단
+                    }
+                }
+                //팀장이 됐을시 그 부서원들의 관리자 지정
+                if (!"팀장".equals(originalPos) && "팀장".equals(newPos)) {
+                    // 부서 내 사원/대리에게 새 팀장을 관리자(mgr)로 지정
+                    Map<String, String> updateMap = new HashMap<>();
+                    updateMap.put("deptno", emp.getDeptno());
+                    updateMap.put("mgr", emp.getEmpno()); // 현재 수정 중인 emp의 사번
+                    emp.setRole_num("2");
+                    ss.update("adminemp.addMgr", updateMap);
+                    ss.commit(); // 관리자 추가하는 쿼리 실행 후 꼭 커밋을 해줘야함 안하면 관리자 최신화가 안됨
+                }
+
                 emp.setEname(tfEname.getText());
 
                 DeptItem selectedDept = (DeptItem) cbDept.getSelectedItem();
@@ -163,8 +226,21 @@ public class EmpEditDialog extends JDialog {
                 emp.setUsername(tfUsername.getText());
                 emp.setPassword(tfPassword.getText());
 
-                int result = ss.update("adminemp.updateEmpByAdmin", emp);
+                //동일한 아이디 있나 확인을 위해 사용
+                Map<String, Object> param = new HashMap<>();
+                param.put("username", tfUsername.getText().trim());
+                param.put("empno", emp.getEmpno()); // 현재 수정 중인 사람의 번호
+
+                //수정 할 때
+                int count = ss.selectOne("adminemp.checkUsername", param);
+                if (count > 0) {
+                    JOptionPane.showMessageDialog(EmpEditDialog.this, "이미 존재하는 아이디입니다.");
+                    return;
+                }
                 ss.commit();
+
+                int result = ss.update("adminemp.updateEmpByAdmin", emp);
+                ss.commit();// 이 커밋은 adminemp에 있는 사원을 수정하기 위한 쿼리를 커밋한거임
                 if (result > 0) {
                     JOptionPane.showMessageDialog(EmpEditDialog.this, "수정 완료");
                     refresh.run();
@@ -173,7 +249,7 @@ public class EmpEditDialog extends JDialog {
                     JOptionPane.showMessageDialog(EmpEditDialog.this, "수정 실패");
                 }
             }
-        });
+        });//수정 버튼의 끝
 
         //취소버튼
         cancel.addActionListener(new ActionListener() {

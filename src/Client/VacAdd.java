@@ -4,49 +4,19 @@
  */
 package Client;
 
-import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
-import vo.EmpVO;
-import vo.Leave_historyVO;
-import vo.Leave_ofVO;
-
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  *
  * @author zhfja
  */
-public class VacAdd extends JFrame {
+public class VacAdd extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(VacAdd.class.getName());
-    EmpVO vo; // 현재 로그인한 객체
-    SqlSessionFactory factory;
-
-    Leave_historyVO lhv; // 로그인한 객체의 휴가이력
-
-    UserFrame frame;
 
     /**
      * Creates new form VacAdd
      */
-    public VacAdd(SqlSessionFactory factory, EmpVO vo, UserFrame frame) {
-
-        this.vo = vo;
-        this.factory = factory;
-        this.frame = frame;
-
+    public VacAdd() {
         initComponents();
-        this.setVisible(true);
-        this.setLocationRelativeTo(null);
     }
 
     /**
@@ -58,59 +28,49 @@ public class VacAdd extends JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        empno_p = new JPanel();
-        empno_l = new JLabel();
-        empno_tf = new JTextField();
-        vacKind_p = new JPanel();
-        vacKind_l = new JLabel();
-        vacKind_cb = new JComboBox<>();
-        startDate_P = new JPanel();
-        startDate_l = new JLabel();
-        year_cb = new JComboBox<>();
-        year_l = new JLabel();
-        month_cb = new JComboBox<>();
-        month_l = new JLabel();
-        day_cb = new JComboBox<>();
-        day_l = new JLabel();
-        remainVac_p = new JPanel();
-        remainVac_l = new JLabel();
-        remainVac_l2 = new JLabel();
-        vacLong_p = new JPanel();
-        vacLong_l = new JLabel();
-        vacLong_cb = new JComboBox<>();
-        south_p = new JPanel();
-        bt_add = new JButton();
-        bt_cancel = new JButton();
+        empno_p = new javax.swing.JPanel();
+        empno_l = new javax.swing.JLabel();
+        empno_tf = new javax.swing.JTextField();
+        vacKind_p = new javax.swing.JPanel();
+        vacKind_l = new javax.swing.JLabel();
+        vacKind_cb = new javax.swing.JComboBox<>();
+        startDate_P = new javax.swing.JPanel();
+        startDate_l = new javax.swing.JLabel();
+        year_cb = new javax.swing.JComboBox<>();
+        year_l = new javax.swing.JLabel();
+        month_cb = new javax.swing.JComboBox<>();
+        month_l = new javax.swing.JLabel();
+        day_cb = new javax.swing.JComboBox<>();
+        day_l = new javax.swing.JLabel();
+        remainVac_p = new javax.swing.JPanel();
+        remainVac_l = new javax.swing.JLabel();
+        remainVac_l2 = new javax.swing.JLabel();
+        vacLong_p = new javax.swing.JPanel();
+        vacLong_l = new javax.swing.JLabel();
+        vacLong_cb = new javax.swing.JComboBox<>();
+        south_p = new javax.swing.JPanel();
+        bt_add = new javax.swing.JButton();
+        bt_cancel = new javax.swing.JButton();
 
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("휴가 신청");
-        setPreferredSize(new java.awt.Dimension(300, 364));
+        setPreferredSize(new java.awt.Dimension(510, 364));
         getContentPane().setLayout(new java.awt.GridLayout(6, 1));
 
         empno_p.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 5, 15));
 
-        empno_l.setText("사원 번호 :" + vo.getEmpno());
+        empno_l.setText("사원 번호 :");
         empno_p.add(empno_l);
+        empno_p.add(empno_tf);
 
         getContentPane().add(empno_p);
-
-        remainVac_p.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 5, 15));
-
-        SqlSession ss = factory.openSession();
-        lhv = ss.selectOne("history.remain_Vac", vo.getEmpno());
-
-
-        remainVac_l.setText("남은 휴가일 : " + lhv.getRemain_leave() + " ");
-        remainVac_p.add(remainVac_l);
-
-        getContentPane().add(remainVac_p);
 
         vacKind_p.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 5, 15));
 
         vacKind_l.setText("휴가 종류 :");
         vacKind_p.add(vacKind_l);
 
-        vacKind_cb.setModel(new DefaultComboBoxModel<>(new String[] { "연차", "오전반차", "오후반차" }));
+        vacKind_cb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "연차", "반차" }));
         vacKind_p.add(vacKind_cb);
 
         getContentPane().add(vacKind_p);
@@ -120,28 +80,19 @@ public class VacAdd extends JFrame {
         startDate_l.setText("휴가 시작일 :");
         startDate_P.add(startDate_l);
 
-        String[] yeararr = new String[3]; // 현재 연도부터 2년 뒤까지 신청 가능하게 할거임
-
-        yeararr[0] = String.valueOf(LocalDate.now().getYear());
-        yeararr[1] = String.valueOf(LocalDate.now().getYear() + 1);
-        yeararr[2] = String.valueOf(LocalDate.now().getYear() + 2);
-        year_cb.setModel(new DefaultComboBoxModel<>(yeararr));
+        year_cb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         startDate_P.add(year_cb);
 
         year_l.setText("년");
         startDate_P.add(year_l);
 
-        month_cb.setModel(new DefaultComboBoxModel<>(new String[]
-                { "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12" }));
+        month_cb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12" }));
         startDate_P.add(month_cb);
 
         month_l.setText("월");
         startDate_P.add(month_l);
 
-        day_cb.setModel(new DefaultComboBoxModel<>(new String[]
-                { "01", "02", "03", "04", "05", "06", "07", "08", "09", "10",
-                        "11", "12", "13", "14", "15", "16", "17", "18", "19", "20",
-                        "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31" }));
+        day_cb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31" }));
         startDate_P.add(day_cb);
 
         day_l.setText("일");
@@ -149,22 +100,25 @@ public class VacAdd extends JFrame {
 
         getContentPane().add(startDate_P);
 
+        remainVac_p.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 5, 15));
+
+        remainVac_l.setText("남은 휴가일 :");
+        remainVac_p.add(remainVac_l);
+
+        remainVac_l2.setBackground(new java.awt.Color(255, 255, 255));
+        remainVac_l2.setText("남은 휴가일");
+        remainVac_l2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        remainVac_l2.setOpaque(true);
+        remainVac_p.add(remainVac_l2);
+
+        getContentPane().add(remainVac_p);
 
         vacLong_p.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 5, 15));
 
         vacLong_l.setText("휴가 기간 (일) :");
         vacLong_p.add(vacLong_l);
 
-        // 연차 올해 남은 휴가 갯수에 따라 초기화
-        int k = (int) Double.parseDouble(lhv.getRemain_leave());
-        // 올해 남은 연차 갯수를 정수형으로 변환(0.5는 연차로 못쓴다)
-        String[] strarr = new String[k]; // 콤보박스 생성용 for문
-
-        for(int i = 0; i < strarr.length; i++) {
-            strarr[i] = String.valueOf(i + 1); // 배열 진행과 동시에 배열 안의 값 채우기
-        }
-        vacLong_cb.setModel(new DefaultComboBoxModel<>(strarr));
-
+        vacLong_cb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "01", "02", "03", "04", "05", "06", "07", "08", "09", "10" }));
         vacLong_p.add(vacLong_cb);
 
         getContentPane().add(vacLong_p);
@@ -180,166 +134,56 @@ public class VacAdd extends JFrame {
         getContentPane().add(south_p);
 
         pack();
-
-        // 휴가종류 콤보박스가 눌렸을 때
-        vacKind_cb.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if(vacKind_cb.getSelectedItem().equals("연차")) { // 안에 있는 내용이 연차라면
-
-                    int k = (int) Double.parseDouble(lhv.getRemain_leave());
-                    // 올해 남은 연차 갯수를 정수형으로 변환(0.5는 연차로 못쓴다)
-                    String[] strarr = new String[k]; // 콤보박스 생성용 for문
-
-                    for(int i = 0; i < strarr.length; i++) {
-                        strarr[i] = String.valueOf(i + 1); // 배열 진행과 동시에 배열 안의 값 채우기
-                    }
-
-                    vacLong_cb.setModel(new DefaultComboBoxModel<>(strarr));
-                    // 콤보박스 생성
-                } else if(Double.parseDouble(lhv.getRemain_leave()) > 0.4)// 연차가 아닌 것들은 모두 반차이다
-                    vacLong_cb.setModel(new DefaultComboBoxModel<>(new String[] {
-                            "0.5"}));
-            }
-        });
-
-        // 임의의 month를 클릭했을 때 선택가능 일자 조정
-        month_cb.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int mon = Integer.parseInt(String.valueOf(month_cb.getSelectedItem()));
-                if(mon < 8) {
-                    if (mon % 2 == 0) {
-                        if (mon == 2) { // 2월
-                            day_cb.setModel(new DefaultComboBoxModel<>(new String[]
-                                    {"01", "02", "03", "04", "05", "06", "07", "08", "09",
-                                            "10", "11", "12", "13", "14", "15", "16", "17",
-                                            "18", "19", "20", "21", "22", "23", "24", "25",
-                                            "26", "27", "28"}));
-                        } else { // 4, 6
-                            day_cb.setModel(new DefaultComboBoxModel<>(new String[]
-                                    {"01", "02", "03", "04", "05", "06", "07", "08", "09",
-                                            "10", "11", "12", "13", "14", "15", "16", "17",
-                                            "18", "19", "20", "21", "22", "23", "24", "25",
-                                            "26", "27", "28", "29", "30"}));
-                        }
-                    } else { // 1, 3, 5, 7
-                        day_cb.setModel(new DefaultComboBoxModel<>(new String[]
-                                {"01", "02", "03", "04", "05", "06", "07", "08", "09",
-                                        "10", "11", "12", "13", "14", "15", "16", "17",
-                                        "18", "19", "20", "21", "22", "23", "24", "25",
-                                        "26", "27", "28", "29", "30", "31"}));
-                    }
-                } else { // 9, 11
-                    if (mon % 2 != 0) {
-                        day_cb.setModel(new DefaultComboBoxModel<>(new String[]
-                                {"01", "02", "03", "04", "05", "06", "07", "08", "09",
-                                "10", "11", "12", "13", "14", "15", "16", "17",
-                                "18", "19", "20", "21", "22", "23", "24", "25",
-                                "26", "27", "28", "29", "30"}));
-                    } else { // 8, 10, 12
-                        day_cb.setModel(new DefaultComboBoxModel<>(new String[]
-                                {"01", "02", "03", "04", "05", "06", "07", "08", "09",
-                                        "10", "11", "12", "13", "14", "15", "16", "17",
-                                        "18", "19", "20", "21", "22", "23", "24", "25",
-                                        "26", "27", "28", "29", "30", "31"}));
-                    }
-                }
-            }
-        });
-
-        bt_cancel.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ss.close();
-                dispose();
-            }
-        });
-
-        bt_add.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                Leave_ofVO lovo = new Leave_ofVO(); // inset문에 전달할 vo
-
-                lovo.setEmpno(vo.getEmpno()); // 로그인한 객체의 사번
-                if(vacKind_cb.getSelectedItem().equals("연차")) // 연차, 오전/오후 반차에 따라 따로 지정
-                    lovo.setLname("연차");
-                else if (vacKind_cb.getSelectedItem().equals("오전반차"))
-                    lovo.setLname("오전반차");
-                else
-                    lovo.setLname("오후반차");
-                StringBuffer ldate = new StringBuffer(); // 각각 콤보박스에서 정보 취합해 하나의 정보로 완성
-                ldate.append(year_cb.getSelectedItem())
-                        .append(month_cb.getSelectedItem()).append(day_cb.getSelectedItem());
-                lovo.setLdate(ldate.toString());
-                lovo.setDuration((String) vacLong_cb.getSelectedItem()); // 신청 일수만큼 지정
-                lovo.setLstatus("0"); // 신청상태이니 0
-
-                int cnt = ss.insert("leave.requestVac", lovo);
-
-                if(cnt != 0) {
-                    ss.commit();
-                    System.out.println("저장완료!");
-                }
-                else
-                    ss.rollback();
-                ss.close();
-
-                frame.vacTable();
-                dispose();
-
-            }
-        });
     }// </editor-fold>//GEN-END:initComponents
+
     /**
      * @param args the command line arguments
      */
-//    public static void main(String args[]) {
-//        /* Set the Nimbus look and feel */
-//        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-//        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-//         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
-//         */
-//        try {
-//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-//                if ("Nimbus".equals(info.getName())) {
-//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-//                    break;
-//                }
-//            }
-//        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-//            logger.log(java.util.logging.Level.SEVERE, null, ex);
-//        }
-//        //</editor-fold>
-//
-//        /* Create and display the form */
-//        java.awt.EventQueue.invokeLater(() -> new VacAdd().setVisible(true));
-//    }
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
+            logger.log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(() -> new VacAdd().setVisible(true));
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private JButton bt_add;
-    private JButton bt_cancel;
-    private JComboBox<String> day_cb;
-    private JLabel day_l;
-    private JLabel empno_l;
-    private JPanel empno_p;
-    private JTextField empno_tf;
-    private JComboBox<String> month_cb;
-    private JLabel month_l;
-    private JLabel remainVac_l;
-    private JLabel remainVac_l2;
-    private JPanel remainVac_p;
-    private JPanel south_p;
-    private JPanel startDate_P;
-    private JLabel startDate_l;
-    private JComboBox<String> vacKind_cb;
-    private JLabel vacKind_l;
-    private JPanel vacKind_p;
-    private JComboBox<String> vacLong_cb;
-    private JLabel vacLong_l;
-    private JPanel vacLong_p;
-    private JComboBox<String> year_cb;
-    private JLabel year_l;
+    private javax.swing.JButton bt_add;
+    private javax.swing.JButton bt_cancel;
+    private javax.swing.JComboBox<String> day_cb;
+    private javax.swing.JLabel day_l;
+    private javax.swing.JLabel empno_l;
+    private javax.swing.JPanel empno_p;
+    private javax.swing.JTextField empno_tf;
+    private javax.swing.JComboBox<String> month_cb;
+    private javax.swing.JLabel month_l;
+    private javax.swing.JLabel remainVac_l;
+    private javax.swing.JLabel remainVac_l2;
+    private javax.swing.JPanel remainVac_p;
+    private javax.swing.JPanel south_p;
+    private javax.swing.JPanel startDate_P;
+    private javax.swing.JLabel startDate_l;
+    private javax.swing.JComboBox<String> vacKind_cb;
+    private javax.swing.JLabel vacKind_l;
+    private javax.swing.JPanel vacKind_p;
+    private javax.swing.JComboBox<String> vacLong_cb;
+    private javax.swing.JLabel vacLong_l;
+    private javax.swing.JPanel vacLong_p;
+    private javax.swing.JComboBox<String> year_cb;
+    private javax.swing.JLabel year_l;
     // End of variables declaration//GEN-END:variables
 }

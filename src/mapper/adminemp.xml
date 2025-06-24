@@ -59,11 +59,12 @@
         </where>
         ORDER BY e.empno ASC <!-- empno로 정렬-->
     </select>
+
     <!-- 수정용 쿼리-->
     <update id="updateEmpByAdmin" parameterType="vo.EmpVO">
         UPDATE emp SET
         ename = #{ename}, deptno = #{deptno}, role_num = #{role_num}, sal = #{sal},
-        work_status = #{work_status}, hiredate = #{hiredate}, resign_date = #{resign_DATE},
+        work_status = #{work_status}, hiredate = #{hireDATE}, resign_date = #{resign_DATE},
         mgr = #{mgr}, email = #{email}, phone = #{phone}, username = #{username},
         password = #{password}, posname = #{posname}
         WHERE empno = #{empno}
@@ -93,6 +94,45 @@
         #{phone}, #{username}, #{password}, #{role_num}
         )
     </insert>
+
+    <!-- 관리자 최신화 하는 쿼라-->
+    <update id="updateMGR" parameterType="String">
+        UPDATE emp SET
+        mgr = null
+        WHERE mgr = #{mgr}
+    </update>
+
+    <!-- 팀장 변경시 이미 존재하는지 판단하는 쿼리-->
+    <select id="changeTeamLeader" resultType="int" parameterType="map">
+        SELECT COUNT(*) FROM emp
+        WHERE deptno = #{deptno}
+        AND posname = '팀장'
+        AND empno != #{empno}
+    </select>
+
+    <!-- 팀장이 되거나 추가하였을때 해당부서의 사원들을 관리자로 추가하는 쿼리  -->
+    <update id="addMgr" parameterType="map">
+        UPDATE emp
+        SET mgr = #{mgr}
+        WHERE deptno = #{deptno}
+        AND posname IN ('사원', '대리')
+    </update>
+
+    <select id="getMgr" parameterType="String" resultType="vo.EmpVO">
+        SELECT empno, deptno
+        FROM emp
+        where deptno = #{deptno} and posname = '팀장'
+    </select>
+
+    <!-- 동일한 아이디 확인용 쿼리 -->
+    <select id="checkUsername" resultType="int" parameterType="map">
+        SELECT COUNT(*) FROM emp
+        WHERE username = #{username}
+        <if test="empno != null">
+            AND empno != #{empno}
+        </if>
+    </select>
+
 
 
 </mapper>

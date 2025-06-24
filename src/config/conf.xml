@@ -15,7 +15,6 @@
         </environment>
     </environments>
     <mappers>
-
         <mapper resource="mapper/attendance.xml"/>
         <mapper resource="mapper/emp.xml"/>
         <mapper resource="mapper/Commute.xml"/>
