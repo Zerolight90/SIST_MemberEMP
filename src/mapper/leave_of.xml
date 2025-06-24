@@ -36,36 +36,42 @@
         and year = date_format(ldate, '%Y')
     </select>
 
+    <!-- 휴가 관리의 승인/반려 테이블에서 관리자가 선택한 열의 휴가코드를 얻어내는 쿼리 -->
     <select id="getLnum" resultType="vo.Leave_ofVO" parameterType="Map">
         select l.lnum from leave_of l inner join emp e
         on l.empno = e.empno
         where l.empno = #{empno} and l.ldate = #{ldate}
     </select>
 
-    <select id="getOne" resultType="vo.Leave_ofVO" parameterType="String">
-        select l.lstatus, e.empno from leave_of l inner join emp e
-        on l.empno = e.empno
-        where l.lnum = #{lnum}
-    </select>
-
+    <!-- 휴가를 승인했을 시 해당 휴가 코드를 가지는 레코드의 휴가 상태를 1 (휴가 승인) 으로 업데이트하는 쿼리 -->
     <update id="statusUpdate" parameterType="String">
         UPDATE leave_of
         SET lstatus = 1
         WHERE lnum = #{lnum}
     </update>
 
+    <!-- 휴가를 반려했을 시 해당 휴가 코드를 가지는 레코드의 휴가 상태를 2 (휴가 반려) 으로 업데이트하는 쿼리 -->
+    <update id="statusUpdate2" parameterType="String">
+        UPDATE leave_of
+        SET lstatus = 2
+        WHERE lnum = #{lnum}
+    </update>
+
+    <!-- 휴가를 승인했을 시 해당 휴가 코드를 가지는 레코드의 결재 날짜를 현재 날짜로 업데이트하는 쿼리 -->
     <update id="processedUpdate" parameterType="String">
         UPDATE leave_of
         SET lprocessed = date_format(now(), '%Y-%m-%d')
         WHERE lnum = #{lnum}
     </update>
 
+    <!-- 휴가를 승인했을 때 leave_history 테이블의 같은 사번을 가지는 레코드에서 사용한 휴가 기간만큼 남은 연차에서 차감시키는 쿼리 -->
     <update id="remainLeaveUpdate" parameterType="Map">
         UPDATE leave_history
         SET remain_leave = remain_leave - #{duration}
         WHERE empno = #{empno}
     </update>
 
+    <!-- 연차를 승인했을 때 근태 테이블에 레코드를 생성하는 쿼리 -->
     <insert id="insertAttLeave" parameterType="map">
         INSERT INTO attendance (empno, date, chkin, chkout, attend_status, attend_note)
         VALUES
@@ -81,6 +87,7 @@
         </foreach>
     </insert>
 
+    <!-- 오전 반차를 승인했을 때 근태 테이블에 레코드를 생성하는 쿼리 -->
     <insert id="insertAttLeave3" parameterType="map">
         INSERT INTO attendance (empno, date, chkin, chkout, attend_status, attend_note)
         VALUES
@@ -96,6 +103,7 @@
         </foreach>
     </insert>
 
+    <!-- 오후 반차를 승인했을 때 근태 테이블에 레코드를 생성하는 쿼리 -->
     <insert id="insertAttLeave4" parameterType="map">
         INSERT INTO attendance (empno, date, chkin, chkout, attend_status, attend_note)
         VALUES

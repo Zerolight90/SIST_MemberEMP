@@ -8,8 +8,7 @@ import vo.EmpVO;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,6 +40,27 @@ public class LoginFrame extends JFrame {
             }
         });
 
+        // 아이디 텍스트필드에서 엔터 쳤을 시 로그인 함수 수행
+        id_tf.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER){
+                    login();
+                }
+            }
+        });
+
+        // 패스워드 필드에서 엔터 쳤을 시 로그인 함수 수행
+        pw_pf.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER){
+                    login();
+                }
+            }
+        });
+
+        // 취소 버튼 눌렀을 때 수행
         bt_cancel.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
