@@ -32,9 +32,9 @@ public class viewdocs extends JFrame {
     SqlSessionFactory factory;
     private boolean mouse = false;
 
-    public viewdocs(UserFrame u_frame, JTable table) {
+    public viewdocs(EmpVO evo, JTable table) {
 
-        this.u_frame = u_frame;
+        this.evo = evo;        // 필드에 저장
         this.table = table;
         //factory
         init();
@@ -62,7 +62,7 @@ public class viewdocs extends JFrame {
     //부서 문서 목록
     public void viewList(JTable table){
         SqlSession ss = factory.openSession();
-        Docslist = ss.selectList("docs.Docs_Dept", "10"); //dvo.getDeptno());
+        Docslist = ss.selectList("docs.Docs_Dept", evo.getDeptno());
         String[] column = {"문서번호", "제목", "내용"};
         String[][] data = new String[Docslist.size()][column.length];
         for (int i = 0; i < Docslist.size(); i++) {
@@ -71,14 +71,14 @@ public class viewdocs extends JFrame {
             data[i][1] = dvo.getTitle();
             data[i][2] = dvo.getContent();
 
-            table.setModel(new DefaultTableModel(data, column) {
-                @Override
-                public boolean isCellEditable(int row, int column) {
-                    return false;
-                }
-            });
-
         }
+        table.setModel(new DefaultTableModel(data, column) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        });
+
         mouseClick(table);
         ss.close();
     }
@@ -94,7 +94,7 @@ public class viewdocs extends JFrame {
                         System.out.println("더블클릭");
                         i = table.getSelectedRow();
                         String docNum = table.getValueAt(i, 0).toString();
-                        String[] select_m = {"열람", "공유"};
+                        String[] select_m = {"열람", "공유", "삭제"};
                         int select_op = JOptionPane.showOptionDialog(viewdocs.this, "선택", "타이틀", 0, JOptionPane.INFORMATION_MESSAGE, null, select_m, select_m[0]);
 
                         if (select_op == 0) {
@@ -103,7 +103,10 @@ public class viewdocs extends JFrame {
                         } else if (select_op == 1) {
                             //공유 선택 함수
                             share_docs(docNum);
+                        } else if (select_op == 2) {
+                            del(docNum);
                         }
+
 
                     }
 
@@ -150,6 +153,38 @@ public class viewdocs extends JFrame {
 
     }
 
+    //문서 삭제
+    private void del(String docNum){
+        String[] select_d = {"예", "아니오"};
+        int select_del = JOptionPane.showOptionDialog(viewdocs.this, "삭제하시겠습니까?", "공유문서도 사라집니다!", 0, JOptionPane.ERROR_MESSAGE, null, select_d, select_d[0]);
+        SqlSession ss = factory.openSession();
+        if(select_del == 0){
+            ss.delete("docs.redel_Docs", docNum);
+            int cnt = ss.delete("docs.del_Docs", docNum);
+
+            try{
+                if(cnt > 0){
+                    ss.commit();
+                    JOptionPane.showMessageDialog(u_frame, "삭제완료!", "삭제", JOptionPane.INFORMATION_MESSAGE);
+                    viewList(table);
+                }
+                else{
+                    ss.rollback();
+                    JOptionPane.showMessageDialog(u_frame, "삭제실패!", "삭제", JOptionPane.INFORMATION_MESSAGE);
+                }
+
+            } catch (Exception e) {
+                ss.rollback();
+                JOptionPane.showMessageDialog(null,
+                        "문서 삭제 실패: 공유 문서부터 먼저 삭제하거나 관리자에게 문의하세요.",
+                        "오류",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        }
+
+        ss.close();
+
+    }
     private void init(){
         try {
             Reader r = Resources.getResourceAsReader(

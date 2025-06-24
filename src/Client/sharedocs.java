@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class sharedocs {
+public class sharedocs extends Component {
     JTextField title;
     JScrollPane jsp_workLogWrite, select_pane, save_p;
     JTextArea ta_workLogWrite, select_ta;
@@ -37,15 +37,16 @@ public class sharedocs {
     SqlSessionFactory factory;
     private boolean mouse = false;
 
-    public sharedocs(JTable stable){
+    public sharedocs(EmpVO evo, JTable stable){
         init();
-        this.table = stable;
+        this.evo = evo;        // 필드에 저장
+        this.stable = stable;
         viewShare(stable);
 
     }
     public void viewShare(JTable stable){
         SqlSession ss = factory.openSession();
-        Docslist = ss.selectList("reDocs", "20");//dvo.getDeptno());
+        Docslist = ss.selectList("reDocs", evo.getDeptno());
         String[] scolumn = {"공유문서번호", "문서번호", "제목", "내용", "부서명"};
         String[][] sdata = new String[Docslist.size()][scolumn.length];
         for (int i = 0; i < Docslist.size(); i++) {
@@ -80,7 +81,15 @@ public class sharedocs {
                         System.out.println("더블클릭");
                         j = stable.getSelectedRow();
                         String docNum = stable.getValueAt(j, 1).toString();
-                        showdocs(docNum);
+                        String sdocNum = stable.getValueAt(j, 0).toString();
+                        String[] select_m = {"열람", "삭제"};
+                        int select_op = JOptionPane.showOptionDialog(sharedocs.this, "선택", "타이틀", 0, JOptionPane.INFORMATION_MESSAGE, null, select_m, select_m[0]);
+                        if (select_op == 0) {
+                            //열람 선택 함수
+                            showdocs(docNum);
+                        } else if (select_op == 1) {
+                            del(sdocNum);
+                        }
                     }
 
                 }
@@ -100,6 +109,28 @@ public class sharedocs {
         }
         String message = String.format("제목: %s\n내용: %s\n작성일: %s\n작성자: %s\n부서명:%s", dvo.getTitle(), dvo.getContent(), dvo.getDate(), dvo.getEname(), dvo.getDname());
         JOptionPane.showMessageDialog(u_frame, message, "문서 열람", JOptionPane.INFORMATION_MESSAGE);
+        ss.close();
+    }
+
+    //문서 삭제
+    private void del(String sdocNum){
+        String[] select_d = {"예", "아니오"};
+        int select_del = JOptionPane.showOptionDialog(sharedocs.this, "삭제하시겠습니까?", "공유문서 삭제", 0, JOptionPane.ERROR_MESSAGE, null, select_d, select_d[0]);
+        SqlSession ss = factory.openSession();
+        if(select_del == 0){
+            int cnt = ss.delete("docs.sdel_Docs", sdocNum);
+            if(cnt > 0){
+                ss.commit();
+                JOptionPane.showMessageDialog(u_frame, "삭제완료!", "삭제", JOptionPane.INFORMATION_MESSAGE);
+                viewShare(stable);
+            }
+            else{
+                ss.rollback();
+                JOptionPane.showMessageDialog(u_frame, "삭제실패!", "삭제", JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
+
+
         ss.close();
     }
 

@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -72,6 +73,8 @@ public class UserFrame extends JFrame {
     savedocs save_d;
     CardLayout card_l;
     JPanel card_p;
+
+    String[] year_ar;
 
 
     /**
@@ -335,7 +338,7 @@ public class UserFrame extends JFrame {
         bt_workLogWrite.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new savedocs();
+                new savedocs(vo);
 
 
             }
@@ -346,7 +349,7 @@ public class UserFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 card_l.show(card_p,"viewCard");
                 if (view_d == null) {
-                    view_d = new viewdocs(UserFrame.this, table); // 인스턴스 저장!
+                    view_d = new viewdocs(vo, table); // 인스턴스 저장!
                 } else {
                     view_d.viewList(table);// 이미 있으면 리스트만 다시 조회
                 }
@@ -360,7 +363,7 @@ public class UserFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 card_l.show(card_p,"sharedCard");
                 if (share_d == null) {
-                    share_d = new sharedocs(stable); // 인스턴스 저장!
+                    share_d = new sharedocs(vo,stable); // 인스턴스 저장!
                 } else {
                     share_d.viewShare(stable);// 이미 있으면 리스트만 다시 조회
                 }
@@ -976,13 +979,13 @@ public class UserFrame extends JFrame {
         this.table = table;
         jsp_logList.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 10));
         jsp_logList.setViewportView(table);
-        backgroundPanel.setBackground(Color.LIGHT_GRAY);
+        backgroundPanel.setBackground(Color.white);
         backgroundPanel.add(jsp_logList, BorderLayout.CENTER);
 
         backgroundPanel2.setBackground(Color.LIGHT_GRAY);
         JScrollPane sharedScrollPane = new JScrollPane();
 
-        String[] col2 = {};
+        String[] col2 = {""};
         String[][] empty2 = new String[0][col2.length];
         DefaultTableModel emptyt2 = new DefaultTableModel(empty2, col2) {
             @Override
@@ -1043,50 +1046,67 @@ public class UserFrame extends JFrame {
         centerCard_p.add(myAtt_p, "myAttCard");
 
         // 나의 휴가정보 패널 설정
-        myVac_p.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 30, 30));
+        myVac_p.setBorder(BorderFactory.createEmptyBorder(1, 1, 30, 30));
         myVac_p.setLayout(new java.awt.BorderLayout());
 
         myVac_north_p.setPreferredSize(new Dimension(785, 50));
         myVac_north_p.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 15));
 
+        // allVac_l 스타일
         allVac_l.setBackground(new Color(255, 193, 7));
-        allVac_l.setHorizontalAlignment(SwingConstants.CENTER); // 수평 가운데 정렬
-        allVac_l.setVerticalAlignment(SwingConstants.CENTER);   // 수직 가운데 정렬 추가
-        allVac_l.setBorder(BorderFactory.createLineBorder(new Color(255, 193, 7)));
+        allVac_l.setForeground(new Color(33, 33, 33));
+        allVac_l.setFont(new Font("맑은 고딕", Font.BOLD, 14));
+        allVac_l.setHorizontalAlignment(JLabel.CENTER);
+        allVac_l.setVerticalAlignment(JLabel.CENTER);
+        allVac_l.setPreferredSize(new Dimension(150,30));
         allVac_l.setOpaque(true);
-        allVac_l.setPreferredSize(new Dimension(120, 30));
-        allVac_l.setForeground(new Color(33,33,33));
-        Font all_labelFont = new Font("맑은  고딕", Font.BOLD, 15);
-        allVac_l.setFont(all_labelFont);
 
-        year_cb = new JComboBox<>(new String[]{"2025", "2024", "2023", "2022"});
-        myVac_north_p.add(year_cb);
-        myVac_north_p.add(new JLabel("년"));
-        myVac_north_p.add(allVac_l);
 
-        usedVac_l.setBackground(new Color(144, 164, 174));
-        usedVac_l.setHorizontalAlignment(SwingConstants.CENTER);
-        usedVac_l.setBorder(BorderFactory.createLineBorder(new Color(144, 164, 174)));
+        // usedVac_l 스타일
+        usedVac_l.setBackground(new Color(123, 104, 238)); // 보라색 계열
+        usedVac_l.setForeground(Color.WHITE);
+        usedVac_l.setFont(new Font("맑은 고딕", Font.BOLD, 14));
+        usedVac_l.setHorizontalAlignment(JLabel.CENTER);
+        usedVac_l.setVerticalAlignment(JLabel.CENTER);
+        usedVac_l.setPreferredSize(new Dimension(150,30));
         usedVac_l.setOpaque(true);
-        usedVac_l.setPreferredSize(new Dimension(120, 30));
-        Font use_labelFont = new Font("맑은 고딕", Font.BOLD, 15);
-        usedVac_l.setForeground(new Color(255,255,255));
-//        setVisible(true);
-        usedVac_l.setFont(use_labelFont);
-        myVac_north_p.add(usedVac_l);
 
+
+        // remainVac_l 스타일
         remainVac_l.setBackground(new Color(109, 76, 65));
-        remainVac_l.setHorizontalAlignment(SwingConstants.CENTER);
-        remainVac_l.setBorder(BorderFactory.createLineBorder(new Color(109, 76, 65)));
+        remainVac_l.setForeground(new Color(255, 243, 224));
+        remainVac_l.setFont(new Font("맑은 고딕", Font.BOLD, 14));
+        remainVac_l.setHorizontalAlignment(JLabel.CENTER);
+        remainVac_l.setVerticalAlignment(JLabel.CENTER);
+        remainVac_l.setPreferredSize(new Dimension(150,30));
         remainVac_l.setOpaque(true);
-        remainVac_l.setPreferredSize(new Dimension(120, 30));
-        Font reamin_labelFont = new Font("맑은 고딕", Font.BOLD, 15);
-        remainVac_l.setForeground(new Color(255,243,224));
-        remainVac_l.setFont(reamin_labelFont);
+
+        setYear_ar();
+        year_cb = new JComboBox<>(year_ar); //최신년도 부터 -4년도 까지만 선택 가능
+
+        JPanel yearPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5)); //좌우 간격
+        yearPanel.setOpaque(false);
+        yearPanel.add(year_cb);
+        yearPanel.add(new JLabel("년"));
+        myVac_north_p.add(yearPanel);
+        myVac_north_p.add(allVac_l);
+        myVac_north_p.add(usedVac_l);
         myVac_north_p.add(remainVac_l);
 
+        //
+        JLabel yearLabel = new JLabel(year_cb.getSelectedItem()+"년도 휴가 상세내역");
+        yearLabel.setFont(new Font("맑은 고딕",Font.BOLD,14));
+        yearLabel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+//        JPanel yearP = new JPanel(new BorderLayout());
+//        yearP.add(yearLabel, BorderLayout.SOUTH);
+
+//        myVac_north_p.add(yearP, BorderLayout.SOUTH);
+
+
+        // 테이블 디자인
+
         myVac_south_p.setBorder(BorderFactory.createEmptyBorder(20, 30, 1, 30));
-        myVac_south_p.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 10));
+        myVac_south_p.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
 
         bt_addVac.setText("휴가 신청");
         myVac_south_p.add(bt_addVac);
@@ -1110,6 +1130,7 @@ public class UserFrame extends JFrame {
 
         jsp_vacTable.setViewportView(vacTable);
 
+        myVac_p.add(yearLabel);
         myVac_p.add(jsp_vacTable, BorderLayout.CENTER);
 
         centerCard_p.add(myVac_p, "myVacCard");
@@ -1137,6 +1158,19 @@ public class UserFrame extends JFrame {
 
         // 프로그램 시작할 때 자동으로 로그인 프레임 창이 열리도록 하기
         new LoginFrame().setVisible(true);
+    }
+
+    private void setYear_ar(){
+        // 현재 년도만 얻어내자!
+        LocalDate date = LocalDate.now();
+        int currentYear = date.getYear();
+        int startYear = currentYear - 3;
+
+        year_ar = new String[4];
+        int i= 0;
+        for(int k=currentYear; k>=startYear; k--){
+            year_ar[i++] = String.valueOf(k);
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

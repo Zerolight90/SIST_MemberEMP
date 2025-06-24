@@ -123,7 +123,7 @@ public class WorkInOut extends JFrame {
 
     }
 
-    private  void updateclockIN(){
+    private void updateclockIN(){
         LocalTime now = LocalTime.now(); // LocalTime -> java에서 현재 시간 가져오는 함수
         LocalTime lateTime = LocalTime.of(13, 10); // 지각 기준 시간 (13시 10분)
 
@@ -205,6 +205,7 @@ public class WorkInOut extends JFrame {
         setTitle("출 / 퇴근");
 
         north_p.setPreferredSize(new java.awt.Dimension(364, 150));
+//        north_p.setBounds(364,150,800,850);
         north_p.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 5, 15));
 
         bt_in.setText("출근");

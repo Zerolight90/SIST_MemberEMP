@@ -32,35 +32,37 @@ public class savedocs extends JFrame {
     JLabel jl1, dateL;
 
     DocsVO dvo;
+    EmpVO evo;
+    DeptVO dpvo;
+    DSharedVO dsvo;
     SqlSessionFactory factory;
 
-    public savedocs(){
+    public savedocs(EmpVO evo){
         //factory
         init();
         //화면생성
         initComponents();
-        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
         //문서저장
         menuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //문서저장함수
-                insertDocs();
+                insertDocs(evo);
             }
         });
 
     }
 
     //문서저장함수
-    private void insertDocs(){
+    private void insertDocs(EmpVO evo){
         SqlSession ss = factory.openSession();
         String str = ta_workLogWrite.getText();
         dvo = new DocsVO();
         dvo.setTitle(title.getText());
         dvo.setContent(ta_workLogWrite.getText());
-        dvo.setEmpno("1000"); //evo.getEmpno());
-        dvo.setDeptno("10");//evo.getDeptno());
+        dvo.setEmpno(evo.getEmpno());
+        dvo.setDeptno(evo.getDeptno());
         dvo.setVisibility("dept");
         dvo.setDate(dateL.getText());
         ss.insert("docs.insertDoc",dvo);
@@ -107,7 +109,6 @@ public class savedocs extends JFrame {
         stable = new JTable();
         saveview = new JMenuItem();
 
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setTitle("업무 일지 작성");
 
         jsp_workLogWrite.setPreferredSize(new Dimension(410, 521));
@@ -135,11 +136,10 @@ public class savedocs extends JFrame {
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                dispose();
+                savedocs.this.dispose();
             }
         });
 
         pack();
     }
 }
-
