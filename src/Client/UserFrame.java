@@ -325,6 +325,14 @@ public class UserFrame extends JFrame {
             }
         });
 
+        // 사원 조회 - 값 필드에서 엔터 눌렀을 경우 검색 버튼 클릭과 동일한 내용 수행
+        value_tf.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                bt_search.doClick(); // 엔터 누르면 검색 버튼 클릭 효과!
+            }
+        });
+
         // 업무 일지 버튼 눌렀을 때 화면 변경
         bt_workLog.addActionListener(new ActionListener() {
             @Override
@@ -437,7 +445,7 @@ public class UserFrame extends JFrame {
             }
         });
 
-        //로그아웃
+        // 로그아웃 버튼 누를 시 창이 닫히고 LoginFrame 열기
         bt_logOut.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -489,6 +497,7 @@ public class UserFrame extends JFrame {
             myinfo[i][7] = evo.getHireDATE();
         }
         table_myInfo.setModel(new DefaultTableModel(myinfo, myinfo_cname));
+        // 컬럼들의 열 간격 조정
         table_myInfo.getColumnModel().getColumn(0).setPreferredWidth(50);   // 사번
         table_myInfo.getColumnModel().getColumn(1).setPreferredWidth(80);   // 이름
         table_myInfo.getColumnModel().getColumn(2).setPreferredWidth(100);  // 직급
@@ -577,7 +586,7 @@ public class UserFrame extends JFrame {
         });
     }
 
-    // (함수 설명)
+    // 나의 휴가정보 테이블 갱신시켜 보여주는 함수
     private void nowVac() {
         String selectedYear = (String) year_cb.getSelectedItem();
         Map<String, String> map = new HashMap<>();
@@ -594,7 +603,7 @@ public class UserFrame extends JFrame {
         ss.close();
     }
 
-    // 휴가 성태 상세 정보 테이블
+    // 휴가 상태 상세 정보 테이블
     public void vacTable() {
         // 연도 콤보 박스에서 선택한 값을 String으로 형변환 후 selectedYear에 저장 한다.
         String selectedYear = (String) year_cb.getSelectedItem();
@@ -689,6 +698,7 @@ public class UserFrame extends JFrame {
 
     } // All_searchAttendanec 종료
 
+    // 근태 테이블 갱신시켜 보여주는 함수
     private void viewAttendanceTable(List<CommuteVO> list) {
 
         //인자로 받은 List구조를 2차원 배열로 변환한 후 JTable에 표현!

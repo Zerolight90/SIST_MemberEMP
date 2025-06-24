@@ -24,8 +24,6 @@ import java.util.Map;
 
 public class AdminFrame extends JFrame {
 
-    EmpVO testadmin = new EmpVO(); // 테스트용 관리자
-
     // DB 연결을 위한 팩토리와 세션 선언
     SqlSessionFactory factory;
     SqlSession ss;
@@ -346,22 +344,17 @@ public class AdminFrame extends JFrame {
                     String ldateStr = vacTable.getValueAt(i, 4).toString();
                     Date ldate = Date.valueOf(ldateStr); // java.sql.Date
 
-                    //String lnum = vacTable.getValueAt(i, 8).toString();
-
                     // 컨펌 다얄로그를 띄우고 승인할지를 물어봄
                     int num = JOptionPane.showConfirmDialog(AdminFrame.this, "승인하시겠습니까?",
                             "휴가 승인 여부", JOptionPane.YES_NO_OPTION);
                     if (num == 0){ // 승인을 했다면
                         ss = factory.openSession();
 
+                        // 선택한 열의 휴가 코드를 얻어내기 위한 쿼리를 실행하기 위해 맵 구조 생성 및 값 넣고 쿼리 실행
                         Map<String, String> lmap = new HashMap<>();
                         lmap.put("empno", empno);
                         lmap.put("ldate", String.valueOf(ldate));
                         Leave_ofVO lvo = ss.selectOne("leave.getLnum", lmap);
-
-                        //String lnum = ss.selectOne("leave_of.getLnum", empno);
-                        //System.out.println(lnum);
-                        //Leave_ofVO lvo = ss.selectOne("leave_of.getOne", listvo);
 
                         // 해당하는 휴가코드를 가지는 leave_of 테이블의 레코드의 휴가상태를 1 (휴가 승인) 으로 업데이트
                         int update = ss.update("leave.statusUpdate", lvo);
@@ -370,30 +363,15 @@ public class AdminFrame extends JFrame {
                             ss.close();
                             return;
                         }
+                        // 승인한 경우 결재 날짜를 업데이트하기 위해 해당 쿼리 실행
                         ss.update("leave.processedUpdate", lvo);
 
+                        // 테이블 갱신 함수 호출
                         List<Leave_ofVO> list = ss.selectList("leave.approvevac", vo.getDeptno());
-                        String[][] data = new String[list.size()][v_name.length];
-
                         ViewvacTable(list);
 
-                        i = 0;
-                        for(Leave_ofVO vo : list) {
-                            data[i][0] = vo.getEmpno();
-                            data[i][1] = vo.getEname();
-                            data[i][2] = vo.getDeptno();
-                            data[i][3] = vo.getLname();
-                            data[i][4] = vo.getLdate();
-                            data[i][5] = vo.getDuration();
-                            data[i][6] = vo.getRemain_leave();
-                            data[i][7] = vo.getLstatus();
-                            data[i][8] = vo.getLprocessed();
-                            i++;
-                        }
-                        vacTable.setModel(new DefaultTableModel(data, v_name));
-
                         //
-                        int days = duration.intValue(); // 소수점은 버림. 2.5 → 2
+                        int days = duration.intValue();
                         List<Date> dates = new ArrayList<>();
                         LocalDate startDate = ldate.toLocalDate();
 
@@ -405,12 +383,6 @@ public class AdminFrame extends JFrame {
                             for (int k = 0; k < days; k++) {
                                 dates.add(Date.valueOf(startDate.plusDays(k)));
                             }
-                        }
-
-                        System.out.println("lname: [" + lname + "]");
-                        System.out.println("dates: " + dates);
-                        for (Date d : dates) {
-                            System.out.println(" date: " + d);
                         }
 
                         // 승인된 휴가가 각각 연차, 오전 반차, 오후 반차일 경우를 구분해 근태 태이블에 레코드를 인서트하는 쿼리
@@ -440,10 +412,34 @@ public class AdminFrame extends JFrame {
                         map.put("duration", duration); // BigDecimal
                         ss.update("leave.remainLeaveUpdate", map);
 
-                        // DB 상에서 변경된 모든 내용을 커밋해서 반영하고 세션 닫기
-                        ss.commit();
-                        ss.close();
+                    } else if (num == 1){ // 아니오를 눌러 반려했을 경우
+                        ss = factory.openSession();
+
+                        // 밑의 쿼리를 실행하기 위한 맵 구조 생성
+                        Map<String, String> lmap = new HashMap<>();
+                        lmap.put("empno", empno);
+                        lmap.put("ldate", String.valueOf(ldate));
+                        Leave_ofVO lvo = ss.selectOne("leave.getLnum", lmap);
+
+                        // 해당하는 휴가코드를 가지는 leave_of 테이블의 레코드의 휴가상태를 2 (휴가 반려) 로 업데이트
+                        int update = ss.update("leave.statusUpdate2", lvo);
+                        if (update == 0){ // 변경된 사항이 없다면 롤백시키고 돌아가기
+                            ss.rollback();
+                            ss.close();
+                            return;
+                        }
+
+                        // 테이블 갱신 함수 호출
+                        List<Leave_ofVO> list = ss.selectList("leave.approvevac", vo.getDeptno());
+                        ViewvacTable(list);
+
+                    } else if (num == -1){ // X를 눌러서 창을 껐을 경우 아무것도 수행하지 않고 그냥 돌아가기
+                        return;
                     }
+
+                    // DB 상에서 변경된 모든 내용을 커밋해서 반영하고 세션 닫기
+                    ss.commit();
+                    ss.close();
                 }
             }
         });
@@ -452,9 +448,9 @@ public class AdminFrame extends JFrame {
         bt_userMode.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                AdminFrame.this.dispose();
+                AdminFrame.this.dispose(); // 어드민 창 종료하고
 
-                new UserFrame(vo).setVisible(true);
+                new UserFrame(vo).setVisible(true); // 로그인한 사원 정보 유지하기 위해서 기본생성자로 vo 다시 넘겨서 생성하기
             }
         });
 
@@ -478,8 +474,10 @@ public class AdminFrame extends JFrame {
             data[i][8] = vo.getLprocessed();
             i++;
         }
+        vacTable.setModel(new DefaultTableModel(data, v_name));
     }
 
+    // 사원 관리 테이블 데이터 불러오는 함수
     private void loadEmpData() {
         try {
             ss = factory.openSession();
@@ -506,6 +504,7 @@ public class AdminFrame extends JFrame {
         ss.close();
     }
 
+    // 사원 관리 테이블에서 더블클릭 했을 경우 수행
     private void EmpTableClick(JTable empTable){
         empTable.addMouseListener(new MouseAdapter() {
             @Override
