@@ -53,17 +53,26 @@ public class LoginFrame extends JFrame {
         //버튼이 포커스를 갖고 있지 않아 `keyPressed` 이벤트가 발생하지 않는 것입니다.
 
         //Enter key 이벤트 정의
-        KeyAdapter enterKeyListener = new KeyAdapter() {
+
+        id_tf.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     login();
                 }
             }
-        };
+        });
 
-        id_tf.addKeyListener(enterKeyListener);
-        pw_pf.addKeyListener(enterKeyListener);
+        pw_pf.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    login();
+                }
+            }
+        });
+
+
 
         bt_cancel.addActionListener(new ActionListener() {
             @Override
