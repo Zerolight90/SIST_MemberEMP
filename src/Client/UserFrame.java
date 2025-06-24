@@ -64,6 +64,9 @@ public class UserFrame extends javax.swing.JFrame {
     viewdocs view_d;
     sharedocs share_d;
     savedocs save_d;
+    CardLayout card_l;
+    JPanel card_p;
+
 
     /**
      * Creates new form UserFrame
@@ -328,11 +331,13 @@ public class UserFrame extends javax.swing.JFrame {
         bt_myList.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                card_l.show(card_p,"viewCard");
                 if (view_d == null) {
-                    view_d = new viewdocs(UserFrame.this, table); // ✅ 인스턴스 저장!
+                    view_d = new viewdocs(UserFrame.this, table); // 인스턴스 저장!
                 } else {
-                    view_d.viewList(table);// ✅ 이미 있으면 리스트만 다시 조회
+                    view_d.viewList(table);// 이미 있으면 리스트만 다시 조회
                 }
+
 
             }
         });
@@ -340,10 +345,11 @@ public class UserFrame extends javax.swing.JFrame {
         bt_dept.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                card_l.show(card_p,"sharedCard");
                 if (share_d == null) {
-                    share_d = new sharedocs(table); // ✅ 인스턴스 저장!
+                    share_d = new sharedocs(stable); // 인스턴스 저장!
                 } else {
-                    share_d.viewShare(table);// ✅ 이미 있으면 리스트만 다시 조회
+                    share_d.viewShare(stable);// 이미 있으면 리스트만 다시 조회
                 }
             }
         });
@@ -692,7 +698,7 @@ public class UserFrame extends javax.swing.JFrame {
         bt_search = new javax.swing.JButton();
         jsp_empTable = new javax.swing.JScrollPane();
         table_emp = new javax.swing.JTable();
-        workLog_p = new javax.swing.JPanel();
+        workLog_p = new javax.swing.JPanel(card_l);
         workLog_north_p = new javax.swing.JPanel();
         bt_workLogWrite = new javax.swing.JButton();
         bt_myList = new javax.swing.JButton();
@@ -910,14 +916,14 @@ public class UserFrame extends javax.swing.JFrame {
 
         bt_dept.setText("받은 문서 조회");
         workLogCenter_p.add(bt_dept);
+        card_l= new CardLayout();
+        card_p = new JPanel(card_l);
 
         workLog_p.add(workLogCenter_p, java.awt.BorderLayout.CENTER);
-
         workLog_p.add(workLog_north_p, java.awt.BorderLayout.PAGE_START);
-
         JPanel backgroundPanel = new JPanel(new BorderLayout());
-        backgroundPanel.setBackground(Color.LIGHT_GRAY);
-        jsp_logList.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 10));
+        JPanel backgroundPanel2 = new JPanel(new BorderLayout());
+
         String[] col = {};
         String[][] empty = new String[0][col.length];
         DefaultTableModel emptyt = new DefaultTableModel(empty, col) {
@@ -929,10 +935,33 @@ public class UserFrame extends javax.swing.JFrame {
         JTable table = new JTable(emptyt);
         table.setBackground(Color.WHITE);
         this.table = table;
+        jsp_logList.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 10));
         jsp_logList.setViewportView(table);
+        backgroundPanel.setBackground(Color.LIGHT_GRAY);
         backgroundPanel.add(jsp_logList, BorderLayout.CENTER);
-        workLog_p.add(backgroundPanel, java.awt.BorderLayout.LINE_START);
 
+        backgroundPanel2.setBackground(Color.LIGHT_GRAY);
+        JScrollPane sharedScrollPane = new JScrollPane();
+
+        String[] col2 = {};
+        String[][] empty2 = new String[0][col2.length];
+        DefaultTableModel emptyt2 = new DefaultTableModel(empty2, col2) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        JTable stable = new JTable(emptyt2);
+        stable.setBackground(Color.WHITE);
+        this.stable = stable;
+        sharedScrollPane.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 10));
+        sharedScrollPane.setViewportView(stable);
+        backgroundPanel2.add(sharedScrollPane, BorderLayout.CENTER);
+
+        card_p.add(backgroundPanel, "viewCard");
+        card_p.add(backgroundPanel2, "sharedCard");
+        workLog_p.add(card_p, BorderLayout.WEST);
         centerCard_p.add(workLog_p, "workLogCard");
 
         myAtt_p.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 30, 30));
@@ -1139,6 +1168,7 @@ public class UserFrame extends javax.swing.JFrame {
     private javax.swing.JPanel workLog_p;
     private javax.swing.JComboBox<String> year_cb;
     private JTable table;
+    private JTable stable;
     private String viewMode = "";
     // End of variables declaration//GEN-END:variables
 }

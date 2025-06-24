@@ -35,6 +35,7 @@ public class sharedocs {
     DSharedVO dsvo;
     List<DocsVO> Docslist;
     SqlSessionFactory factory;
+    private boolean mouse = false;
 
     public sharedocs(JTable stable){
         init();
@@ -63,28 +64,32 @@ public class sharedocs {
                 return false;
             }
         });
-
+        mouseClick(stable);
         //공유된 문서 확인
-
-        stable.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                int cnt = e.getClickCount();
-                System.out.println("들어감");
-                if (cnt == 2) {
-                    System.out.println("더블클릭");
-                    j = stable.getSelectedRow();
-                    String docNum = stable.getValueAt(j, 1).toString();
-                    showdocs(docNum);
-                }
-
-            }
-        });
-
-
-
         ss.close();
     }
+
+    public void mouseClick(JTable stable){
+        if(!mouse){
+            stable.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    int cnt = e.getClickCount();
+                    System.out.println("들어감");
+                    if (cnt == 2) {
+                        System.out.println("더블클릭");
+                        j = stable.getSelectedRow();
+                        String docNum = stable.getValueAt(j, 1).toString();
+                        showdocs(docNum);
+                    }
+
+                }
+            });
+            mouse = true;
+        }
+
+    }
+
     //조회 테이블 더블클릭 후 열람을 누르면 발생
     public void showdocs(String docNum){ // 선택된 열의 문서번호 값
         SqlSession ss = factory.openSession();
@@ -97,6 +102,7 @@ public class sharedocs {
         JOptionPane.showMessageDialog(u_frame, message, "문서 열람", JOptionPane.INFORMATION_MESSAGE);
         ss.close();
     }
+
     private void init(){
         try {
             Reader r = Resources.getResourceAsReader(

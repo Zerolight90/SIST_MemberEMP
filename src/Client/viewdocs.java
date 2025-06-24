@@ -30,49 +30,17 @@ public class viewdocs extends JFrame {
     DSharedVO dsvo;
     List<DocsVO> Docslist;
     SqlSessionFactory factory;
-
+    private boolean mouse = false;
 
     public viewdocs(UserFrame u_frame, JTable table) {
 
         this.u_frame = u_frame;
         this.table = table;
-
-
         //factory
         init();
         //문서 조회 테이블의 열 선택 후 열람, 공유 선택
-
-
-        table.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                int cnt = e.getClickCount();
-                System.out.println("들어감");
-                if (cnt == 2) {
-                    System.out.println("더블클릭");
-                    i = table.getSelectedRow();
-                    String docNum = table.getValueAt(i, 0).toString();
-                    String[] select_m = {"열람", "공유"};
-                    int select_op = JOptionPane.showOptionDialog(viewdocs.this, "선택", "타이틀", 0, JOptionPane.INFORMATION_MESSAGE, null, select_m, select_m[0]);
-
-                    if (select_op == 0) {
-                        //열람 선택 함수
-                        showdocs(docNum);
-                    } else if (select_op == 1) {
-                        //공유 선택 함수
-                        share_docs(docNum);
-                    }
-
-                }
-
-            }
-        });
-
-
         //부서별 문서 조회
         viewList(table);
-
-
 
     }
 
@@ -111,7 +79,39 @@ public class viewdocs extends JFrame {
             });
 
         }
+        mouseClick(table);
         ss.close();
+    }
+
+    public void mouseClick(JTable table){
+        if(!mouse){
+            table.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    int cnt = e.getClickCount();
+                    System.out.println("들어감");
+                    if (cnt == 2) {
+                        System.out.println("더블클릭");
+                        i = table.getSelectedRow();
+                        String docNum = table.getValueAt(i, 0).toString();
+                        String[] select_m = {"열람", "공유"};
+                        int select_op = JOptionPane.showOptionDialog(viewdocs.this, "선택", "타이틀", 0, JOptionPane.INFORMATION_MESSAGE, null, select_m, select_m[0]);
+
+                        if (select_op == 0) {
+                            //열람 선택 함수
+                            showdocs(docNum);
+                        } else if (select_op == 1) {
+                            //공유 선택 함수
+                            share_docs(docNum);
+                        }
+
+                    }
+
+                }
+            });
+            mouse = true;
+        }
+
     }
 
     //공유 버튼 누르면 실행
