@@ -8,8 +8,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class EmpAddDialog extends JDialog {
     private JTextField tfEname, tfSal, tfHire, tfResign, tfEmail, tfPhone, tfUsername, tfPassword;
@@ -39,6 +40,15 @@ public class EmpAddDialog extends JDialog {
         cbStatus = new JComboBox<>(new String[]{"재직", "퇴직"});
         tfHire = new JTextField();
         tfResign = new JTextField();
+
+        try (SqlSession ss = factory.openSession()) {
+            List<EmpVO> mgrList = ss.selectList("adminemp.getAllMgrCandidates");
+            for (EmpVO mgr : mgrList) {
+                mgrMap.put(mgr.getEname(), String.valueOf(mgr.getEmpno()));
+            }
+        }
+
+        cbMgr = new JComboBox<>(mgrMap.keySet().toArray(new String[0]));
         tfEmail = new JTextField();
         tfPhone = new JTextField();
         tfUsername = new JTextField();

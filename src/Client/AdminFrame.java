@@ -24,7 +24,7 @@ import java.util.Map;
 
 public class AdminFrame extends JFrame {
 
-    EmpVO testadmin = new EmpVO();
+    EmpVO testadmin = new EmpVO(); // 테스트용 관리자
 
     // DB 연결을 위한 팩토리와 세션 선언
     SqlSessionFactory factory;
@@ -48,7 +48,6 @@ public class AdminFrame extends JFrame {
 
     // 로그인한 사원의 모든 정보를 LoginFrame 으로부터 받아올 변수 선언
     EmpVO vo;
-
     // 기본 생성자
     public AdminFrame(EmpVO vo) throws IOException { // UserFrame 으로부터 로그인한 사원의 모든 정보를 받기 위해 기본 생성자에서 EmpVO 받기
         this.vo = vo; // UserFrame 으로부터 받아온 vo를 앞서 선언한 vo에 저장
@@ -176,6 +175,7 @@ public class AdminFrame extends JFrame {
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
+                ss.close();
                 System.exit(0);
             }
         });
@@ -228,9 +228,7 @@ public class AdminFrame extends JFrame {
                 bt_find.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        ss = factory.openSession();
-
-                        // 각각 검색할 연도, 월 받아와 맵 구조에 저장
+                        // 각각 검색할 연도, 월 받아와 맵구조에 저장
                         String year = year_cb.getSelectedItem().toString();
                         String mon = month_cb.getSelectedItem().toString();
                         Map<String, String> attsearchmap = new HashMap<>();
@@ -545,5 +543,8 @@ public class AdminFrame extends JFrame {
         // 팩토리 생성
         factory = new SqlSessionFactoryBuilder().build(r);
         r.close();
+
+        // sql세션 열기
+        ss = factory.openSession();
     }
 }
