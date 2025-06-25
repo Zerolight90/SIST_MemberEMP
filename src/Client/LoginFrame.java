@@ -47,21 +47,24 @@ public class LoginFrame extends JFrame {
 
         //Enter key 이벤트 정의
 
-        id_tf.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    login();
-                }
-            }
-        });
+//        id_tf.addKeyListener(new KeyAdapter() {
+//            @Override
+//            public void keyPressed(KeyEvent e) {
+//                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+//                    login();
+//                }
+//            }
+//        });
 
-        pw_pf.addKeyListener(new KeyAdapter() {
+        id_tf.addActionListener(new ActionListener() {
             @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    login();
-                }
+            public void actionPerformed(ActionEvent e) {
+                bt_login.doClick();}
+        });
+        pw_pf.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                bt_login.doClick();
             }
         });
 

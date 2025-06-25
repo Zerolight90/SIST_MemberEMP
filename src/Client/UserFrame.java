@@ -514,15 +514,30 @@ public class UserFrame extends JFrame {
         year_cb.setFont(new Font("나눔 고딕", Font.PLAIN, 15)); // combo box 폰트 셋팅
 
         //1.콤보박스의 첫해 2025년도 값을 가져온다
-        String firstYear = (String) year_cb.getSelectedItem();
+        math_vac();
+
+        // 콤보박스로 해당년도 클릭하면 그해 데이터 조회 값을 가져와서 재 출력
+        year_cb.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                vacTable(); // 사용한 휴가 상세 정보 테이블
+                //콤보 박스에서 사용자가 선택한 x년도를 가져와서 selecterd에 저장 한다.
+                math_vac();
+            }
+        });
+    }
+    
+    //휴가 계산 레이블
+    public void math_vac(){
+        String selected = (String) year_cb.getSelectedItem();
 
         try {
             ss = factory.openSession();
             Map<String, Object> remain_Vac_map = new HashMap<>();
             remain_Vac_map.put("empno", vo.getEmpno());
-            remain_Vac_map.put("year", firstYear); // 초기연도(2025년)로 기본 값을 설성 합니다.
+            remain_Vac_map.put("year", selected); // 새로 선택한 연도를 파나메타로 사용한다
 
-            // MY batis에서 실행 쿼리 결과를 lhvo(Leavo history vo) 객체 저장 한다.
+            //선택한 연도를 가지고 쿼리를 실행하여 lhvo에 값을 저장한다.
             lhvo = ss.selectOne("history.math_Vac", remain_Vac_map);
 
             if (lhvo != null) {
@@ -533,57 +548,17 @@ public class UserFrame extends JFrame {
                 double total = Double.parseDouble(lhvo.getTotal_leave());
                 double remain = Double.parseDouble(lhvo.getRemain_leave());
                 used = total - remain;
-//            System.out.println(used);
+                //                  System.out.println(used);
                 usedVac_l.setText("사용 휴가 :" + used);
             } else {
                 allVac_l.setText("총 휴가 : 데이터 없음");
                 remainVac_l.setText("남은 휴기 : 데이터 없음");
                 usedVac_l.setText("사용 휴가 : 데이터 없음");
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
         ss.close();
-
-        // 콤보박스로 해당년도 클릭하면 그해 데이터 조회 값을 가져와서 재 출력
-        year_cb.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                vacTable(); // 사용한 휴가 상세 정보 테이블
-                //콤보 박스에서 사용자가 선택한 x년도를 가져와서 selecterd에 저장 한다.
-                String selected = (String) year_cb.getSelectedItem();
-
-                try {
-                    ss = factory.openSession();
-                    Map<String, Object> remain_Vac_map = new HashMap<>();
-                    remain_Vac_map.put("empno", vo.getEmpno());
-                    remain_Vac_map.put("year", selected); // 새로 선택한 연도를 파나메타로 사용한다
-
-                    //선택한 연도를 가지고 쿼리를 실행하여 lhvo에 값을 저장한다.
-                    lhvo = ss.selectOne("history.math_Vac", remain_Vac_map);
-
-                    if (lhvo != null) {
-                        allVac_l.setText("총 휴가 :" + lhvo.getTotal_leave());
-                        remainVac_l.setText("남은 휴가 :" + lhvo.getRemain_leave());
-
-                        // 사용 휴가 계산
-                        double total = Double.parseDouble(lhvo.getTotal_leave());
-                        double remain = Double.parseDouble(lhvo.getRemain_leave());
-                        used = total - remain;
-                        //                  System.out.println(used);
-                        usedVac_l.setText("사용 휴가 :" + used);
-                    } else {
-                        allVac_l.setText("총 휴가 : 데이터 없음");
-                        remainVac_l.setText("남은 휴기 : 데이터 없음");
-                        usedVac_l.setText("사용 휴가 : 데이터 없음");
-                    }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-                ss.close();
-
-            }
-        });
     }
 
     // 나의 휴가정보 테이블 갱신시켜 보여주는 함수

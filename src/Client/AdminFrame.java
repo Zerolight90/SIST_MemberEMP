@@ -120,7 +120,7 @@ public class AdminFrame extends JFrame {
         adminAtt_p.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 30));
 
         JPanel adminAtt_north_p = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 15));
-        JComboBox<String> year_cb = new JComboBox<>(new String[]{"2022", "2023", "2024", "2025"});
+        JComboBox<String> year_cb = new JComboBox<>(new String[]{"2025", "2024", "2022", "2021"});
         JComboBox<String> month_cb = new JComboBox<>(new String[]{"01", "02", "03", "04", "05", "06", "07",
                 "08", "09", "10", "11", "12"});
 
@@ -138,6 +138,7 @@ public class AdminFrame extends JFrame {
                 null,
                 a_name
         ));
+        attTable.setDefaultEditor(Object.class, null); // 셀 편집 비활성화 하는 기능
         JScrollPane jsp_attTable = new JScrollPane(attTable);
         adminAtt_p.add(jsp_attTable, BorderLayout.CENTER);
         centerCard_p.add(adminAtt_p, "adminAttCard");
@@ -174,6 +175,7 @@ public class AdminFrame extends JFrame {
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
+                ss.close();
                 System.exit(0);
             }
         });
@@ -202,14 +204,14 @@ public class AdminFrame extends JFrame {
             }
         });
 
-        // 사원 관리 - 사원 추가
+        //사원 추가 yjun
         bt_addEmp.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                EmpAddDialog dialog = new EmpAddDialog(AdminFrame.this, factory);
-                dialog.setEmpAddedListener(new EmpAddDialog.EmpAddedListener() {
+                EmpAddDialog dialog = new EmpAddDialog(AdminFrame.this, AdminFrame.this.vo, factory);
+                dialog.setEmpAddedListener(new EmpAddDialog.EmpAddedListener() {//EmpAddDialog에 선언해놓음
                     @Override
-                    public void onEmpAdded() {
+                    public void onEmpAdded() {//EmpAddDialog에 존재
                         loadEmpData(); // 테이블 리로드
                     }
                 });
@@ -477,31 +479,31 @@ public class AdminFrame extends JFrame {
         vacTable.setModel(new DefaultTableModel(data, v_name));
     }
 
-    // 사원 관리 테이블 데이터 불러오는 함수
+
+    //yjun
+    //테이블을 다시 구성하기 위한 함수 테이블 재사용은 이 함수로 불러옴
     private void loadEmpData() {
-        try {
-            ss = factory.openSession();
+        try (SqlSession ss = factory.openSession()) {//try-with-resoureces 형식 ss닫을 필요 없음
             List<EmpVO> list = ss.selectList("adminemp.getALLemp");
 
             DefaultTableModel model = new DefaultTableModel(null, e_name);
             for (EmpVO vo : list) {
-                model.addRow(new Object[]{
+                model.addRow(new Object[]{ //addRow 열에 추가하는것
                         vo.getEmpno(),
                         vo.getEname(),
                         vo.getDept_name(),
                         vo.getPosname(),
                         vo.getSal(),
                         "0".equals(vo.getWork_status()) ? "재직" : "퇴직",
-                        vo.getHiredate(),
+                        vo.getHireDATE(),
                         vo.getMgr_name() == null ? "-" : vo.getMgr_name()
                 });
             }
-            empTable.setModel(model);
+            empTable.setModel(model);//열에 추가한 값들을 넣고 emptable에 추가
         } catch (Exception e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "데이터 불러오기 실패!");
+            JOptionPane.showMessageDialog(this, "데이터 불러오기 X");
         }
-        ss.close();
     }
 
     // 사원 관리 테이블에서 더블클릭 했을 경우 수행
@@ -516,11 +518,22 @@ public class AdminFrame extends JFrame {
                     if(row == -1) return;
 
                     Long empno = Long.parseLong(empTable.getValueAt(row,0).toString());
-                    EmpVO vo = ss.selectOne("adminemp.getEmpByEmpno", empno);
-                    if(vo == null) return;
-
-                    new EmpEditDialog(AdminFrame.this, vo, ss, () -> loadEmpData());
-                    ss.close();
+                    EmpVO targetEmp = ss.selectOne("adminemp.getEmpByEmpno", empno);
+                    // 로그인한 사용자가 팀장인데, 수정하려는 대상도 팀장 이상이면 수정 불가능
+                    if (vo.getRole_num().equals("2") &&
+                            (targetEmp.getRole_num().equals("2") || targetEmp.getRole_num().equals("3"))) {
+                        JOptionPane.showMessageDialog(AdminFrame.this, "팀장이상의 직급을 수정할 수 있는 권한이 없습니다.");
+                        return;
+                    }
+                    //EmpEditDialog로 보내줄 인자들 runnable함수 사용(runnable란 run()이라는 할 일 하나만 정의하는 인터페이스)
+                    //listner로 사용 가능하지만 단순한 작업이기때문에 runnanble함수를 사용했음
+                    //쉽게 말해 해야 할 일을 담는 일회용 함수 언제 사용할지 정하기만 하면 되고 지금 Runnable은 loadEmpData함수를 부르기 위해 사용
+                    new EmpEditDialog(AdminFrame.this, targetEmp, AdminFrame.this.vo, ss, new Runnable() {
+                        @Override
+                        public void run() {
+                            loadEmpData();
+                        }
+                    });
                 }
             }
         });
@@ -533,5 +546,8 @@ public class AdminFrame extends JFrame {
         // 팩토리 생성
         factory = new SqlSessionFactoryBuilder().build(r);
         r.close();
+
+        // sql세션 열기
+        ss = factory.openSession();
     }
 }
