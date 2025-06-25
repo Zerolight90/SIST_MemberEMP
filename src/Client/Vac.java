@@ -117,8 +117,6 @@ public class Vac {
                         List<Date> dates = new ArrayList<>();
                         LocalDate startDate = ldate.toLocalDate();
 
-
-
                         // 휴가 기간을 비교해서 0.5라면 반차이므로 근태 테이블에 레코드를 하나만 추가하고
                         // 그 외의 경우라면 연차이므로 앞서 얻어낸 휴가 기간의 수만큼 날짜를 얻어내 dates 리스트에 저장
                         if (duration.compareTo(new BigDecimal("0.5")) == 0) {
@@ -129,10 +127,8 @@ public class Vac {
                             }
                         }
 
-                        System.out.println(dates.size());
-
                         // 승인된 휴가가 각각 연차, 오전 반차, 오후 반차일 경우를 구분해 근태 태이블에 레코드를 인서트하는 쿼리
-                        if (lname.equals("가족행사") || lname.equals("개인 사유 휴가") || lname.equals("경조사")) {
+                        if (lname.equals("가족행사") || lname.equals("개인 사유 휴가") || lname.equals("경조사") || lname.equals("연차")) {
                             Map<String, Object> map = new HashMap<>();
                             map.put("empno", empno);
                             map.put("dates", dates);
@@ -144,16 +140,14 @@ public class Vac {
                             map.put("empno", empno);
                             map.put("dates", dates);
                             map.put("lname", lname);
-                            int cnt2 = af.ss.insert("leave.insertAttLeave3", map);
-                            System.out.println(cnt2);
+                            af.ss.insert("leave.insertAttLeave3", map);
                         } else if (lname.equals("오후 반차")){
                             System.out.println("확인");
                             Map<String, Object> map = new HashMap<>();
                             map.put("empno", empno);
                             map.put("dates", dates);
                             map.put("lname", lname);
-                            int cnt1 = af.ss.insert("leave.insertAttLeave4", map);
-                            System.out.println(cnt1);
+                            af.ss.insert("leave.insertAttLeave4", map);
                         }
 
                         // leave_history 테이블에서 남은 휴가를 사용한 휴가 기간만큼 빼는 쿼리

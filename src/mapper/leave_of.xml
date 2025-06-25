@@ -71,7 +71,7 @@
     <!-- 휴가를 승인했을 때 leave_history 테이블의 같은 사번을 가지는 레코드에서 사용한 휴가 기간만큼 남은 연차에서 차감시키는 쿼리 -->
     <update id="remainLeaveUpdate" parameterType="Map">
         UPDATE leave_history
-        SET remain_leave = remain_leave - #{duration}
+        SET remain_leave = remain_leave - #{duration} and year = date_format(now(), '%Y')
         WHERE empno = #{empno}
     </update>
 
@@ -99,8 +99,8 @@
             (
             #{empno},
             #{date},
-            '13:00:00',
-            '18:30:00',
+            NULL,
+            NULL,
             3,
             #{lname}
             )
@@ -115,11 +115,16 @@
             (
             #{empno},
             #{date},
-            '08:55:00',
-            '13:00:00',
+            NULL,
+            NULL,
             4,
             #{lname}
             )
         </foreach>
+    </insert>
+
+    <insert id="requestVac" parameterType="vo.Leave_ofVO">
+        INSERT INTO leave_of (empno, lname, ldate, duration, lstatus)
+        VALUES (#{empno}, #{lname}, #{ldate}, #{duration}, #{lstatus})
     </insert>
 </mapper>

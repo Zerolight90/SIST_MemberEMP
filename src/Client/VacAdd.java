@@ -112,7 +112,7 @@ public class VacAdd extends JFrame {
         vacKind_l.setText("휴가 종류 :");
         vacKind_p.add(vacKind_l);
 
-        vacKind_cb.setModel(new DefaultComboBoxModel<>(new String[] { "연차", "오전반차", "오후반차" }));
+        vacKind_cb.setModel(new DefaultComboBoxModel<>(new String[] { "연차", "오전 반차", "오후 반차" }));
         vacKind_p.add(vacKind_cb);
 
         getContentPane().add(vacKind_p);
@@ -267,10 +267,10 @@ public class VacAdd extends JFrame {
                 lovo.setEmpno(vo.getEmpno()); // 로그인한 객체의 사번
                 if(vacKind_cb.getSelectedItem().equals("연차")) // 연차, 오전/오후 반차에 따라 따로 지정
                     lovo.setLname("연차");
-                else if (vacKind_cb.getSelectedItem().equals("오전반차"))
-                    lovo.setLname("오전반차");
+                else if (vacKind_cb.getSelectedItem().equals("오전 반차"))
+                    lovo.setLname("오전 반차");
                 else
-                    lovo.setLname("오후반차");
+                    lovo.setLname("오후 반차");
                 StringBuffer ldate = new StringBuffer(); // 각각 콤보박스에서 정보 취합해 하나의 정보로 완성
                 ldate.append(year_cb.getSelectedItem())
                         .append(month_cb.getSelectedItem()).append(day_cb.getSelectedItem());
