@@ -77,6 +77,8 @@ public class savedocs extends JFrame {
         ss.commit();
         ss.close();
         JOptionPane.showMessageDialog(savedocs.this, "문서 저장 완료");
+        savedocs.this.dispose();
+
     }
 
 

@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package Client;
 
 import vo.EmpVO;
@@ -9,9 +5,6 @@ import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import vo.CommuteVO;
-import vo.Leave_historyVO;
-import vo.Leave_ofVO;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -19,16 +12,10 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.Reader;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.swing.*;
-import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 
-/**
- * @author zhfja
- */
 public class UserFrame extends JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(UserFrame.class.getName());
@@ -38,7 +25,6 @@ public class UserFrame extends JFrame {
     //공통 맴버 변수
     CardLayout cl;
     SqlSessionFactory factory;
-    List<CommuteVO> commuteList;
     SqlSession ss;
 
     //근태 상태 맴버 변수
@@ -57,29 +43,18 @@ public class UserFrame extends JFrame {
     String[] searchInfo_cname = {"사번", "이름", "직급", "부서", "전화번호", "이메일", "입사일"};
 
     // 휴가 히스토리
-    Leave_historyVO lhvo;
-    int year;
-    double total;
-    double remin;
-    List<Leave_historyVO> history_List;
-    List<Leave_ofVO> Leave_info;
-    List<Leave_ofVO> Leave_now;
     String[] vac_colum = {"휴가 항목", "휴가 기간", "남은 휴가", "신청 날짜", "결재 상태"};
     Object[][] vac_info;
 
     //문서
     viewdocs view_d;
     sharedocs share_d;
-    savedocs save_d;
     CardLayout card_l;
     JPanel card_p;
 
     String[] year_ar;
 
-
-    /**
-     * Creates new form UserFrame
-     */
+    Vac_Search Vac_Search;
 
     //기본 생성자
     public UserFrame(EmpVO vo) { // LoginFrame 으로부터 로그인한 사원의 모든 정보를 받기 위해 기본 생성자에서 EmpVO 받기
@@ -95,633 +70,6 @@ public class UserFrame extends JFrame {
         initDB();
 
         // 창 구성
-        initComponents();
-
-        // 창 열릴 때 위치 조정
-        this.setBounds(410, 130, this.getWidth(), this.getHeight());
-
-        // LoginFrame 으로부터 받아온 vo와 emp 매퍼의 getMyInfo 쿼리를 이용해 내 정보 테이블 갱신하기
-        if (this.vo != null) {
-            ss = factory.openSession();
-            List<EmpVO> list = ss.selectList("emp.getMyInfo", this.vo.getEmpno());
-            myinfo = new Object[list.size()][myinfo_cname.length];
-            int i = 0;
-            for (EmpVO evo : list) {
-                myinfo[i][0] = evo.getEmpno();
-                myinfo[i][1] = evo.getEname();
-                myinfo[i][2] = evo.getPosname();
-                myinfo[i][3] = evo.getDname();
-                myinfo[i][4] = evo.getSal();
-                myinfo[i][5] = evo.getPhone();
-                myinfo[i][6] = evo.getEmail();
-                myinfo[i][7] = evo.getHireDATE();
-            }
-            table_myInfo.setModel(new DefaultTableModel(myinfo, myinfo_cname));
-            ss.close();
-        } else {
-            // 사번이 넘어오지 않는 경우 에러 출력
-            JOptionPane.showMessageDialog(this, "사번이 확인되지 않습니다!");
-        }
-
-        // 홈 패널 중앙에 들어갈 이미지 설정
-        ImageIcon icon = new ImageIcon(getClass().getResource("/images/empOffice.png"));
-        Image img = icon.getImage().getScaledInstance(750, 580, Image.SCALE_SMOOTH);
-        homeImage_l.setIcon(new ImageIcon(img));
-
-        // 내 정보 테이블의 컬럼들의 열 간격 조정
-        table_myInfo.getColumnModel().getColumn(0).setPreferredWidth(50);   // 사번
-        table_myInfo.getColumnModel().getColumn(1).setPreferredWidth(80);   // 이름
-        table_myInfo.getColumnModel().getColumn(2).setPreferredWidth(100);  // 직급
-        table_myInfo.getColumnModel().getColumn(3).setPreferredWidth(120);  // 부서
-        table_myInfo.getColumnModel().getColumn(4).setPreferredWidth(60);   // 급여
-        table_myInfo.getColumnModel().getColumn(5).setPreferredWidth(120);  // 연락처
-        table_myInfo.getColumnModel().getColumn(6).setPreferredWidth(150);  // 이메일
-        table_myInfo.getColumnModel().getColumn(7).setPreferredWidth(100);  // 입사일
-
-        // 홈 버튼 눌렀을 때 화면 변경
-        bt_home.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cl.show(UserFrame.this.centerCard_p, "homeCard");
-            }
-        });
-
-        // 내 정보 버튼 눌렀을 때 화면 변경
-        bt_myInfo.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cl.show(UserFrame.this.centerCard_p, "myInfoCard");
-            }
-        });
-
-        // 사원 조회 버튼 눌렀을 때 화면 변경
-        bt_searchEmp.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cl.show(UserFrame.this.centerCard_p, "searchEmpCard");
-            }
-        });
-
-        // 내 정보 - 내 정보 수정 버튼 눌렀을 때 창 띄우기
-        bt_editMyInfo.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new EditMyinfoForm(UserFrame.this, true, UserFrame.this.vo).setVisible(true);
-            }
-        });
-
-        // 사원 조회 - 검색 버튼 눌렀을 때 수행
-        // 콤보박스에 무엇이 선택됐는지와 검색창에 무엇이 입력되었는지를 알아내고
-        // 콤보박스 값에 따라서 조건식에 맞는 사원들의 정보를 리스트에 담아서
-        // 사원 조회 테이블에 갱신시킨다
-        bt_search.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int cnt = search_cbox.getSelectedIndex(); // 콤보박스에서 선택된 인덱스값 얻어내기
-                String str = value_tf.getText().trim(); // 검색창 텍스트필드에 입력된값 얻기
-
-                int i = 0; // 스위치문 안의 반복문에서 사용할 증가용 정수 선언
-                List<EmpVO> list; // 스위치문에서 사용할 EmpVO를 자료형으로 받는 리스트 선언
-
-                if (str.isEmpty() == false) {
-                    switch (cnt) { // 콤보박스에서 선택된 인덱스값이 무엇인지에 따라서 스위치문 진행
-                        case 0:
-                            ss = factory.openSession();
-                            list = ss.selectList("searchEmp.searchEmpno", str);
-                            searchInfo = new Object[list.size()][searchInfo_cname.length];
-
-                            i = 0;
-                            for (EmpVO vo : list) {
-                                searchInfo[i][0] = vo.getEmpno();
-                                searchInfo[i][1] = vo.getEname();
-                                searchInfo[i][2] = vo.getPosname();
-                                searchInfo[i][3] = vo.getDname();
-                                searchInfo[i][4] = vo.getPhone();
-                                searchInfo[i][5] = vo.getEmail();
-                                searchInfo[i][6] = vo.getHireDATE();
-                                i++;
-                            }
-                            table_emp.setModel(new DefaultTableModel(searchInfo, searchInfo_cname));
-                            ss.close();
-                            break;
-                        case 1:
-                            ss = factory.openSession();
-                            list = ss.selectList("searchEmp.searchEname", str);
-                            searchInfo = new Object[list.size()][searchInfo_cname.length];
-
-                            i = 0;
-                            for (EmpVO vo : list) {
-                                searchInfo[i][0] = vo.getEmpno();
-                                searchInfo[i][1] = vo.getEname();
-                                searchInfo[i][2] = vo.getPosname();
-                                searchInfo[i][3] = vo.getDname();
-                                searchInfo[i][4] = vo.getPhone();
-                                searchInfo[i][5] = vo.getEmail();
-                                searchInfo[i][6] = vo.getHireDATE();
-                                i++;
-                            }
-                            table_emp.setModel(new DefaultTableModel(searchInfo, searchInfo_cname));
-                            ss.close();
-                            break;
-                        case 2:
-                            ss = factory.openSession();
-                            list = ss.selectList("searchEmp.searchPos", str);
-                            searchInfo = new Object[list.size()][searchInfo_cname.length];
-
-                            i = 0;
-                            for (EmpVO vo : list) {
-                                searchInfo[i][0] = vo.getEmpno();
-                                searchInfo[i][1] = vo.getEname();
-                                searchInfo[i][2] = vo.getPosname();
-                                searchInfo[i][3] = vo.getDname();
-                                searchInfo[i][4] = vo.getPhone();
-                                searchInfo[i][5] = vo.getEmail();
-                                searchInfo[i][6] = vo.getHireDATE();
-                                i++;
-                            }
-                            table_emp.setModel(new DefaultTableModel(searchInfo, searchInfo_cname));
-                            ss.close();
-                            break;
-                        case 3:
-                            ss = factory.openSession();
-                            list = ss.selectList("searchEmp.searchEmp", str);
-                            searchInfo = new Object[list.size()][searchInfo_cname.length];
-
-                            i = 0;
-                            for (EmpVO vo : list) {
-                                searchInfo[i][0] = vo.getEmpno();
-                                searchInfo[i][1] = vo.getEname();
-                                searchInfo[i][2] = vo.getPosname();
-                                searchInfo[i][3] = vo.getDname();
-                                searchInfo[i][4] = vo.getPhone();
-                                searchInfo[i][5] = vo.getEmail();
-                                searchInfo[i][6] = vo.getHireDATE();
-                                i++;
-                            }
-                            table_emp.setModel(new DefaultTableModel(searchInfo, searchInfo_cname));
-                            ss.close();
-                            break;
-                        case 4:
-                            ss = factory.openSession();
-                            list = ss.selectList("searchEmp.searchPhone", str);
-                            searchInfo = new Object[list.size()][searchInfo_cname.length];
-
-                            i = 0;
-                            for (EmpVO vo : list) {
-                                searchInfo[i][0] = vo.getEmpno();
-                                searchInfo[i][1] = vo.getEname();
-                                searchInfo[i][2] = vo.getPosname();
-                                searchInfo[i][3] = vo.getDname();
-                                searchInfo[i][4] = vo.getPhone();
-                                searchInfo[i][5] = vo.getEmail();
-                                searchInfo[i][6] = vo.getHireDATE();
-                                i++;
-                            }
-                            table_emp.setModel(new DefaultTableModel(searchInfo, searchInfo_cname));
-                            ss.close();
-                            break;
-                        case 5:
-                            ss = factory.openSession();
-                            list = ss.selectList("searchEmp.searchEmail", str);
-                            searchInfo = new Object[list.size()][searchInfo_cname.length];
-
-                            i = 0;
-                            for (EmpVO vo : list) {
-                                searchInfo[i][0] = vo.getEmpno();
-                                searchInfo[i][1] = vo.getEname();
-                                searchInfo[i][2] = vo.getPosname();
-                                searchInfo[i][3] = vo.getDname();
-                                searchInfo[i][4] = vo.getPhone();
-                                searchInfo[i][5] = vo.getEmail();
-                                searchInfo[i][6] = vo.getHireDATE();
-                                i++;
-                            }
-                            table_emp.setModel(new DefaultTableModel(searchInfo, searchInfo_cname));
-                            ss.close();
-                            break;
-                        case 6:
-                            ss = factory.openSession();
-                            list = ss.selectList("searchEmp.searchHiredate", str);
-                            searchInfo = new Object[list.size()][searchInfo_cname.length];
-
-                            i = 0;
-                            for (EmpVO vo : list) {
-                                searchInfo[i][0] = vo.getEmpno();
-                                searchInfo[i][1] = vo.getEname();
-                                searchInfo[i][2] = vo.getPosname();
-                                searchInfo[i][3] = vo.getDname();
-                                searchInfo[i][4] = vo.getPhone();
-                                searchInfo[i][5] = vo.getEmail();
-                                searchInfo[i][6] = vo.getHireDATE();
-                                i++;
-                            }
-                            table_emp.setModel(new DefaultTableModel(searchInfo, searchInfo_cname));
-                            ss.close();
-                            break;
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(UserFrame.this, "값을 입력하세요");
-                }
-            }
-        });
-
-        // 사원 조회 - 값 필드에서 엔터 눌렀을 경우 검색 버튼 클릭과 동일한 내용 수행
-        value_tf.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                bt_search.doClick(); // 엔터 누르면 검색 버튼 클릭 효과!
-            }
-        });
-
-        // 업무 일지 버튼 눌렀을 때 화면 변경
-        bt_workLog.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cl.show(UserFrame.this.centerCard_p, "workLogCard");
-
-            }
-        });
-
-        // 업무 일지 - 업무일지 작성 버튼 눌렀을 때 창 띄우기
-        bt_workLogWrite.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new savedocs(vo);
-
-
-            }
-        });
-
-        bt_myList.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                card_l.show(card_p,"viewCard");
-                if (view_d == null) {
-                    view_d = new viewdocs(vo, table); // 인스턴스 저장!
-                } else {
-                    view_d.viewList(table);// 이미 있으면 리스트만 다시 조회
-                }
-
-
-            }
-        });
-
-        bt_dept.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                card_l.show(card_p,"sharedCard");
-                if (share_d == null) {
-                    share_d = new sharedocs(vo,stable); // 인스턴스 저장!
-                } else {
-                    share_d.viewShare(stable);// 이미 있으면 리스트만 다시 조회
-                }
-            }
-        });
-
-        // 나의 근태정보 버튼 눌렀을 때 화면 변경
-        bt_myAtt.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cl.show(UserFrame.this.centerCard_p, "myAttCard");
-                All_searchAttendance();
-            }
-        });
-
-        // "나의 근태정보" 패널의 "조회" 버튼에 대한 ActionListener 추가
-        bt_find.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                searchAttendance();
-            }
-        });
-
-        // 관리자 모드 버튼 눌렀을 시 관리자 인증 진행한 후
-        // 권한번호가 일정 번호라면 인증 성공해서 창 닫고 AdminFrame 열기
-        // 일정 번호가 안 된다면 인증 실패해서 메세지 띄우기
-        bt_adminMode.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (vo.getRole_num().equals("3")) {
-                    UserFrame.this.dispose();
-
-                    try {
-                        new AdminFrame(vo);
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    }
-
-                } else {
-                    JOptionPane.showMessageDialog(UserFrame.this, "권한이 없습니다!");
-                }
-            }
-        });
-
-        // 출퇴근 버튼
-        bt_workInOut.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                WorkInOut workInOutWindow = new WorkInOut(UserFrame.this);
-
-            }
-
-        });
-
-        //나의 휴가정보
-        bt_myVac.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cl.show(UserFrame.this.centerCard_p, "myVacCard");
-                nowVac();
-                setLabel();
-            }
-        });
-
-        // 휴가 신청 버튼을 눌렀을 때
-        bt_addVac.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                VacAdd dialog = new VacAdd(factory, vo, UserFrame.this);
-
-            }
-        });
-
-        // 로그아웃 버튼 누를 시 창이 닫히고 LoginFrame 열기
-        bt_logOut.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                UserFrame.this.dispose();
-
-                new LoginFrame().setVisible(true);
-            }
-        });
-
-        // 종료 버튼 누를 시 UserFrame 종료
-        bt_exit.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                UserFrame.this.dispose();
-            }
-        });
-    } // 생성자의 끝
-
-
-    //DB연결 함수
-    private void initDB() {
-        try {
-            Reader r = Resources.getResourceAsReader("config/conf.xml"); // MyBatis 설정 파일 경로
-            factory = new SqlSessionFactoryBuilder().build(r);
-            r.close();
-
-            System.out.println("DB연결 완료");
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    // 내 정보 수정 창에서 사원 정보를 수정했을 때 내 정보 테이블 갱신하는 함수
-    public void EditMyInfoTable(EmpVO vo) {
-        ss = factory.openSession();
-        List<EmpVO> list = ss.selectList("emp.getMyInfo", this.vo.getEmpno());
-        myinfo = new Object[list.size()][myinfo_cname.length];
-        int i = 0;
-        for (EmpVO evo : list) {
-            myinfo[i][0] = evo.getEmpno();
-            myinfo[i][1] = evo.getEname();
-            myinfo[i][2] = evo.getPosname();
-            myinfo[i][3] = evo.getDname();
-            myinfo[i][4] = evo.getSal();
-            myinfo[i][5] = evo.getPhone();
-            myinfo[i][6] = evo.getEmail();
-            myinfo[i][7] = evo.getHireDATE();
-        }
-        table_myInfo.setModel(new DefaultTableModel(myinfo, myinfo_cname));
-        // 컬럼들의 열 간격 조정
-        table_myInfo.getColumnModel().getColumn(0).setPreferredWidth(50);   // 사번
-        table_myInfo.getColumnModel().getColumn(1).setPreferredWidth(80);   // 이름
-        table_myInfo.getColumnModel().getColumn(2).setPreferredWidth(100);  // 직급
-        table_myInfo.getColumnModel().getColumn(3).setPreferredWidth(120);  // 부서
-        table_myInfo.getColumnModel().getColumn(4).setPreferredWidth(60);   // 급여
-        table_myInfo.getColumnModel().getColumn(5).setPreferredWidth(120);  // 연락처
-        table_myInfo.getColumnModel().getColumn(6).setPreferredWidth(150);  // 이메일
-        table_myInfo.getColumnModel().getColumn(7).setPreferredWidth(100);  // 입사일
-        ss.close();
-    }
-
-    // 휴가 상태 레이블 설정하는 함수
-    private void setLabel() {
-        year_cb.setFont(new Font("나눔 고딕", Font.PLAIN, 15)); // combo box 폰트 셋팅
-
-        //1.콤보박스의 첫해 2025년도 값을 가져온다
-        String firstYear = (String) year_cb.getSelectedItem();
-
-        try {
-            ss = factory.openSession();
-            Map<String, Object> remain_Vac_map = new HashMap<>();
-            remain_Vac_map.put("empno", vo.getEmpno());
-            remain_Vac_map.put("year", firstYear); // 초기연도(2025년)로 기본 값을 설성 합니다.
-
-            // MY batis에서 실행 쿼리 결과를 lhvo(Leavo history vo) 객체 저장 한다.
-            lhvo = ss.selectOne("history.math_Vac", remain_Vac_map);
-
-            if (lhvo != null) {
-                allVac_l.setText("총 휴가 :" + lhvo.getTotal_leave());
-                remainVac_l.setText("남은 휴가 :" + lhvo.getRemain_leave());
-
-                // 사용 휴가 계산
-                double total = Double.parseDouble(lhvo.getTotal_leave());
-                double remain = Double.parseDouble(lhvo.getRemain_leave());
-                used = total - remain;
-//            System.out.println(used);
-                usedVac_l.setText("사용 휴가 :" + used);
-            } else {
-                allVac_l.setText("총 휴가 : 데이터 없음");
-                remainVac_l.setText("남은 휴기 : 데이터 없음");
-                usedVac_l.setText("사용 휴가 : 데이터 없음");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        ss.close();
-
-        // 콤보박스로 해당년도 클릭하면 그해 데이터 조회 값을 가져와서 재 출력
-        year_cb.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                vacTable(); // 사용한 휴가 상세 정보 테이블
-                //콤보 박스에서 사용자가 선택한 x년도를 가져와서 selecterd에 저장 한다.
-                String selected = (String) year_cb.getSelectedItem();
-
-                try {
-                    ss = factory.openSession();
-                    Map<String, Object> remain_Vac_map = new HashMap<>();
-                    remain_Vac_map.put("empno", vo.getEmpno());
-                    remain_Vac_map.put("year", selected); // 새로 선택한 연도를 파나메타로 사용한다
-
-                    //선택한 연도를 가지고 쿼리를 실행하여 lhvo에 값을 저장한다.
-                    lhvo = ss.selectOne("history.math_Vac", remain_Vac_map);
-
-                    if (lhvo != null) {
-                        allVac_l.setText("총 휴가 :" + lhvo.getTotal_leave());
-                        remainVac_l.setText("남은 휴가 :" + lhvo.getRemain_leave());
-
-                        // 사용 휴가 계산
-                        double total = Double.parseDouble(lhvo.getTotal_leave());
-                        double remain = Double.parseDouble(lhvo.getRemain_leave());
-                        used = total - remain;
-                        //                  System.out.println(used);
-                        usedVac_l.setText("사용 휴가 :" + used);
-                    } else {
-                        allVac_l.setText("총 휴가 : 데이터 없음");
-                        remainVac_l.setText("남은 휴기 : 데이터 없음");
-                        usedVac_l.setText("사용 휴가 : 데이터 없음");
-                    }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-                ss.close();
-
-            }
-        });
-    }
-
-    // 나의 휴가정보 테이블 갱신시켜 보여주는 함수
-    private void nowVac() {
-        String selectedYear = (String) year_cb.getSelectedItem();
-        Map<String, String> map = new HashMap<>();
-        map.put("empno", vo.getEmpno());
-
-        try {
-            ss = factory.openSession();
-            // 로그인한 사번의 근태 조회
-            Leave_info = ss.selectList("leave.vac_search", map); //
-            viewVacTable(Leave_info);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        ss.close();
-    }
-
-    // 휴가 상태 상세 정보 테이블
-    public void vacTable() {
-        // 연도 콤보 박스에서 선택한 값을 String으로 형변환 후 selectedYear에 저장 한다.
-        String selectedYear = (String) year_cb.getSelectedItem();
-        System.out.println(selectedYear);
-
-        Map<String, String> map = new HashMap<>();
-        map.put("empno", vo.getEmpno());
-        map.put("year", selectedYear);
-
-        try {
-            ss = factory.openSession();
-            // 로그인한 사번의 근태 조회
-            Leave_info = ss.selectList("leave.yearsSearch", map); //
-            viewVacTable(Leave_info); // 이 메소드는 JTable을 업데이트합니다.
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        ss.close();
-    }
-
-    //휴가 조회시트 테이블
-    private void viewVacTable(List<Leave_ofVO> list) {
-
-        vac_info = new Object[list.size()][vac_colum.length];
-        int i = 0;
-        for (Leave_ofVO vo : list) {
-            vac_info[i][0] = vo.getLname();
-            vac_info[i][1] = vo.getLdate();
-            vac_info[i][2] = vo.getDuration();
-            vac_info[i][3] = vo.getLprocessed();
-            switch (vo.getLstatus()) {
-                case "0":
-                    vac_info[i][4] = "신청";
-                    break;
-                case "1":
-                    vac_info[i][4] = "승인";
-                    break;
-                case "2":
-                    vac_info[i][4] = "반려";
-
-            }
-//           vac_info[i][4] = vo.getLstatus();
-            i++;
-        }//for종료
-        vacTable.setModel(new DefaultTableModel(vac_info, vac_colum));
-        vacTable.setDefaultEditor(Object.class, null); // 셀 편집 비활성화 하는 기능
-    }
-
-    // 근태 조회(검색) 함수
-    private void searchAttendance() {
-        String selectedYear = (String) year_cb.getSelectedItem();
-        String selectedMonth = (String) month_cb.getSelectedItem();
-
-        if (selectedYear == null || selectedMonth == null) {
-            JOptionPane.showMessageDialog(this, "조회할 연도와 월을 선택해주세요.", "알림", JOptionPane.INFORMATION_MESSAGE);
-            return;
-        }
-
-        Map<String, Object> map = new HashMap<>();
-        map.put("empno", vo.getEmpno());
-        map.put("year", selectedYear);
-        map.put("month", selectedMonth);
-
-        try {
-            ss = factory.openSession();
-            // 로그인한 사번의 근태 조회
-            commuteList = ss.selectList("commute.searchByYearMonth", map);
-            viewAttendanceTable(commuteList);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        ss.close();
-
-    } // searchAttendanec 종료
-
-    //나의 전체 년도 월 조회
-    private void All_searchAttendance() {
-
-        Map<String, String> map = new HashMap<>();
-        map.put("empno", vo.getEmpno());
-//        map.put("year", selectedYear);
-//        map.put("month", selectedMonth);
-
-        try {
-            ss = factory.openSession();
-            commuteList = ss.selectList("commute.login", map); //
-            viewAttendanceTable(commuteList); // 이 메소드는 JTable을 업데이트합니다.
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        ss.close();
-
-    } // All_searchAttendanec 종료
-
-    // 근태 테이블 갱신시켜 보여주는 함수
-    private void viewAttendanceTable(List<CommuteVO> list) {
-
-        //인자로 받은 List구조를 2차원 배열로 변환한 후 JTable에 표현!
-        chk = new String[list.size()][date_name.length];
-        int i = 0;
-        for (CommuteVO vo : list) {
-            chk[i][0] = vo.getEmpno();
-            chk[i][1] = vo.getDate();
-            chk[i][2] = vo.getChkin();
-            chk[i][3] = vo.getChkout();
-            chk[i][4] = vo.getAttend_note();
-
-            i++;
-        }//for종료
-        attTable.setModel(new DefaultTableModel(chk, date_name));
-        attTable.setDefaultEditor(Object.class, null); // 셀 편집 비활성화 하는 기능
-    }
-
-
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
-
         workLogCenter_p = new JPanel();
         allVac_l = new JLabel();
         myVac_south_p = new JPanel();
@@ -781,7 +129,6 @@ public class UserFrame extends JFrame {
         bt_addVac = new JButton();
         jsp_vacTable = new JScrollPane();
         vacTable = new JTable();
-
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setMaximumSize(new Dimension(1000, 1000));
@@ -968,7 +315,7 @@ public class UserFrame extends JFrame {
 
         bt_dept.setText("받은 문서 조회");
         workLogCenter_p.add(bt_dept);
-        card_l= new CardLayout();
+        card_l = new CardLayout();
         card_p = new JPanel(card_l);
 
         workLog_p.add(workLogCenter_p, java.awt.BorderLayout.CENTER);
@@ -1051,7 +398,6 @@ public class UserFrame extends JFrame {
 
         jsp_attTable.setViewportView(attTable);
 
-
         myAtt_p.add(jsp_attTable, BorderLayout.CENTER);
         centerCard_p.add(myAtt_p, "myAttCard");
 
@@ -1068,9 +414,8 @@ public class UserFrame extends JFrame {
         allVac_l.setFont(new Font("맑은 고딕", Font.BOLD, 14));
         allVac_l.setHorizontalAlignment(JLabel.CENTER);
         allVac_l.setVerticalAlignment(JLabel.CENTER);
-        allVac_l.setPreferredSize(new Dimension(150,30));
+        allVac_l.setPreferredSize(new Dimension(150, 30));
         allVac_l.setOpaque(true);
-
 
         // usedVac_l 스타일
         usedVac_l.setBackground(new Color(123, 104, 238)); // 보라색 계열
@@ -1078,9 +423,8 @@ public class UserFrame extends JFrame {
         usedVac_l.setFont(new Font("맑은 고딕", Font.BOLD, 14));
         usedVac_l.setHorizontalAlignment(JLabel.CENTER);
         usedVac_l.setVerticalAlignment(JLabel.CENTER);
-        usedVac_l.setPreferredSize(new Dimension(150,30));
+        usedVac_l.setPreferredSize(new Dimension(150, 30));
         usedVac_l.setOpaque(true);
-
 
         // remainVac_l 스타일
         remainVac_l.setBackground(new Color(109, 76, 65));
@@ -1088,7 +432,7 @@ public class UserFrame extends JFrame {
         remainVac_l.setFont(new Font("맑은 고딕", Font.BOLD, 14));
         remainVac_l.setHorizontalAlignment(JLabel.CENTER);
         remainVac_l.setVerticalAlignment(JLabel.CENTER);
-        remainVac_l.setPreferredSize(new Dimension(150,30));
+        remainVac_l.setPreferredSize(new Dimension(150, 30));
         remainVac_l.setOpaque(true);
 
         setYear_ar();
@@ -1103,18 +447,11 @@ public class UserFrame extends JFrame {
         myVac_north_p.add(usedVac_l);
         myVac_north_p.add(remainVac_l);
 
-        //
-        JLabel yearLabel = new JLabel(year_cb.getSelectedItem()+"년도 휴가 상세내역");
-        yearLabel.setFont(new Font("맑은 고딕",Font.BOLD,14));
-        yearLabel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
-//        JPanel yearP = new JPanel(new BorderLayout());
-//        yearP.add(yearLabel, BorderLayout.SOUTH);
-
-//        myVac_north_p.add(yearP, BorderLayout.SOUTH);
-
+        JLabel yearLabel = new JLabel(year_cb.getSelectedItem() + "년도 휴가 상세내역");
+        yearLabel.setFont(new Font("맑은 고딕", Font.BOLD, 14));
+        yearLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         // 테이블 디자인
-
         myVac_south_p.setBorder(BorderFactory.createEmptyBorder(20, 30, 1, 30));
         myVac_south_p.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
 
@@ -1150,10 +487,237 @@ public class UserFrame extends JFrame {
         getContentPane().add(center_p, BorderLayout.CENTER);
 
         pack();
-    }// </editor-fold>//GEN-END:initComponents
+
+        // 창 열릴 때 위치 조정
+        this.setBounds(410, 130, this.getWidth(), this.getHeight());
+
+        // LoginFrame 으로부터 받아온 vo와 emp 매퍼의 getMyInfo 쿼리를 이용해 내 정보 테이블 갱신하기
+        if (this.vo != null) {
+            ss = factory.openSession();
+            List<EmpVO> list = ss.selectList("emp.getMyInfo", this.vo.getEmpno());
+            myinfo = new Object[list.size()][myinfo_cname.length];
+            int i = 0;
+            for (EmpVO evo : list) {
+                myinfo[i][0] = evo.getEmpno();
+                myinfo[i][1] = evo.getEname();
+                myinfo[i][2] = evo.getPosname();
+                myinfo[i][3] = evo.getDname();
+                myinfo[i][4] = evo.getSal();
+                myinfo[i][5] = evo.getPhone();
+                myinfo[i][6] = evo.getEmail();
+                myinfo[i][7] = evo.getHireDATE();
+            }
+            table_myInfo.setModel(new DefaultTableModel(myinfo, myinfo_cname));
+            ss.close();
+        } else {
+            // 사번이 넘어오지 않는 경우 에러 출력
+            JOptionPane.showMessageDialog(this, "사번이 확인되지 않습니다!");
+        }
+
+        // 홈 패널 중앙에 들어갈 이미지 설정
+        ImageIcon icon2 = new ImageIcon(getClass().getResource("/images/empOffice.png"));
+        Image img2 = icon2.getImage().getScaledInstance(750, 580, Image.SCALE_SMOOTH);
+        homeImage_l.setIcon(new ImageIcon(img2));
+
+        // 내 정보 테이블의 컬럼들의 열 간격 조정
+        EditTableC();
+
+        // 홈 버튼 눌렀을 때 화면 변경
+        bt_home.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cl.show(UserFrame.this.centerCard_p, "homeCard");
+            }
+        });
+
+        // 내 정보 버튼 관련 기능 클래스 호출
+        new UserMyInfo(UserFrame.this);
+
+        // 사원 조회 버튼 관련 기능 클래스 호출
+        new UserEmpSearch(UserFrame.this);
+
+        // 업무 일지 버튼 눌렀을 때 화면 변경
+        bt_workLog.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cl.show(UserFrame.this.centerCard_p, "workLogCard");
+
+            }
+        });
+
+        // 업무 일지 - 업무일지 작성 버튼 눌렀을 때 창 띄우기
+        bt_workLogWrite.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new savedocs(vo);
+
+
+            }
+        });
+
+        bt_myList.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                card_l.show(card_p, "viewCard");
+                if (view_d == null) {
+                    view_d = new viewdocs(vo, table); // 인스턴스 저장!
+                } else {
+                    view_d.viewList(table);// 이미 있으면 리스트만 다시 조회
+                }
+
+
+            }
+        });
+
+        bt_dept.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                card_l.show(card_p, "sharedCard");
+                if (share_d == null) {
+                    share_d = new sharedocs(vo, stable); // 인스턴스 저장!
+                } else {
+                    share_d.viewShare(stable);// 이미 있으면 리스트만 다시 조회
+                }
+            }
+        });
+
+        // 나의 근태정보 버튼 눌렀을 때 화면 변경
+        bt_myAtt.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cl.show(UserFrame.this.centerCard_p, "myAttCard");
+                new Myatt(vo, UserFrame.this);
+            }
+        });
+
+        // "나의 근태정보" 패널의 "조회" 버튼에 대한 ActionListener 추가
+        bt_find.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new Search_Myatt(vo, UserFrame.this);
+            }
+        });
+
+        // 관리자 모드 버튼 눌렀을 시 관리자 인증 진행한 후
+        // 권한번호가 일정 번호라면 인증 성공해서 창 닫고 AdminFrame 열기
+        // 일정 번호가 안 된다면 인증 실패해서 메세지 띄우기
+        bt_adminMode.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (vo.getRole_num().equals("3") || vo.getRole_num().equals("2")) {
+                    UserFrame.this.dispose();
+
+                    try {
+                        new AdminFrame(vo);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+
+                } else {
+                    JOptionPane.showMessageDialog(UserFrame.this, "권한이 없습니다!");
+                }
+            }
+        });
+
+        // 출퇴근 버튼
+        bt_workInOut.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                WorkInOut workInOutWindow = new WorkInOut(UserFrame.this);
+
+            }
+
+        });
+
+        //나의 휴가정보
+        bt_myVac.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cl.show(UserFrame.this.centerCard_p, "myVacCard");
+
+                Vac_Search = new Vac_Search(vo, UserFrame.this);
+            }
+        });
+
+        // 휴가 신청 버튼을 눌렀을 때
+        bt_addVac.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                VacAdd dialog = new VacAdd(Vac_Search, factory, vo, UserFrame.this);
+
+            }
+        });
+
+        // 로그아웃 버튼 누를 시 창이 닫히고 LoginFrame 열기
+        bt_logOut.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                UserFrame.this.dispose();
+
+                new LoginFrame().setVisible(true);
+            }
+        });
+
+        // 종료 버튼 누를 시 UserFrame 종료
+        bt_exit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                UserFrame.this.dispose();
+            }
+        });
+    } // 생성자의 끝
+
+
+    //DB연결 함수
+    private void initDB() {
+        try {
+            Reader r = Resources.getResourceAsReader("config/conf.xml"); // MyBatis 설정 파일 경로
+            factory = new SqlSessionFactoryBuilder().build(r);
+            r.close();
+
+            System.out.println("DB연결 완료");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // 내 정보 수정 창에서 사원 정보를 수정했을 때 내 정보 테이블 갱신하는 함수
+    public void EditMyInfoTable(EmpVO vo) {
+        ss = factory.openSession();
+        List<EmpVO> list = ss.selectList("emp.getMyInfo", this.vo.getEmpno());
+        myinfo = new Object[list.size()][myinfo_cname.length];
+        int i = 0;
+        for (EmpVO evo : list) {
+            myinfo[i][0] = evo.getEmpno();
+            myinfo[i][1] = evo.getEname();
+            myinfo[i][2] = evo.getPosname();
+            myinfo[i][3] = evo.getDname();
+            myinfo[i][4] = evo.getSal();
+            myinfo[i][5] = evo.getPhone();
+            myinfo[i][6] = evo.getEmail();
+            myinfo[i][7] = evo.getHireDATE();
+        }
+        table_myInfo.setModel(new DefaultTableModel(myinfo, myinfo_cname));
+        // 컬럼들의 열 간격 조정
+        EditTableC();
+        ss.close();
+    }
+
+    // 내 정보 테이블의 컬럼들의 열 간격 조정 함수
+    private void EditTableC() {
+        table_myInfo.getColumnModel().getColumn(0).setPreferredWidth(50);   // 사번
+        table_myInfo.getColumnModel().getColumn(1).setPreferredWidth(80);   // 이름
+        table_myInfo.getColumnModel().getColumn(2).setPreferredWidth(100);  // 직급
+        table_myInfo.getColumnModel().getColumn(3).setPreferredWidth(120);  // 부서
+        table_myInfo.getColumnModel().getColumn(4).setPreferredWidth(60);   // 급여
+        table_myInfo.getColumnModel().getColumn(5).setPreferredWidth(120);  // 연락처
+        table_myInfo.getColumnModel().getColumn(6).setPreferredWidth(150);  // 이메일
+        table_myInfo.getColumnModel().getColumn(7).setPreferredWidth(100);  // 입사일
+    }
+
 
     public static void main(String args[]) {
-
         // Swing GUI 테마를 바꾸는 구문
         try {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
@@ -1165,7 +729,6 @@ public class UserFrame extends JFrame {
         } catch (ReflectiveOperationException | UnsupportedLookAndFeelException ex) {
             logger.log(java.util.logging.Level.SEVERE, null, ex);
         }
-
         // 프로그램 시작할 때 자동으로 로그인 프레임 창이 열리도록 하기
         new LoginFrame().setVisible(true);
     }
@@ -1184,66 +747,65 @@ public class UserFrame extends JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private JPanel workLogCenter_p;
-    private JLabel allVac_l;
-    private JPanel myVac_south_p;
-    private JTable attTable;
-    private JButton bt_addVac;
-    private JButton bt_adminMode;
-    private JButton bt_dept;
-    private JButton bt_editMyInfo;
-    private JButton bt_exit;
-    private JButton bt_find;
-    private JButton bt_home;
-    private JButton bt_logOut;
-    private JButton bt_myAtt;
-    private JButton bt_myInfo;
-    private JButton bt_myList;
-    private JButton bt_myVac;
-    private JButton bt_search;
-    private JButton bt_searchEmp;
-    private JButton bt_workInOut;
-    private JButton bt_workLog;
-    private JButton bt_workLogWrite;
-    private JPanel centerCard_p;
-    private JPanel centerNorth_p;
-    private JPanel center_p;
-    private JPanel empty_p;
-    private JLabel homeImage_l;
-    private JPanel home_p;
-    private JPanel jPanel1;
-    private JPanel myVac_north_p;
-    private JScrollPane jsp_attTable;
-    private JScrollPane jsp_empTable;
-    private JScrollPane jsp_logList;
-    private JScrollPane jsp_logRead;
-    private JScrollPane jsp_myInfo;
-    private JScrollPane jsp_vacTable;
-    private JList<String> logList;
-    private JComboBox<String> month_cb;
-    private JPanel myAtt_north_p;
-    private JPanel myAtt_p;
-    private JPanel myInfo_north_p;
-    private JPanel myInfo_p;
-    private JPanel myVac_p;
-    private JLabel northImage_l;
-    private JLabel remainVac_l;
-    private JPanel searchEmp_p;
-    private JComboBox<String> search_cbox;
-    private JLabel search_l;
-    private JPanel south_p;
-    private JTextArea ta_logRead;
-    private JTable table_emp;
-    private JTable table_myInfo;
-    private JLabel usedVac_l;
-    private JTable vacTable;
-    private JLabel value_l;
-    private JTextField value_tf;
-    private JPanel west_p;
-    private JPanel workLog_north_p;
-    private JPanel workLog_p;
-    private JComboBox<String> year_cb;
-    private JTable table;
-    private JTable stable;
-    private String viewMode = "";
+    public JPanel workLogCenter_p;
+    public JLabel allVac_l;
+    public JPanel myVac_south_p;
+    public JTable attTable;
+    public JButton bt_addVac;
+    public JButton bt_adminMode;
+    public JButton bt_dept;
+    public JButton bt_editMyInfo;
+    public JButton bt_exit;
+    public JButton bt_find;
+    public JButton bt_home;
+    public JButton bt_logOut;
+    public JButton bt_myAtt;
+    public JButton bt_myInfo;
+    public JButton bt_myList;
+    public JButton bt_myVac;
+    public JButton bt_search;
+    public JButton bt_searchEmp;
+    public JButton bt_workInOut;
+    public JButton bt_workLog;
+    public JButton bt_workLogWrite;
+    public JPanel centerCard_p;
+    public JPanel centerNorth_p;
+    public JPanel center_p;
+    public JPanel empty_p;
+    public JLabel homeImage_l;
+    public JPanel home_p;
+    public JPanel jPanel1;
+    public JPanel myVac_north_p;
+    public JScrollPane jsp_attTable;
+    public JScrollPane jsp_empTable;
+    public JScrollPane jsp_logList;
+    public JScrollPane jsp_logRead;
+    public JScrollPane jsp_myInfo;
+    public JScrollPane jsp_vacTable;
+    public JList<String> logList;
+    public JComboBox<String> month_cb;
+    public JPanel myAtt_north_p;
+    public JPanel myAtt_p;
+    public JPanel myInfo_north_p;
+    public JPanel myInfo_p;
+    public JPanel myVac_p;
+    public JLabel northImage_l;
+    public JLabel remainVac_l;
+    public JPanel searchEmp_p;
+    public JComboBox<String> search_cbox;
+    public JLabel search_l;
+    public JPanel south_p;
+    public JTextArea ta_logRead;
+    public JTable table_emp;
+    public JTable table_myInfo;
+    public JLabel usedVac_l;
+    public JTable vacTable;
+    public JLabel value_l;
+    public JTextField value_tf;
+    public JPanel west_p;
+    public JPanel workLog_north_p;
+    public JPanel workLog_p;
+    public JComboBox<String> year_cb;
+    public JTable table;
+    public JTable stable;
 }

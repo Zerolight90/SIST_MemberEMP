@@ -59,11 +59,12 @@
         </where>
         ORDER BY e.empno ASC <!-- empno로 정렬-->
     </select>
+
     <!-- 수정용 쿼리-->
     <update id="updateEmpByAdmin" parameterType="vo.EmpVO">
         UPDATE emp SET
         ename = #{ename}, deptno = #{deptno}, role_num = #{role_num}, sal = #{sal},
-        work_status = #{work_status}, hiredate = #{hiredate}, resign_date = #{resign_DATE},
+        work_status = #{work_status}, hiredate = #{hireDATE}, resign_date = #{resign_DATE},
         mgr = #{mgr}, email = #{email}, phone = #{phone}, username = #{username},
         password = #{password}, posname = #{posname}
         WHERE empno = #{empno}

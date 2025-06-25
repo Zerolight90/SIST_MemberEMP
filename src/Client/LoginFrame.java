@@ -17,7 +17,6 @@ import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 
-
 public class LoginFrame extends JFrame {
 
     private SqlSessionFactory factory; // DB 연결용 팩토리
@@ -48,21 +47,24 @@ public class LoginFrame extends JFrame {
 
         //Enter key 이벤트 정의
 
-        id_tf.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    login();
-                }
-            }
-        });
+//        id_tf.addKeyListener(new KeyAdapter() {
+//            @Override
+//            public void keyPressed(KeyEvent e) {
+//                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+//                    login();
+//                }
+//            }
+//        });
 
-        pw_pf.addKeyListener(new KeyAdapter() {
+        id_tf.addActionListener(new ActionListener() {
             @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    login();
-                }
+            public void actionPerformed(ActionEvent e) {
+                bt_login.doClick();}
+        });
+        pw_pf.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                bt_login.doClick();
             }
         });
 
@@ -186,12 +188,12 @@ public class LoginFrame extends JFrame {
                 this.dispose();
                 parent.setVisible(true);
 
-            } else if (user.getWork_status().equals("1")) {
-                JOptionPane.showMessageDialog(this, "퇴사한 사원의 계정입니다.");
-            } else {
+            } else if (user == null) {
                 // 여기 넘어왔다는건 이미 위에서
                 // 아이디를 확인했다는것과 동일함 그래서 비밀번호 틀림만 출력
                 JOptionPane.showMessageDialog(this, "비밀번호가 틀렸습니다.");
+            } else if (user.getWork_status().equals("1")) {
+                JOptionPane.showMessageDialog(this, "퇴사한 사원의 계정입니다.");
             }
 
         } catch (Exception e) {

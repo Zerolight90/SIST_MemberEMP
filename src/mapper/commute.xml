@@ -47,11 +47,10 @@
 
     </update>
 
-    <select id="getStatus" parameterType="String" resultType="int" >
+    <select id="getStatus" parameterType="String" resultType="String" >
         <!-- 특정 사번의 퇴근 시간이 없는 오늘 상태 키값을 가져온다 -->
          SELECT attend_status FROM team_db.attendance
         where empno = #{empno} AND date = DATE(NOW()) AND chkout is null
-
     </select>
 
     <update id="chkout" parameterType="Map">
