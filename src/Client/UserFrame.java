@@ -265,7 +265,7 @@ public class UserFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 cl.show(UserFrame.this.centerCard_p, "myAttCard");
-                All_searchAttendance();
+                new Myatt(vo,UserFrame.this);
             }
         });
 
@@ -273,7 +273,7 @@ public class UserFrame extends JFrame {
         bt_find.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                searchAttendance();
+                new Search_Myatt(vo,UserFrame.this);
             }
         });
 
@@ -313,8 +313,8 @@ public class UserFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 cl.show(UserFrame.this.centerCard_p, "myVacCard");
-                nowVac();
-                setLabel();
+
+                new Vac_Search(vo, UserFrame.this);
             }
         });
 
@@ -420,75 +420,6 @@ public class UserFrame extends JFrame {
             i++;
         }
         table_emp.setModel(new DefaultTableModel(searchInfo, searchInfo_cname));
-        ss.close();
-    }
-
-    // 휴가 상태 레이블 설정하는 함수
-    private void setLabel() {
-        year_cb.setFont(new Font("나눔 고딕", Font.PLAIN, 15)); // combo box 폰트 셋팅
-
-        //1.콤보박스의 첫해 2025년도 값을 가져온다
-        math_vac();
-
-        // 콤보박스로 해당년도 클릭하면 그해 데이터 조회 값을 가져와서 재 출력
-        year_cb.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                vacTable(); // 사용한 휴가 상세 정보 테이블
-                //콤보 박스에서 사용자가 선택한 x년도를 가져와서 selecterd에 저장 한다.
-                math_vac();
-            }
-        });
-    }
-    
-    //휴가 계산 레이블
-    public void math_vac(){
-        String selected = (String) year_cb.getSelectedItem();
-
-        try {
-            ss = factory.openSession();
-            Map<String, Object> remain_Vac_map = new HashMap<>();
-            remain_Vac_map.put("empno", vo.getEmpno());
-            remain_Vac_map.put("year", selected); // 새로 선택한 연도를 파나메타로 사용한다
-
-            //선택한 연도를 가지고 쿼리를 실행하여 lhvo에 값을 저장한다.
-            lhvo = ss.selectOne("history.math_Vac", remain_Vac_map);
-
-            if (lhvo != null) {
-                allVac_l.setText("총 휴가 :" + lhvo.getTotal_leave());
-                remainVac_l.setText("남은 휴가 :" + lhvo.getRemain_leave());
-
-                // 사용 휴가 계산
-                double total = Double.parseDouble(lhvo.getTotal_leave());
-                double remain = Double.parseDouble(lhvo.getRemain_leave());
-                used = total - remain;
-                //                  System.out.println(used);
-                usedVac_l.setText("사용 휴가 :" + used);
-            } else {
-                allVac_l.setText("총 휴가 : 데이터 없음");
-                remainVac_l.setText("남은 휴기 : 데이터 없음");
-                usedVac_l.setText("사용 휴가 : 데이터 없음");
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        ss.close();
-    }
-
-    // 나의 휴가정보 테이블 갱신시켜 보여주는 함수
-    private void nowVac() {
-        String selectedYear = (String) year_cb.getSelectedItem();
-        Map<String, String> map = new HashMap<>();
-        map.put("empno", vo.getEmpno());
-
-        try {
-            ss = factory.openSession();
-            // 로그인한 사번의 근태 조회
-            Leave_info = ss.selectList("leave.vac_search", map); //
-            viewVacTable(Leave_info);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         ss.close();
     }
 
@@ -1073,65 +1004,65 @@ public class UserFrame extends JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private JPanel workLogCenter_p;
-    private JLabel allVac_l;
-    private JPanel myVac_south_p;
-    private JTable attTable;
-    private JButton bt_addVac;
-    private JButton bt_adminMode;
-    private JButton bt_dept;
-    private JButton bt_editMyInfo;
-    private JButton bt_exit;
-    private JButton bt_find;
-    private JButton bt_home;
-    private JButton bt_logOut;
-    private JButton bt_myAtt;
-    private JButton bt_myInfo;
-    private JButton bt_myList;
-    private JButton bt_myVac;
-    private JButton bt_search;
-    private JButton bt_searchEmp;
-    private JButton bt_workInOut;
-    private JButton bt_workLog;
-    private JButton bt_workLogWrite;
-    private JPanel centerCard_p;
-    private JPanel centerNorth_p;
-    private JPanel center_p;
-    private JPanel empty_p;
-    private JLabel homeImage_l;
-    private JPanel home_p;
-    private JPanel jPanel1;
-    private JPanel myVac_north_p;
-    private JScrollPane jsp_attTable;
-    private JScrollPane jsp_empTable;
-    private JScrollPane jsp_logList;
-    private JScrollPane jsp_logRead;
-    private JScrollPane jsp_myInfo;
-    private JScrollPane jsp_vacTable;
-    private JList<String> logList;
-    private JComboBox<String> month_cb;
-    private JPanel myAtt_north_p;
-    private JPanel myAtt_p;
-    private JPanel myInfo_north_p;
-    private JPanel myInfo_p;
-    private JPanel myVac_p;
-    private JLabel northImage_l;
-    private JLabel remainVac_l;
-    private JPanel searchEmp_p;
-    private JComboBox<String> search_cbox;
-    private JLabel search_l;
-    private JPanel south_p;
-    private JTextArea ta_logRead;
-    private JTable table_emp;
-    private JTable table_myInfo;
-    private JLabel usedVac_l;
-    private JTable vacTable;
-    private JLabel value_l;
-    private JTextField value_tf;
-    private JPanel west_p;
-    private JPanel workLog_north_p;
-    private JPanel workLog_p;
-    private JComboBox<String> year_cb;
-    private JTable table;
-    private JTable stable;
+    public JPanel workLogCenter_p;
+    public JLabel allVac_l;
+    public JPanel myVac_south_p;
+    public JTable attTable;
+    public JButton bt_addVac;
+    public JButton bt_adminMode;
+    public JButton bt_dept;
+    public JButton bt_editMyInfo;
+    public JButton bt_exit;
+    public JButton bt_find;
+    public JButton bt_home;
+    public JButton bt_logOut;
+    public JButton bt_myAtt;
+    public JButton bt_myInfo;
+    public JButton bt_myList;
+    public JButton bt_myVac;
+    public JButton bt_search;
+    public JButton bt_searchEmp;
+    public JButton bt_workInOut;
+    public JButton bt_workLog;
+    public JButton bt_workLogWrite;
+    public JPanel centerCard_p;
+    public JPanel centerNorth_p;
+    public JPanel center_p;
+    public JPanel empty_p;
+    public JLabel homeImage_l;
+    public JPanel home_p;
+    public JPanel jPanel1;
+    public JPanel myVac_north_p;
+    public JScrollPane jsp_attTable;
+    public JScrollPane jsp_empTable;
+    public JScrollPane jsp_logList;
+    public JScrollPane jsp_logRead;
+    public JScrollPane jsp_myInfo;
+    public JScrollPane jsp_vacTable;
+    public JList<String> logList;
+    public JComboBox<String> month_cb;
+    public JPanel myAtt_north_p;
+    public JPanel myAtt_p;
+    public JPanel myInfo_north_p;
+    public JPanel myInfo_p;
+    public JPanel myVac_p;
+    public JLabel northImage_l;
+    public JLabel remainVac_l;
+    public JPanel searchEmp_p;
+    public JComboBox<String> search_cbox;
+    public JLabel search_l;
+    public JPanel south_p;
+    public JTextArea ta_logRead;
+    public JTable table_emp;
+    public JTable table_myInfo;
+    public JLabel usedVac_l;
+    public JTable vacTable;
+    public JLabel value_l;
+    public JTextField value_tf;
+    public JPanel west_p;
+    public JPanel workLog_north_p;
+    public JPanel workLog_p;
+    public JComboBox<String> year_cb;
+    public JTable table;
+    public JTable stable;
 }

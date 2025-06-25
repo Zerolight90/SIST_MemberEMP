@@ -33,7 +33,7 @@ public class WorkInOut extends JFrame {
     private JLabel inOutImage_l;
     private JPanel north_p;
     private String user_name;
-    private String loginedEmpno; // 로그인한 사번을 저장할 변수
+    public String loginedEmpno; // 로그인한 사번을 저장할 변수
     private String status; // handleClockOut에서 쓰일 status값 저장소
     private CommuteVO commuteVO;
 
@@ -61,26 +61,20 @@ public class WorkInOut extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //if 만들자
-
                    //현재 로그인 한 EMP에서 정보를 가져와서 전달
                 ss = factory.openSession();
-               commuteVO = ss.selectOne("commute.member_search", loginedEmpno);
+                 commuteVO = ss.selectOne("commute.member_search", loginedEmpno);
 //                System.out.println(commuteVO.getEmpno());
-//                System.out.println(commuteVO.getAttend_status());
+                System.out.println(commuteVO.getAttend_status());
                 if (commuteVO == null){
-
                     handleClockIn();
-
                 } else if (commuteVO.getChkin() != null) {
                     JOptionPane.showMessageDialog(WorkInOut.this, "이미 출근도장을 찍으셨습니다.");
-
                 } else {
                     updateclockIN();
                 }
-
                 dispose();
             }
-
         });
         // 퇴근 버튼 이벤트
         bt_out.addActionListener(new ActionListener() {
@@ -120,7 +114,6 @@ public class WorkInOut extends JFrame {
             e.printStackTrace();
         }
                 ss.close(); // 세션 닫기
-
     }
 
     private void updateclockIN(){
@@ -156,19 +149,17 @@ public class WorkInOut extends JFrame {
         JOptionPane.showMessageDialog(WorkInOut.this,
                 user_name+"님 오늘하루도 고생하셨습니다.");
 
+        Map<String, Object> map = new HashMap<>();
+        map.put("empno", loginedEmpno);
+        ss = factory.openSession();
+
         try {
-            ss = factory.openSession();
             status = ss.selectOne("commute.getStatus", loginedEmpno); // empno로 status 조회
             System.out.println(status);
             System.out.println(loginedEmpno);
         }catch (Exception e){
             e.printStackTrace();
         }
-
-        Map<String, String> map = new HashMap<>();
-        map.put("empno", loginedEmpno);
-
-
             try {
             ss = factory.openSession();
             ss.update("commute.chkout", map);
