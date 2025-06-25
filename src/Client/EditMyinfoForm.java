@@ -93,12 +93,14 @@ public class EditMyinfoForm extends JDialog {
         bt_edit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // 수정 가능한 필드만 값을 얻어내서 변수에 저장
                 String ename = ename_tf.getText().trim();
                 String email = email_tf.getText().trim();
                 String phone = phone_tf.getText().trim();
 
                 SqlSession ss = factory.openSession();
 
+                // 위에서 만들었던 evo 사용해서 얻어낸 필드값들을 set 해서 저장한 후 업데이트
                 evo.setEname(ename);
                 evo.setEmail(email);
                 evo.setPhone(phone);

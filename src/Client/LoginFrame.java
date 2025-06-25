@@ -68,8 +68,10 @@ public class LoginFrame extends JFrame {
             }
         });
 
+        // 창 어디에서 엔터를 눌러도 해당하는 버튼이 눌리게 하기
+        getRootPane().setDefaultButton(bt_login);
 
-
+        // 취소 버튼 눌렀을 때 수행
         bt_cancel.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -163,7 +165,7 @@ public class LoginFrame extends JFrame {
             String count = ss.selectOne("emp.checkUsername", username); // emp.xml에 있음
             // 아이디가 DB에 없다면 메세지 띄우기
             if (count == null) {
-                JOptionPane.showMessageDialog(this, "아이디 없어 or 잘못된 아이디 출력");
+                JOptionPane.showMessageDialog(this, "아이디가 존재하지 않습니다");
                 return;
             }
 
