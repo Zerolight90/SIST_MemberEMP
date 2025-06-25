@@ -71,8 +71,8 @@
     <!-- 휴가를 승인했을 때 leave_history 테이블의 같은 사번을 가지는 레코드에서 사용한 휴가 기간만큼 남은 연차에서 차감시키는 쿼리 -->
     <update id="remainLeaveUpdate" parameterType="Map">
         UPDATE leave_history
-        SET remain_leave = remain_leave - #{duration} and year = date_format(now(), '%Y')
-        WHERE empno = #{empno}
+        SET remain_leave = remain_leave - #{duration}
+        WHERE empno = #{empno} and year = date_format(now(), '%Y')
     </update>
 
     <!-- 연차를 승인했을 때 근태 테이블에 레코드를 생성하는 쿼리 -->
