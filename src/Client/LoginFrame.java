@@ -175,7 +175,7 @@ public class LoginFrame extends JFrame {
             String count = ss.selectOne("emp.checkUsername", username); // emp.xml에 있음
             // 아이디가 DB에 없다면 메세지 띄우기
             if (count == null) {
-                JOptionPane.showMessageDialog(this, "아이디 없어 or 잘못된 아이디 출력");
+                JOptionPane.showMessageDialog(this, "아이디가 존재하지 않습니다");
                 return;
             }
 
@@ -200,12 +200,12 @@ public class LoginFrame extends JFrame {
                 this.dispose();
                 parent.setVisible(true);
 
-            } else if (user.getWork_status().equals("1")) {
-                JOptionPane.showMessageDialog(this, "퇴사한 사원의 계정입니다.");
-            } else {
+            } else if (user == null) {
                 // 여기 넘어왔다는건 이미 위에서
                 // 아이디를 확인했다는것과 동일함 그래서 비밀번호 틀림만 출력
                 JOptionPane.showMessageDialog(this, "비밀번호가 틀렸습니다.");
+            } else if (user.getWork_status().equals("1")) {
+                JOptionPane.showMessageDialog(this, "퇴사한 사원의 계정입니다.");
             }
 
         } catch (Exception e) {
