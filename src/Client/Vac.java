@@ -20,8 +20,13 @@ import java.util.List;
 import java.util.Map;
 
 public class Vac {
+    // 승인/반려내역에서 더블클릭 기능을 막기 위한 불린형 변수
+    boolean rist;
 
     public Vac(AdminFrame af){
+        // 승인/반려내역에서 더블클릭 기능을 막기 위한 불린형 변수 초기화
+        rist = true;
+
         af.ss = af.factory.openSession();
 
         // 로그인한 사원의 부서번호를 얻어내 같은 부서인 사람들의 휴가 정보인 Leave_ofVO를 리스트 형태로 저장
@@ -47,6 +52,7 @@ public class Vac {
                 List<Leave_ofVO> list = af.ss.selectList("leave.approvevac", af.vo.getDeptno());
                 ViewvacTable(list, af.v_name, af.vacTable);
                 af.ss.close();
+                rist = true;
             }
         });
 
@@ -58,6 +64,7 @@ public class Vac {
                 List<Leave_ofVO> list = af.ss.selectList("leave.searchvac", af.vo.getDeptno());
                 ViewvacTable(list, af.v_name, af.vacTable);
                 af.ss.close();
+                rist = false;
             }
         });
 
@@ -66,7 +73,7 @@ public class Vac {
             @Override
             public void mouseClicked(MouseEvent e) {
                 int cnt = e.getClickCount();
-                if (cnt == 2){ // 테이블에서 더블클릭을 했다면
+                if (cnt == 2 && rist == true){ // 테이블에서 더블클릭을 했다면, 그리고 승인/반려 버튼을 누른 화면이라면
                     int i = af.vacTable.getSelectedRow(); // 정수형 변수 i에 선택된 열의 인덱스값을 저장
                     String empno = af.vacTable.getValueAt(i, 0).toString(); // 선택된 열의 사번 저장
                     String lname = af.vacTable.getValueAt(i, 3).toString(); // 선택된 열의 휴가 유형 저장
