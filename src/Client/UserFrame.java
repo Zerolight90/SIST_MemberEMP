@@ -549,14 +549,7 @@ public class UserFrame extends JFrame {
         homeImage_l.setIcon(new ImageIcon(img2));
 
         // 내 정보 테이블의 컬럼들의 열 간격 조정
-        table_myInfo.getColumnModel().getColumn(0).setPreferredWidth(50);   // 사번
-        table_myInfo.getColumnModel().getColumn(1).setPreferredWidth(80);   // 이름
-        table_myInfo.getColumnModel().getColumn(2).setPreferredWidth(100);  // 직급
-        table_myInfo.getColumnModel().getColumn(3).setPreferredWidth(120);  // 부서
-        table_myInfo.getColumnModel().getColumn(4).setPreferredWidth(60);   // 급여
-        table_myInfo.getColumnModel().getColumn(5).setPreferredWidth(120);  // 연락처
-        table_myInfo.getColumnModel().getColumn(6).setPreferredWidth(150);  // 이메일
-        table_myInfo.getColumnModel().getColumn(7).setPreferredWidth(100);  // 입사일
+        EditTableC();
 
         // 홈 버튼 눌렀을 때 화면 변경
         bt_home.addActionListener(new ActionListener() {
@@ -737,14 +730,7 @@ public class UserFrame extends JFrame {
         }
         table_myInfo.setModel(new DefaultTableModel(myinfo, myinfo_cname));
         // 컬럼들의 열 간격 조정
-        table_myInfo.getColumnModel().getColumn(0).setPreferredWidth(50);   // 사번
-        table_myInfo.getColumnModel().getColumn(1).setPreferredWidth(80);   // 이름
-        table_myInfo.getColumnModel().getColumn(2).setPreferredWidth(100);  // 직급
-        table_myInfo.getColumnModel().getColumn(3).setPreferredWidth(120);  // 부서
-        table_myInfo.getColumnModel().getColumn(4).setPreferredWidth(60);   // 급여
-        table_myInfo.getColumnModel().getColumn(5).setPreferredWidth(120);  // 연락처
-        table_myInfo.getColumnModel().getColumn(6).setPreferredWidth(150);  // 이메일
-        table_myInfo.getColumnModel().getColumn(7).setPreferredWidth(100);  // 입사일
+        EditTableC();
         ss.close();
     }
 
@@ -759,25 +745,6 @@ public class UserFrame extends JFrame {
         table_myInfo.getColumnModel().getColumn(6).setPreferredWidth(150);  // 이메일
         table_myInfo.getColumnModel().getColumn(7).setPreferredWidth(100);  // 입사일
     }
-
-//    // 선택된 인덱스값을 가지고 생성한 리스트를 이용해 사원을 검색하는 함수
-//    private void searchInfo(List<EmpVO> list){
-//        searchInfo = new Object[list.size()][searchInfo_cname.length];
-//
-//        int i = 0;
-//        for (EmpVO vo : list) {
-//            searchInfo[i][0] = vo.getEmpno();
-//            searchInfo[i][1] = vo.getEname();
-//            searchInfo[i][2] = vo.getPosname();
-//            searchInfo[i][3] = vo.getDname();
-//            searchInfo[i][4] = vo.getPhone();
-//            searchInfo[i][5] = vo.getEmail();
-//            searchInfo[i][6] = vo.getHireDATE();
-//            i++;
-//        }
-//        table_emp.setModel(new DefaultTableModel(searchInfo, searchInfo_cname));
-//        ss.close();
-//    }
 
     // 휴가 상태 레이블 설정하는 함수
     private void setLabel() {
