@@ -85,9 +85,8 @@ public class docs extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 SqlSession ss = factory.openSession();
-                Docslist = ss.selectList("docs.Docs_Dept", vo.getDeptno());
+                Docslist = ss.selectList("docs.Docs_Dept", evo.getDeptno()); //dvo.getDeptno());
                 String[] column = {"문서번호", "제목", "내용"};
-
                 String[][] data = new String[Docslist.size()][column.length];
                 for (int i = 0; i < Docslist.size(); i++) {
                     DocsVO dvo = Docslist.get(i);
@@ -216,10 +215,10 @@ public class docs extends JFrame {
                     map.put("deptno", entry.getValue()); // 선택한 부서의 deptno로 저장
                     ss.insert("docs.share_Docs", map);
                     ss.commit();
+                    JOptionPane.showMessageDialog(docs.this, "공유 완료");
                 }
             }
         }
-        JOptionPane.showMessageDialog(docs.this, "공유 완료");
         ss.close();
 
     }
@@ -244,12 +243,12 @@ public class docs extends JFrame {
     private void initComponents() {
 
         north_p = new JPanel();
-        jsp_workLogWrite = new javax.swing.JScrollPane();
+        jsp_workLogWrite = new JScrollPane();
         save_p = new JScrollPane();
-        ta_workLogWrite = new javax.swing.JTextArea();
-        bar = new javax.swing.JMenuBar();
-        menu = new javax.swing.JMenu();
-        menuItem = new javax.swing.JMenuItem();
+        ta_workLogWrite = new JTextArea();
+        bar = new JMenuBar();
+        menu = new JMenu();
+        menuItem = new JMenuItem();
         view_menu = new JMenuItem();
         title = new JTextField(10);
         table = new JTable();
@@ -261,7 +260,7 @@ public class docs extends JFrame {
 
         setTitle("업무 일지 작성");
 
-        jsp_workLogWrite.setPreferredSize(new java.awt.Dimension(410, 521));
+        jsp_workLogWrite.setPreferredSize(new Dimension(410, 521));
         north_p.add(jl1 = new JLabel("제목: "));
         north_p.add(title);
         LocalDate now = LocalDate.now();
@@ -270,7 +269,7 @@ public class docs extends JFrame {
         ta_workLogWrite.setRows(5);
         jsp_workLogWrite.setViewportView(ta_workLogWrite);
 
-        getContentPane().add(jsp_workLogWrite, java.awt.BorderLayout.CENTER);
+        getContentPane().add(jsp_workLogWrite, BorderLayout.CENTER);
 
         menu.setText("파일");
 

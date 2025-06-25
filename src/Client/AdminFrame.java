@@ -92,7 +92,7 @@ public class AdminFrame extends JFrame {
         JLabel homeImage_l = new JLabel("", SwingConstants.CENTER);
         ImageIcon icon = new ImageIcon(getClass().getResource("/images/adminHome.jpg"));
         Image img = icon.getImage().getScaledInstance(600, 760, Image.SCALE_SMOOTH);
-        homeImage_l.setBorder(javax.swing.BorderFactory.createEmptyBorder(15, 1, 1, 1));
+        homeImage_l.setBorder(BorderFactory.createEmptyBorder(15, 1, 1, 1));
         homeImage_l.setIcon(new ImageIcon(img));
         admin_p.add(homeImage_l, BorderLayout.CENTER);
         centerCard_p.add(admin_p, "adminCard");
@@ -134,7 +134,7 @@ public class AdminFrame extends JFrame {
         adminAtt_p.add(adminAtt_north_p, BorderLayout.NORTH);
 
         // 근태관리 테이블 설정
-        JTable attTable = new JTable(new javax.swing.table.DefaultTableModel(
+        JTable attTable = new JTable(new DefaultTableModel(
                 null,
                 a_name
         ));
@@ -154,7 +154,7 @@ public class AdminFrame extends JFrame {
         adminVac_p.add(adminVac_north_p, BorderLayout.NORTH);
 
         // 휴가관리 테이블 설정
-        vacTable = new JTable(new javax.swing.table.DefaultTableModel(
+        vacTable = new JTable(new DefaultTableModel(
                 new Object[4][9],
                 new String[]{"사원 번호", "사원 이름", "부서", "휴가 종류", "휴가 시작일", "휴가 기간", "남은 휴가", "결재 상태", "결재 날짜"}
         ));

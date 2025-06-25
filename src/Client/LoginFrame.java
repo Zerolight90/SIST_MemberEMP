@@ -1,5 +1,6 @@
 package Client;
 
+import com.sun.source.doctree.AttributeTree;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -8,26 +9,23 @@ import vo.EmpVO;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- *
- * @author zhfja
- */
 public class LoginFrame extends JFrame {
 
     private SqlSessionFactory factory; // DB 연결용 팩토리
 
     EmpVO vo; // UserFrame 에 로그인된 계정의 모든 정보를 넘겨주기 위한 EmpVO 변수 선언
+    SqlSession ss;
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(LoginFrame.class.getName());
 
-    /**
-     * Creates new form empFrame
-     */
     public LoginFrame() {
         initComponents();
 
@@ -39,21 +37,48 @@ public class LoginFrame extends JFrame {
                 login();
             }
         });
+        //각 텍스트 필드에 KeyLIstener를 추가
+
+        //bt_logint.addKeyListener로 하게 되면, 키보드 포커스를 가진 컴포넌트만 이벤트가 발생한다
+        //즉, 로그인 버튼이 아닌 아이디나 비밀번호 입력  필드에 커서가 있을 때 Enter 키를 누르므로, 버튼에 추가된 `KeyListener`는 실행되지 않습니다.
+        //따라서, 사용자가 아이디와 비밀번호를 입력할 때는 `id_tf` (JTextField) 또는 `pw_pf` (JPasswordField)가 포커스를 가지고 있습니다.
+        //따라서 `bt_login` 버튼에 `KeyListener`를 추가해도, 정작 Enter 키를 누르는 시점에는
+        //버튼이 포커스를 갖고 있지 않아 `keyPressed` 이벤트가 발생하지 않는 것입니다.
+
+        //Enter key 이벤트 정의
+
+//        id_tf.addKeyListener(new KeyAdapter() {
+//            @Override
+//            public void keyPressed(KeyEvent e) {
+//                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+//                    login();
+//                }
+//            }
+//        });
+//
+//        pw_pf.addKeyListener(new KeyAdapter() {
+//            @Override
+//            public void keyPressed(KeyEvent e) {
+//                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+//                    login();
+//                }
+//            }
+//        });
 
         // 아이디 텍스트필드에서 엔터 쳤을 시 로그인 함수 수행
         id_tf.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                bt_login.doClick();
-            }
+              @Override
+              public void actionPerformed(ActionEvent e) {
+                    bt_login.doClick();
+              }
         });
 
         // 패스워드 필드에서 엔터 쳤을 시 로그인 함수 수행
         pw_pf.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                bt_login.doClick();
-            }
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    bt_login.doClick();
+                }
         });
 
         // 취소 버튼 눌렀을 때 수행
@@ -136,7 +161,7 @@ public class LoginFrame extends JFrame {
             return; // 이전 창으로 돌아가기 위해 return
         }
 
-        SqlSession ss = null; // sqlsession 변수 선언 (혹시 몰라 null로 초기화)
+
         try {
             Reader r = Resources.getResourceAsReader(
                     "config/conf.xml"
@@ -161,7 +186,8 @@ public class LoginFrame extends JFrame {
 
             EmpVO user = ss.selectOne("emp.loginCheck", map);
 
-            if (user != null && user.getWork_status().equals("0")) { // user 가 null 이 아니면 (넘어온 사원의 정보가 있다면), 즉 로그인 성공을 의미함
+            // user 가 null 이 아니고 (넘어온 사원의 정보가 있다면), 재직 상태가 0일 경우 (재직자라면) 즉 로그인 성공을 의미함
+            if (user != null && user.getWork_status().equals("0")) {
                 JOptionPane.showMessageDialog(this, "로그인 성공");
 
                 // 로그인 성공 시 UserFrame 에 로그인된 사원의 모든 정보를 넘겨주기 위한 구문
@@ -210,9 +236,11 @@ public class LoginFrame extends JFrame {
         }
         //</editor-fold>
 
+        /* Create and display the form */
         EventQueue.invokeLater(() -> new LoginFrame().setVisible(true));
     }
 
+    // Variables declaration - do not modify//GEN-BEGIN:variables
     private JButton bt_cancel;
     private JButton bt_login;
     private JPanel center_p;
@@ -222,4 +250,5 @@ public class LoginFrame extends JFrame {
     private JLabel pw_l;
     private JPasswordField pw_pf;
     private JPanel south_p;
+    // End of variables declaration//GEN-END:variables
 }
