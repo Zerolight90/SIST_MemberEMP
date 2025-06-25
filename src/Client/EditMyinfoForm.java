@@ -123,6 +123,7 @@ public class EditMyinfoForm extends JDialog {
 
                     parent.EditMyInfoTable(evo); // UserFrame의 테이블을 갱신시키기 위한 함수 호출
                     JOptionPane.showMessageDialog(EditMyinfoForm.this, "정보 수정이 완료됐습니다!");
+                    EditMyinfoForm.this.dispose();
                 }
                 else {
                     ss.rollback(); // 변동된 사항이 없을 경우 롤백시켜 취소한다.

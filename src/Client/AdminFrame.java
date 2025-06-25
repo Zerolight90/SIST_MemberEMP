@@ -264,6 +264,14 @@ public class AdminFrame extends JFrame {
         bt_adminVac.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                ss = factory.openSession();
+
+                // 로그인한 사원의 부서번호를 얻어내 같은 부서인 사람들의 휴가 정보인 Leave_ofVO를 리스트 형태로 저장
+                List<Leave_ofVO> list = ss.selectList("leave.approvevac", vo.getDeptno());
+
+                ViewvacTable(list);
+                ss.close();
+
                 cl.show(centerCard_p, "adminVacCard");
 
                 // 승인/반려 버튼을 눌렀을 때
@@ -271,27 +279,9 @@ public class AdminFrame extends JFrame {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         ss = factory.openSession();
-
                         // 로그인한 사원의 부서번호를 얻어내 같은 부서인 사람들의 휴가 정보인 Leave_ofVO를 리스트 형태로 저장
                         List<Leave_ofVO> list = ss.selectList("leave.approvevac", vo.getDeptno());
-                        String[][] data = new String[list.size()][v_name.length];
-
                         ViewvacTable(list);
-
-                        int i = 0;
-                        for(Leave_ofVO vo : list) {
-                            data[i][0] = vo.getEmpno();
-                            data[i][1] = vo.getEname();
-                            data[i][2] = vo.getDeptno();
-                            data[i][3] = vo.getLname();
-                            data[i][4] = vo.getLdate();
-                            data[i][5] = vo.getDuration();
-                            data[i][6] = vo.getRemain_leave();
-                            data[i][7] = vo.getLstatus();
-                            data[i][8] = vo.getLprocessed();
-                            i++;
-                        }
-                        vacTable.setModel(new DefaultTableModel(data, v_name));
                         ss.close();
                     }
                 });
@@ -301,25 +291,8 @@ public class AdminFrame extends JFrame {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         ss = factory.openSession();
-
                         List<Leave_ofVO> list = ss.selectList("leave.searchvac", vo.getDeptno());
-                        String[][] data = new String[list.size()][v_name.length];
                         ViewvacTable(list);
-
-                        int i = 0;
-                        for(Leave_ofVO vo : list) {
-                            data[i][0] = vo.getEmpno();
-                            data[i][1] = vo.getEname();
-                            data[i][2] = vo.getDeptno();
-                            data[i][3] = vo.getLname();
-                            data[i][4] = vo.getLdate();
-                            data[i][5] = vo.getDuration();
-                            data[i][6] = vo.getRemain_leave();
-                            data[i][7] = vo.getLstatus();
-                            data[i][8] = vo.getLprocessed();
-                            i++;
-                        }
-                        vacTable.setModel(new DefaultTableModel(data, v_name));
                         ss.close();
                     }
                 });
