@@ -27,29 +27,27 @@ String[] vac_colum = {"휴가 항목", "휴가 기간", "남은 휴가", "신청
 Object[][] vac_info;
 SqlSessionFactory factory;
 SqlSession ss;
-JTable vacTable;
 UserFrame userFrame;
 String[] year_ar;
 EmpVO vo;
+
 
 
     public Vac_Search(EmpVO vo, UserFrame userFrame){
         this.userFrame = userFrame;
         this.vo=vo;
         initDB();
+
         nowVac(userFrame);
         setLabel(vo,userFrame);
+
     }//생성자의 끝
 
     // 휴가 상태 레이블 설정하는 함수
-
-
     private void setLabel(EmpVO vo, UserFrame userFrame) {
         userFrame.year_cb.setFont(new Font("나눔 고딕", Font.PLAIN, 15)); // combo box 폰트 셋팅
-
         //1.콤보박스의 첫해 2025년도 값을 가져온다
         math_vac(vo, userFrame);
-
         // 콤보박스로 해당년도 클릭하면 그해 데이터 조회 값을 가져와서 재 출력
         userFrame.year_cb.addActionListener(new ActionListener() {
             @Override
@@ -57,11 +55,11 @@ EmpVO vo;
                 vacTable(vo, userFrame); // 사용한 휴가 상세 정보 테이블
                 //콤보 박스에서 사용자가 선택한 x년도를 가져와서 selecterd에 저장 한다.
                 math_vac(vo, userFrame);
-
             }
         });
     }
 
+    //나의 휴가정보 버튼을 눌렀을때 호출되는 함수
     private void nowVac(UserFrame userFrame) {
         String selectedYear = (String) userFrame.year_cb.getSelectedItem();
         Map<String, String> map = new HashMap<>();
@@ -89,17 +87,17 @@ EmpVO vo;
             remain_Vac_map.put("empno", vo.getEmpno());
             remain_Vac_map.put("year", selected); // 새로 선택한 연도를 파나메타로 사용한다
 
-            //선택한 연도를 가지고 쿼리를 실행하여 lhvo에 값을 저장한다.
-            lhvo = ss.selectOne("history.math_Vac", remain_Vac_map);
+            //선택한 연도를 가지고 쿼리를 실행하여 lhvo(Leave_history)에 값을 저장한다.
+            lhvo = ss.selectOne("history.math_Vac", remain_Vac_map); //해당년도의 남은 휴가를 가져온다.
 
             if (lhvo != null) {
                 userFrame.allVac_l.setText("총 휴가 :" + lhvo.getTotal_leave());
                 userFrame.remainVac_l.setText("남은 휴가 :" + lhvo.getRemain_leave());
 
-                // 사용 휴가 계산
+                // 사용 휴가 계산(반차의 경우 0.5이기에 int가 아닌 double로 형변환을 시켜 계산 한다.)
                 double total = Double.parseDouble(lhvo.getTotal_leave());
                 double remain = Double.parseDouble(lhvo.getRemain_leave());
-                userFrame.used = total - remain;
+                userFrame.used = total - remain; //사용 휴가의 경우 1년에 받은 총 휴가에서 남은 휴가를 빼서 사용휴가를 얻어낸다.
                 //                  System.out.println(used);
                 userFrame.usedVac_l.setText("사용 휴가 :" + userFrame.used);
             } else {
@@ -117,7 +115,7 @@ EmpVO vo;
     public void vacTable(EmpVO vo, UserFrame userFrame) {
         // 연도 콤보 박스에서 선택한 값을 String으로 형변환 후 selectedYear에 저장 한다.
         String selectedYear = (String)userFrame.year_cb.getSelectedItem();
-        System.out.println(selectedYear);
+//        System.out.println(selectedYear);
 
         Map<String, String> map = new HashMap<>();
         map.put("empno", vo.getEmpno());
@@ -134,7 +132,7 @@ EmpVO vo;
         ss.close();
     }
 
-    //휴가 조회시트 테이블
+    //로그인한 사원의 휴가 기록을 조회하여 시트에 저장하는 테이블
     private void viewVacTable(List<Leave_ofVO> list, UserFrame userFrame) {
 
         vac_info = new Object[list.size()][vac_colum.length];
@@ -144,6 +142,7 @@ EmpVO vo;
             vac_info[i][1] = vo.getLdate();
             vac_info[i][2] = vo.getDuration();
             vac_info[i][3] = vo.getLprocessed();
+
             switch (vo.getLstatus()) {
                 case "0":
                     vac_info[i][4] = "신청";
@@ -153,9 +152,7 @@ EmpVO vo;
                     break;
                 case "2":
                     vac_info[i][4] = "반려";
-
             }
-    //           vac_info[i][4] = vo.getLstatus();
             i++;
         }//for종료
 
@@ -163,6 +160,7 @@ EmpVO vo;
         userFrame.vacTable.setDefaultEditor(Object.class, null); // 셀 편집 비활성화 하는 기능
     }
 
+    //원래는 콤보박스 배열 대신 쓰려고 만든 함수인데 객체화 하면서 어디에 넣을지 잊어버림
     private void setYear_ar(){
         // 현재 년도만 얻어내자!
         LocalDate date = LocalDate.now();
@@ -181,9 +179,7 @@ EmpVO vo;
             Reader r = Resources.getResourceAsReader("config/conf.xml"); // MyBatis 설정 파일 경로
             factory = new SqlSessionFactoryBuilder().build(r);
             r.close();
-
 //            System.out.println("DB연결 완료");
-
         } catch (IOException e) {
             e.printStackTrace();
         }

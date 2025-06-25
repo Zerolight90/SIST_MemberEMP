@@ -451,7 +451,7 @@ public class UserFrame extends JFrame {
         yearLabel.setFont(new Font("맑은 고딕", Font.BOLD, 14));
         yearLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // 테이블 디자인
+         // 테이블 디자인
         myVac_south_p.setBorder(BorderFactory.createEmptyBorder(20, 30, 1, 30));
         myVac_south_p.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
 

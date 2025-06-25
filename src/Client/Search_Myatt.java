@@ -29,12 +29,12 @@ public class Search_Myatt extends JFrame{
         this.userFrame = userFrame;
         this.vo=vo;
         initDB();
-        searchAttendance(vo,userFrame);
+        searchAttendance(vo,userFrame); //로그인한 사원이 해당 년월을 선택하여 조회버튼을 눌를때 발동하는 함수
 
     }//기본 생정자
 
 
-    // 근태 조회(검색) 함수
+    //로그인한 사원의 해당년월을 선택하여 그 사원의 근태를 조회(검색) 함수
     private void searchAttendance(EmpVO vo,UserFrame userFrame) {
         String selectedYear = (String) userFrame.year_cb.getSelectedItem();
         String selectedMonth = (String) userFrame.month_cb.getSelectedItem();
@@ -45,9 +45,9 @@ public class Search_Myatt extends JFrame{
         }
 
         Map<String, Object> map = new HashMap<>();
-        map.put("empno", vo.getEmpno());
-        map.put("year", selectedYear);
-        map.put("month", selectedMonth);
+        map.put("empno", vo.getEmpno()); //로그인한 사원의 사번
+        map.put("year", selectedYear); //선택한 년도
+        map.put("month", selectedMonth); //선택한 월
 
         try {
             ss = factory.openSession();
@@ -67,11 +67,11 @@ public class Search_Myatt extends JFrame{
         chk = new String[list.size()][date_name.length];
         int i = 0;
         for (CommuteVO vo : list) {
-            chk[i][0] = vo.getEmpno();
-            chk[i][1] = vo.getDate();
-            chk[i][2] = vo.getChkin();
-            chk[i][3] = vo.getChkout();
-            chk[i][4] = vo.getAttend_note();
+            chk[i][0] = vo.getEmpno(); //사번
+            chk[i][1] = vo.getDate(); //날짜
+            chk[i][2] = vo.getChkin(); //출근 시간
+            chk[i][3] = vo.getChkout(); //퇴근 시간
+            chk[i][4] = vo.getAttend_note(); //attend_states값에 따라 0:출근 1:퇴근 2:연차 3:오전반찬 4:오후반차 5:지각
 
             i++;
         }//for종료
