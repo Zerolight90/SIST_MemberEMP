@@ -66,20 +66,23 @@ public class LoginFrame extends JFrame {
 //        });
 
         // 아이디 텍스트필드에서 엔터 쳤을 시 로그인 함수 수행
-        id_tf.addActionListener(new ActionListener() {
-              @Override
-              public void actionPerformed(ActionEvent e) {
-                    bt_login.doClick();
-              }
-        });
-
-        // 패스워드 필드에서 엔터 쳤을 시 로그인 함수 수행
-        pw_pf.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    bt_login.doClick();
-                }
-        });
+//        id_tf.addActionListener(new ActionListener() {
+//              @Override
+//              public void actionPerformed(ActionEvent e) {
+//                    bt_login.doClick();
+//              }
+//        });
+//
+//        // 패스워드 필드에서 엔터 쳤을 시 로그인 함수 수행
+//        pw_pf.addActionListener(new ActionListener() {
+//                @Override
+//                public void actionPerformed(ActionEvent e) {
+//                    bt_login.doClick();
+//                }
+//        });
+        
+        // 창 어디에서 엔터를 눌러도 해당하는 버튼이 눌리게 하기
+        getRootPane().setDefaultButton(bt_login);
 
         // 취소 버튼 눌렀을 때 수행
         bt_cancel.addActionListener(new ActionListener() {
