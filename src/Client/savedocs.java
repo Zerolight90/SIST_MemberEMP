@@ -133,7 +133,7 @@ public class savedocs extends JFrame {
 
         setJMenuBar(bar);
 
-        this.setBounds(300, 300, 300, 300);
+        this.setBounds(730, 220, 300, 300);
         this.setVisible(true);
         this.addWindowListener(new WindowAdapter() {
             @Override

@@ -550,11 +550,10 @@ public class UserFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 new savedocs(vo);
-
-
             }
         });
 
+        // 부서 문서 조회 버튼
         bt_myList.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -569,6 +568,7 @@ public class UserFrame extends JFrame {
             }
         });
 
+        // 공유받은 무서 조회 버튼
         bt_dept.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -593,7 +593,7 @@ public class UserFrame extends JFrame {
         bt_adminMode.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (vo.getRole_num().equals("3") || vo.getRole_num().equals("2")) {
+                if (vo.getRole_num().equals("3") || vo.getRole_num().equals("2")) { // 권한번호 3과 2만 접근 가능
                     UserFrame.this.dispose();
 
                     try {

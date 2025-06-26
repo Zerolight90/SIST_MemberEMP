@@ -46,6 +46,7 @@ public class WorkInOut extends JFrame {
         loginedEmpno = userFrame.vo.getEmpno();
 
         initComponents();
+        this.setBounds(800, 400, this.getWidth(), this.getHeight()); // 생성 시 프레임 위치 조정
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         System.out.println(userFrame.vo.getEmpno());
         System.out.println(user_name);
