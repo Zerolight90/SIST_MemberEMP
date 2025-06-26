@@ -38,7 +38,6 @@ public class Myatt extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 userFrame.cl.show(userFrame.centerCard_p, "myAttCard");
-                new Myatt(vo, userFrame);
             }
         });
 
