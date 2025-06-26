@@ -36,7 +36,6 @@ public class EmpEditDialog extends JDialog {
             this.deptNo = deptNo;
             this.deptName = deptName;
         }
-
         @Override
         public String toString() {
             return deptName; // 콤보박스에 보일 이름
@@ -66,6 +65,7 @@ public class EmpEditDialog extends JDialog {
         cbDept.addItem(new DeptItem("40", "관리부"));
         cbDept.addItem(new DeptItem("50", "총무부"));
 
+        //무슨 부서를 선택받았는지 알 수있게 함
         for (int i = 0; i < cbDept.getItemCount(); i++) {
             DeptItem item = cbDept.getItemAt(i);
             if (item.deptNo.equals(emp.getDeptno())) {
@@ -78,8 +78,8 @@ public class EmpEditDialog extends JDialog {
         // 현재 로그인한 관리자 권한에 따라 직급 선택지 설정
         //System.out.println(vo.getRole_num());
         String[] roleBasedPositions = loginAdmin.getRole_num().equals("3") ? allPositions : limitedPositions;
-
         cbPos = new JComboBox<>(roleBasedPositions);
+        //권한이 3이면 사장까지 뜨게하고 직급명이 팀장이면 팀장까지
         if(emp.getRole_num().equals("3")){
             if(emp.getPosname().equals("사장")){
                 cbPos = new JComboBox<>(new String[] {"사장"});
@@ -87,10 +87,10 @@ public class EmpEditDialog extends JDialog {
             if(emp.getPosname().equals("팀장")){
                 cbPos = new JComboBox<>(new String[] {"팀장"});
             }
-            cbPos.disable();
+            cbPos.disable();//사장이면 수정 불가능하게
         }
-        tfSal = new JTextField(emp.getSal());
 
+        tfSal = new JTextField(emp.getSal());
         cbStatus = new JComboBox<>(statusOptions.toArray(new String[0]));
         cbStatus.setSelectedIndex("1".equals(emp.getWork_status()) ? 1 : 0);//1인지 0인지 확인
 
@@ -124,7 +124,7 @@ public class EmpEditDialog extends JDialog {
         }
 
 
-        //저장할 때
+        //관리자 이름을 저장하기 위해 없으면 null아니면 사번을 가져와 이름을 넣음
         String mgrName = (String) cbMgr.getSelectedItem();
         if ("없음".equals(mgrName)) {
             emp.setMgr(null);
@@ -137,6 +137,7 @@ public class EmpEditDialog extends JDialog {
         tfUsername = new JTextField(emp.getUsername());
         tfPassword = new JTextField(emp.getPassword());
 
+        //form은 Jpanel이름
         form.add(new JLabel("이름")); form.add(tfEname);
         form.add(new JLabel("부서명")); form.add(cbDept);
         form.add(new JLabel("직급명")); form.add(cbPos);
@@ -169,16 +170,16 @@ public class EmpEditDialog extends JDialog {
                     return;
                 }
                 // 팀장에서 하위 직급으로 강등되면 평사원들의 관리자에서 내려주기
-               if(!emp.getPosname().equals(cbPos.getSelectedItem()) || emp.getWork_status().equals("1")) {
-                   int cnt = ss.update("adminemp.updateMGR",emp.getEmpno());
-                   emp.setRole_num("1");
-                   if(cnt != 0)
-                       ss.commit();//이 커밋은 관리자를 최신화 하고 커밋
-                   else
-                       ss.rollback();
+                if(!emp.getPosname().equals(cbPos.getSelectedItem()) || emp.getWork_status().equals("1")) {
+                    int cnt = ss.update("adminemp.updateMGR",emp.getEmpno());
+                    emp.setRole_num("1");
+                    if(cnt != 0)
+                        ss.commit();//이 커밋은 관리자를 최신화 하고 커밋
+                    else
+                        ss.rollback();
                 }
 
-               //직급 변경했을때 팀장 이미 존재하면 변경 불가
+                //직급 변경했을때 팀장 이미 존재하면 변경 불가
                 String newPos = (String) cbPos.getSelectedItem();//새롭게 선택하는 팀장
                 String originalPos = emp.getPosname();//기존의 팀장
 
@@ -241,15 +242,28 @@ public class EmpEditDialog extends JDialog {
 
                 int result = ss.update("adminemp.updateEmpByAdmin", emp);
                 ss.commit();// 이 커밋은 adminemp에 있는 사원을 수정하기 위한 쿼리를 커밋한거임
-                if (result > 0) {
-                    JOptionPane.showMessageDialog(EmpEditDialog.this, "수정 완료");
-                    refresh.run();
-                    dispose();
-                } else {
-                    JOptionPane.showMessageDialog(EmpEditDialog.this, "수정 실패");
+
+                String[] select_d = {"예", "아니오"};
+                int select_del = JOptionPane.showOptionDialog(EmpEditDialog.this,
+                        "수정하시겠습니까?", "", 0,
+                        JOptionPane.ERROR_MESSAGE, null, select_d, select_d[0]);
+                //선택한 값이 예이면 0 아니면 1
+                if (select_del==0){
+                    if (result > 0) {
+                        JOptionPane.showMessageDialog(EmpEditDialog.this, "수정 완료");
+                        refresh.run();
+                        dispose();
+                    } else {
+                        JOptionPane.showMessageDialog(EmpEditDialog.this, "수정 실패");
+                    }
                 }
             }
         });//수정 버튼의 끝
+
+        //getRootPane은 Jdialog JFrame등의 최상의 컨테이너에서 사용하는 루트패널임
+        //만약 이 함수가 있으면 어디서 엔터를 누르든 save버튼을 누르게 설정해놓음
+        //내부적으로 이미 엔터키를 눌렀을때라고 동작이 내장되어있음
+        getRootPane().setDefaultButton(save);
 
         //취소버튼
         cancel.addActionListener(new ActionListener() {

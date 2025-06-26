@@ -121,7 +121,7 @@ public class Vac {
                         }
 
                         // 승인된 휴가가 각각 연차, 오전 반차, 오후 반차일 경우를 구분해 근태 태이블에 레코드를 인서트하는 쿼리
-                        if (lname.equals("가족행사") || lname.equals("개인 사유 휴가") || lname.equals("경조사")) {
+                        if (lname.equals("가족행사") || lname.equals("개인 사유 휴가") || lname.equals("경조사") || lname.equals("연차")) {
                             Map<String, Object> map = new HashMap<>();
                             map.put("empno", empno);
                             map.put("dates", dates);

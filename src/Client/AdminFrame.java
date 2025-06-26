@@ -202,23 +202,34 @@ public class AdminFrame extends JFrame {
             }
         });
 
-        // 사원 관리 - 상세 조회
+        //상세 조회 yjun
         bt_dsearch.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new EmpSearchDialog(AdminFrame.this).setVisible(true);
+                //EmpSearchDialog 생성자 호출                부모 프레임(위치 다이얼로그)
+                EmpSearchDialog dialog = new EmpSearchDialog(AdminFrame.this, vo, factory, new Runnable() {
+                    @Override
+                    public void run() {
+                        loadEmpData();
+                    }
+                });
+                dialog.setVisible(true);
             }
         });
 
         //사원 추가 yjun
+        //사원 추가 버튼이 눌렸을 때
         bt_addEmp.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                //EmpAddDialog생성자 호출              부모프레임(다이얼로그)  로그인한 관리자 정보  DB세션 생성용 팩토리
                 EmpAddDialog dialog = new EmpAddDialog(AdminFrame.this, AdminFrame.this.vo, factory);
+
+                //dialog에서 사원 추가완료 했을시 콜백을 하는 부분
                 dialog.setEmpAddedListener(new EmpAddDialog.EmpAddedListener() {//EmpAddDialog에 선언해놓음
                     @Override
                     public void onEmpAdded() {//EmpAddDialog에 존재
-                        loadEmpData(); // 테이블 리로드
+                        loadEmpData(); // 사원 추가 성공 후 테이블 리로드
                     }
                 });
                 dialog.setVisible(true);
@@ -314,17 +325,19 @@ public class AdminFrame extends JFrame {
         }
     }
 
-    // 사원 관리 테이블에서 더블클릭 했을 경우 수행
+    //사원관리에서 테이블을 더블 클릭할때 yjun
     private void EmpTableClick(JTable empTable){
         empTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {
+                if (e.getClickCount() == 2) {//더블 클릭할시
                     ss = factory.openSession();
 
-                    int row = empTable.getSelectedRow();
-                    if(row == -1) return;
+                    int row = empTable.getSelectedRow();//그 열에 선택된 값을 가져옴
+                    if(row == -1) //그 열이 아무것도 없으면 실행 X
+                        return;
 
+                    //사번은 Long 형으로
                     Long empno = Long.parseLong(empTable.getValueAt(row,0).toString());
                     EmpVO targetEmp = ss.selectOne("adminemp.getEmpByEmpno", empno);
                     // 로그인한 사용자가 팀장인데, 수정하려는 대상도 팀장 이상이면 수정 불가능
@@ -334,7 +347,7 @@ public class AdminFrame extends JFrame {
                         return;
                     }
                     //EmpEditDialog로 보내줄 인자들 runnable함수 사용(runnable란 run()이라는 할 일 하나만 정의하는 인터페이스)
-                    //listner로 사용 가능하지만 단순한 작업이기때문에 runnanble함수를 사용했음
+                    //listner로 리스너 인터페이스를 만들어 사용 가능하지만 단순한 작업이기때문에 runnanble함수를 사용했음
                     //쉽게 말해 해야 할 일을 담는 일회용 함수 언제 사용할지 정하기만 하면 되고 지금 Runnable은 loadEmpData함수를 부르기 위해 사용
                     new EmpEditDialog(AdminFrame.this, targetEmp, AdminFrame.this.vo, ss, new Runnable() {
                         @Override
@@ -342,6 +355,8 @@ public class AdminFrame extends JFrame {
                             loadEmpData();
                         }
                     });
+
+                    ss.close();
                 }
             }
         });

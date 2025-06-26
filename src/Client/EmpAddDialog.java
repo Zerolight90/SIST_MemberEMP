@@ -10,7 +10,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 public class EmpAddDialog extends JDialog {
     private JTextField tfEname, tfSal, tfHire, tfResign, tfEmail, tfPhone, tfUsername, tfPassword;
@@ -33,6 +32,7 @@ public class EmpAddDialog extends JDialog {
         tfEname = new JTextField();
         cbDept = new JComboBox<>(new String[]{"개발부", "인사부", "영업부", "관리부", "총무부"});
         //cbPos = new JComboBox<>(new String[]{"사원", "대리", "팀장"});
+        //삼항 연산자 로그인한사람의 rol_num이 3이면 allPositions 아니면 limitedPosition
         String[] roleBasedPositions = loginAdmin.getRole_num().equals("3") ? allPositions : limitedPositions;
 
         cbPos = new JComboBox<>(roleBasedPositions);
@@ -48,6 +48,7 @@ public class EmpAddDialog extends JDialog {
         cbMgr = new JComboBox<>();
         loadMgrList(); // 관리자 콤보박스 초기화
 
+        //form은 Jpanel이름
         form.add(new JLabel("이름 *")); form.add(tfEname);
         form.add(new JLabel("부서 *")); form.add(cbDept);
         form.add(new JLabel("직급 *")); form.add(cbPos);
@@ -61,15 +62,21 @@ public class EmpAddDialog extends JDialog {
         form.add(new JLabel("아이디 *")); form.add(tfUsername);
         form.add(new JLabel("비밀번호 *")); form.add(tfPassword);
 
+        //중앙에 위치
         add(form, BorderLayout.CENTER);
 
         JButton btnAdd = new JButton("추가");
+        //추가 버튼을 눌렀을떄
         btnAdd.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                addEmployee();
+                addEmployee();//addEmployee함수 불러옴
             }
         });
+
+        //최상위 컨테이너임 어디에서든 엔터를 누르면 추가 버튼을 누른것과 같음
+        //내부적으로 엔터키를 눌렀을때와 똑같은 동작을 내장하고있음
+        getRootPane().setDefaultButton(btnAdd);
 
         JPanel btnPanel = new JPanel();
         btnPanel.add(btnAdd);
@@ -79,6 +86,7 @@ public class EmpAddDialog extends JDialog {
         setLocationRelativeTo(parent);
     }//생성자의 끝
 
+    //관리자의 리스트들을 불러오는 함수
     private void loadMgrList() {
         try (SqlSession ss = factory.openSession()) {//try-with-resources 사용 ss.close할필요 없음
             cbMgr.addItem("없음"); // 기본값
@@ -90,6 +98,7 @@ public class EmpAddDialog extends JDialog {
         }
     }
 
+    //사원 추가 함수
     private void addEmployee() {
         //유효성 검사
         if (tfEname.getText().trim().isEmpty() || tfSal.getText().trim().isEmpty()
@@ -98,7 +107,6 @@ public class EmpAddDialog extends JDialog {
             JOptionPane.showMessageDialog(this, "필수 항목을 모두 입력해주세요.");
             return;
         }
-
         try {
             Integer.parseInt(tfSal.getText().trim());
         } catch (NumberFormatException ex) {
@@ -126,7 +134,7 @@ public class EmpAddDialog extends JDialog {
             emp.setRole_num("2");
 
             String mgrName = (String) cbMgr.getSelectedItem();
-            emp.setMgr("없음".equals(mgrName) ? null : mgrMap.get(mgrName));
+            emp.setMgr("없음".equals(mgrName) ? null : mgrMap.get(mgrName));//여기도 삼항 연산자임
 
             Map<String, String> updateMap = new HashMap<>();
 
@@ -138,23 +146,33 @@ public class EmpAddDialog extends JDialog {
                     JOptionPane.showMessageDialog(this, "해당 부서에는 이미 팀장이 존재합니다.");
                     return;
                 }
-                emp.setRole_num("2");
+                emp.setRole_num("2");//팀장이면 권한을 2로 줄예정
             } else
-                emp.setRole_num("1");
+                emp.setRole_num("1");//아니면 일반사원 대리처럼 권한을 1로
 
-            if(emp.getPosname().equals("팀장")) {
+            if(emp.getPosname().equals("팀장")) {//만약 직급명이 팀장일때 실행
                 EmpVO mgr = ss.selectOne("adminemp.getMgr", emp.getDeptno());
 
-                updateMap.put("deptno", mgr.getDeptno());
-                updateMap.put("mgr", mgr.getEmpno()); // 현재 수정 중인 emp의 사번
+                // updateMap.put("deptno", mgr.getDeptno());//관리자와 같은 부서의 사람들에게 관리자를 추가
+                // updateMap.put("mgr", mgr.getEmpno());
+                if (mgr != null) {
+                    updateMap.put("deptno", mgr.getDeptno());
+                    updateMap.put("mgr", String.valueOf(mgr.getEmpno()));
+                    ss.update("adminemp.addMgr", updateMap);
+                    ss.commit();
+                }
+                if ("없음".equals(cbMgr.getSelectedItem())) {
+                    emp.setMgr(null);
+                } else {
+                    emp.setMgr(mgrMap.get(cbMgr.getSelectedItem()));
+                }
 
-                ss.update("adminemp.addMgr", updateMap);
-                ss.commit();
+                //ss.update("adminemp.addMgr", updateMap);
+                //ss.commit();
             }
 
             Map<String, Object> map = new HashMap<>();
             map.put("username", tfUsername.getText().trim());
-            //map.put("empno", mgr.getEmpno()); // 본인 제외
 
             int count = ss.selectOne("adminemp.checkUsername", map);
             if (count > 0) {
@@ -162,9 +180,24 @@ public class EmpAddDialog extends JDialog {
                 return;
             }
 
-            int result = ss.insert("adminemp.insertEmp", emp);
+            // 팀장이면 role_num 2
+            emp.setRole_num("팀장".equals(pos) ? "2" : "1");
 
-            ss.commit();
+            int result = ss.insert("adminemp.insertEmp", emp);
+            ss.commit();//커밋먼저 하고
+
+            // 다시 실행
+            EmpVO inserted = ss.selectOne("adminemp.getEmpByUsername", emp.getUsername()); //쿼리를 다시만들어서 추가
+
+            //들어온값이
+            if (inserted != null && "팀장".equals(inserted.getPosname())) {
+                Map<String, String> updated = new HashMap<>();
+                updated.put("deptno", inserted.getDeptno());
+                updated.put("mgr", String.valueOf(inserted.getEmpno()));
+                ss.update("adminemp.addMgr", updated);
+                ss.commit();
+            }
+
             if (result > 0) {
                 JOptionPane.showMessageDialog(this, "사원 추가 성공");
                 if (empAddedListener != null) {

@@ -133,6 +133,11 @@
         </if>
     </select>
 
-
+    <!-- EmpAddDialog에서 팀장을 추가했을때를 위한 쿼리  -->
+    <select id="getEmpByUsername" resultType="vo.EmpVO" parameterType="string">
+        SELECT empno, deptno, posname
+        FROM emp
+        WHERE username = #{username}
+    </select>
 
 </mapper>

@@ -9,6 +9,8 @@ import vo.EmpVO;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.HashMap;
@@ -29,7 +31,15 @@ public class Search_Myatt extends JFrame{
         this.userFrame = userFrame;
         this.vo=vo;
         initDB();
-        searchAttendance(vo,userFrame); //로그인한 사원이 해당 년월을 선택하여 조회버튼을 눌를때 발동하는 함수
+
+        // "나의 근태정보" 패널의 "조회" 버튼에 대한 ActionListener 추가
+        userFrame.bt_find.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                searchAttendance(vo,userFrame); //로그인한 사원이 해당 년월을 선택하여 조회버튼을 눌를때 발동하는 함수
+            }
+        });
+
 
     }//기본 생정자
 

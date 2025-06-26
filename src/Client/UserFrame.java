@@ -581,22 +581,11 @@ public class UserFrame extends JFrame {
             }
         });
 
-        // 나의 근태정보 버튼 눌렀을 때 화면 변경
-        bt_myAtt.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cl.show(UserFrame.this.centerCard_p, "myAttCard");
-                new Myatt(vo, UserFrame.this);
-            }
-        });
+        // 나의 근태정보 버튼 클래스 호출
+        new Myatt(vo, UserFrame.this);
 
-        // "나의 근태정보" 패널의 "조회" 버튼에 대한 ActionListener 추가
-        bt_find.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new Search_Myatt(vo, UserFrame.this);
-            }
-        });
+        // "나의 근태정보" 패널의 "조회" 버튼 클래스 호출
+        new Search_Myatt(vo, UserFrame.this);
 
         // 관리자 모드 버튼 눌렀을 시 관리자 인증 진행한 후
         // 권한번호가 일정 번호라면 인증 성공해서 창 닫고 AdminFrame 열기

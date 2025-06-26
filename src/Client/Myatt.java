@@ -9,6 +9,8 @@ import vo.EmpVO;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.HashMap;
@@ -30,6 +32,16 @@ public class Myatt extends JFrame {
     public Myatt(EmpVO vo, UserFrame userFrame){
         this.userFrame = userFrame;
         this.vo=vo;
+
+        // 나의 근태정보 버튼 눌렀을 때 화면 변경
+        userFrame.bt_myAtt.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                userFrame.cl.show(userFrame.centerCard_p, "myAttCard");
+                new Myatt(vo, userFrame);
+            }
+        });
+
         initDB(); //DB연결
         All_searchAttendance(vo,userFrame); // 로그인한 사원의 전체 근태기록 테이블을 호출하는 함수
 
