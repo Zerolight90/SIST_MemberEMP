@@ -21,18 +21,20 @@ import java.util.Map;
 
 public class Vac {
 
-    public Vac(AdminFrame af){
+    public Vac(AdminFrame af){ // 관리자 프레임에서 기능들을 수행할 수 있도록 기본 생성자에서 어드민 프레임을 인자로 받아옴
         af.ss = af.factory.openSession();
 
         // 로그인한 사원의 부서번호를 얻어내 같은 부서인 사람들의 휴가 정보인 Leave_ofVO를 리스트 형태로 저장
         List<Leave_ofVO> list = af.ss.selectList("leave.approvevac", af.vo.getDeptno());
 
+        // 초기에 휴가 관리 버튼을 눌렀을 때 승인/반려 테이블이 보여지도록 테이블 갱신해 출력하는 함수 호출
         ViewvacTable(list, af.v_name, af.vacTable);
         af.ss.close();
 
         // 휴가 관리 버튼을 눌렀을 때
         af.bt_adminVac.addActionListener(new ActionListener() {
             @Override
+            // 관리자 프레임의 카드레이아웃 변경
             public void actionPerformed(ActionEvent e) {
                 af.cl.show(af.centerCard_p, "adminVacCard");
             }
@@ -45,6 +47,7 @@ public class Vac {
                 af.ss = af.factory.openSession();
                 // 로그인한 사원의 부서번호를 얻어내 같은 부서인 사람들의 휴가 정보인 Leave_ofVO를 리스트 형태로 저장
                 List<Leave_ofVO> list = af.ss.selectList("leave.approvevac", af.vo.getDeptno());
+                // 테이블 갱신해 출력하는 함수 호출
                 ViewvacTable(list, af.v_name, af.vacTable);
                 af.ss.close();
             }
@@ -61,7 +64,7 @@ public class Vac {
             }
         });
 
-        // 휴가 관리 - 승인/반려 테이블에서 특정 휴가 신청을 승인했을 경우 수행하는 감지자
+        // 휴가 관리 - 승인/반려 테이블에서 더블 클릭을 감지해 승인할지 반려할지를 결정하는 창을 띄우기를 수행하는 감지자
         af.vacTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -73,11 +76,11 @@ public class Vac {
 
                     // 선택된 열의 휴가 기간 저장
                     String durationStr = af.vacTable.getValueAt(i, 5).toString();
-                    BigDecimal duration = new BigDecimal(durationStr);
+                    BigDecimal duration = new BigDecimal(durationStr); // 스트링 형태로 받은 후 데시멀로 형변환
 
                     // 선택된 열의 휴가 시작일 저장
                     String ldateStr = af.vacTable.getValueAt(i, 4).toString();
-                    Date ldate = Date.valueOf(ldateStr); // java.sql.Date
+                    Date ldate = Date.valueOf(ldateStr); // 스트링 형태로 받은 후 데이트로 형변환
 
                     // 컨펌 다얄로그를 띄우고 승인할지를 물어봄
                     int num = JOptionPane.showConfirmDialog(af, "승인하시겠습니까?",
@@ -101,17 +104,16 @@ public class Vac {
                         // 승인한 경우 결재 날짜를 업데이트하기 위해 해당 쿼리 실행
                         af.ss.update("leave.processedUpdate", lvo);
 
-                        // 테이블 갱신 함수 호출
                         List<Leave_ofVO> list = af.ss.selectList("leave.approvevac", af.vo.getDeptno());
+                        // 테이블 갱신 함수 호출
                         ViewvacTable(list, af.v_name, af.vacTable);
 
-                        //
-                        int days = duration.intValue();
-                        List<Date> dates = new ArrayList<>();
-                        LocalDate startDate = ldate.toLocalDate();
+                        int days = duration.intValue(); // 연차일 경우 쿼리를 반복하기 위한 변수 선언
+                        List<Date> dates = new ArrayList<>(); // 쿼리를 반복할 때 사용할 데이트형 리스트 선언
+                        LocalDate startDate = ldate.toLocalDate(); // plusDays 기능을 사용하기 위해 휴가 시작일을 로컬데이트형 변수로 변환
 
-                        // 휴가 기간을 비교해서 0.5라면 반차이므로 근태 테이블에 레코드를 하나만 추가하고
-                        // 그 외의 경우라면 연차이므로 앞서 얻어낸 휴가 기간의 수만큼 날짜를 얻어내 dates 리스트에 저장
+                        // 휴가 기간을 비교해서 0.5와 차이가 없다면 반차이므로 근태 테이블에 레코드를 하나만 추가하고
+                        // 그 외의 경우라면 연차이므로 앞서 얻어낸 휴가 기간의 수만큼 날짜를 얻어내 데이트형 리스트 dates에 저장
                         if (duration.compareTo(new BigDecimal("0.5")) == 0) {
                             dates.add(Date.valueOf(startDate));
                         } else {
@@ -128,27 +130,23 @@ public class Vac {
                             map.put("lname", lname);
                             af.ss.insert("leave.insertAttLeave", map);
                         } else if (lname.equals("오전 반차")){
-                            System.out.println("확인");
                             Map<String, Object> map = new HashMap<>();
                             map.put("empno", empno);
                             map.put("dates", dates);
                             map.put("lname", lname);
-                            int cnt2 = af.ss.insert("leave.insertAttLeave3", map);
-                            System.out.println(cnt2);
+                            af.ss.insert("leave.insertAttLeave3", map);
                         } else if (lname.equals("오후 반차")){
-                            System.out.println("확인");
                             Map<String, Object> map = new HashMap<>();
                             map.put("empno", empno);
                             map.put("dates", dates);
                             map.put("lname", lname);
-                            int cnt1 = af.ss.insert("leave.insertAttLeave4", map);
-                            System.out.println(cnt1);
+                            af.ss.insert("leave.insertAttLeave4", map);
                         }
 
-                        // leave_history 테이블에서 남은 휴가를 사용한 휴가 기간만큼 빼는 쿼리
+                        // 휴가 승인에 성공했으므로 leave_history 테이블에서 남은 휴가를 사용한 휴가 기간만큼 빼는 쿼리
                         Map<String, Object> map = new HashMap<>();
                         map.put("empno", empno);
-                        map.put("duration", duration); // BigDecimal
+                        map.put("duration", duration);
                         af.ss.update("leave.remainLeaveUpdate", map);
 
                     } else if (num == 1){ // 아니오를 눌러 반려했을 경우
