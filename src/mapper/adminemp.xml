@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="adminemp">
+
+    <!-- 전체 사원 정보 + 부서명 + 역할명 + 관리자 이름까지 포함 -->
+    <select id="getALLemp" resultType="vo.EmpVO">
+        SELECT
+        e.empno, e.ename, e.sal, e.hiredate, e.resign_date, e.work_status,
+        e.deptno, d.dname AS dept_name, e.role_num, r.role_name, e.mgr, m.ename AS mgr_name,
+        e.phone, e.email, e.username, e.password,e.posname
+        FROM emp e
+        JOIN dept d ON e.deptno = d.deptno
+        JOIN roles r ON e.role_num = r.role_num
+        LEFT JOIN emp m ON e.mgr = m.empno
+        ORDER BY e.empno ASC;
+    </select>
+
+    <!-- 사원 조회용 쿼리  -->
+    <select id="getEmpByEmpno" resultType="vo.EmpVO" parameterType="long">
+        SELECT
+        e.empno, e.ename, e.sal, e.hiredate, e.resign_date, e.work_status, e.deptno,
+        d.dname AS dept_name, e.role_num, r.role_name, e.mgr, m.ename AS mgr_name,
+        e.phone, e.email, e.username, e.password, e.posname
+        FROM emp e
+        JOIN dept d ON e.deptno = d.deptno
+        JOIN roles r ON e.role_num = r.role_num
+        LEFT JOIN emp m ON e.mgr = m.empno
+        WHERE e.empno = #{empno}
+    </select>
+
+    <!-- 사원 검색용 쿼리 -->
+    <select id="searchEmp" resultType="vo.EmpVO" parameterType="map">
+        SELECT
+        e.empno, e.ename, e.sal, e.hiredate, e.resign_date, e.work_status,
+        e.deptno, d.dname AS dept_name, e.role_num, r.role_name,
+        e.mgr, m.ename AS mgr_name, e.phone, e.email,
+        e.username, e.password, e.posname
+        FROM emp e
+        JOIN dept d ON e.deptno = d.deptno
+        JOIN roles r ON e.role_num = r.role_num
+        LEFT JOIN emp m ON e.mgr = m.empno
+        <where>
+            <choose>
+                <when test="str =='사원번호'">
+                    e.empno = CAST(#{text} AS UNSIGNED) <!-- CAST 한것 AS UNSIGNED 즉 string형을 숫자형 정수로 바꾼거 -->
+                </when>
+                <when test="str == '사원이름'">
+                    e.ename LIKE CONCAT('%', #{text}, '%')
+                </when>
+                <when test="str == '직급명'">
+                    e.posname LIKE CONCAT('%', #{text}, '%')
+                </when>
+                <when test="str == '부서명'">
+                    d.dname LIKE CONCAT('%', #{text}, '%')
+                </when>
+            </choose>
+        </where>
+        ORDER BY e.empno ASC <!-- empno로 정렬-->
+    </select>
+
+    <!-- 수정용 쿼리-->
+    <update id="updateEmpByAdmin" parameterType="vo.EmpVO">
+        UPDATE emp SET
+        ename = #{ename}, deptno = #{deptno}, role_num = #{role_num}, sal = #{sal},
+        work_status = #{work_status}, hiredate = #{hireDATE}, resign_date = #{resign_DATE},
+        mgr = #{mgr}, email = #{email}, phone = #{phone}, username = #{username},
+        password = #{password}, posname = #{posname}
+        WHERE empno = #{empno}
+    </update>
+
+    <!-- 관리자 가져오는 쿼리-->
+    <select id="getAllMgrCandidates" resultType="vo.EmpVO">
+        SELECT empno, ename FROM emp
+        WHERE posname IN ('팀장') <!-- 나중에 사장 추가할수도-->
+        ORDER BY empno
+    </select>
+
+    <!-- 사원 추가하는 쿼리 -->
+    <insert id="insertEmp" parameterType="vo.EmpVO">
+        INSERT INTO emp (
+        ename, deptno, posname, sal, work_status,
+        hiredate, resign_date, mgr, email, phone,
+        username, password, role_num
+        )
+        VALUES (
+        #{ename}, #{deptno}, #{posname}, #{sal}, #{work_status},
+        #{hireDATE}, #{resign_DATE}, #{mgr},
+        <choose>
+            <when test="email != null and email != ''">#{email}</when>
+            <otherwise>null</otherwise>
+        </choose>,
+        #{phone}, #{username}, #{password}, #{role_num}
+        )
+    </insert>
+
+    <!-- 관리자 최신화 하는 쿼라-->
+    <update id="updateMGR" parameterType="String">
+        UPDATE emp SET
+        mgr = null
+        WHERE mgr = #{mgr}
+    </update>
+
+    <!-- 팀장 변경시 이미 존재하는지 판단하는 쿼리-->
+    <select id="changeTeamLeader" resultType="int" parameterType="map">
+        SELECT COUNT(*) FROM emp
+        WHERE deptno = #{deptno}
+        AND posname = '팀장'
+        AND empno != #{empno}
+    </select>
+
+    <!-- 팀장이 되거나 추가하였을때 해당부서의 사원들을 관리자로 추가하는 쿼리  -->
+    <update id="addMgr" parameterType="map">
+        UPDATE emp
+        SET mgr = #{mgr}
+        WHERE deptno = #{deptno}
+        AND posname IN ('사원', '대리')
+    </update>
+
+    <select id="getMgr" parameterType="String" resultType="vo.EmpVO">
+        SELECT empno, deptno
+        FROM emp
+        where deptno = #{deptno} and posname = '팀장'
+    </select>
+
+    <!-- 동일한 아이디 확인용 쿼리 -->
+    <select id="checkUsername" resultType="int" parameterType="map">
+        SELECT COUNT(*) FROM emp
+        WHERE username = #{username}
+        <if test="empno != null">
+            AND empno != #{empno}
+        </if>
+    </select>
+
+    <!-- EmpAddDialog에서 팀장을 추가했을때를 위한 쿼리  -->
+    <select id="getEmpByUsername" resultType="vo.EmpVO" parameterType="string">
+        SELECT empno, deptno, posname
+        FROM emp
+        WHERE username = #{username}
+    </select>
+
+</mapper>
