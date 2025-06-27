@@ -19,20 +19,15 @@ import java.util.List;
 import java.util.Map;
 
 public class sharedocs extends Component {
-    JTextField title;
-    JScrollPane jsp_workLogWrite, select_pane, save_p;
-    JTextArea ta_workLogWrite, select_ta;
 
-    JPanel north_p;
-    JTable table, stable;
-    JLabel jl1, dateL;
-    int i,j;
+    JTable stable;
+
+    int j;
 
     UserFrame u_frame;
-    DocsVO dvo;
+
     EmpVO evo;
-    DeptVO dpvo;
-    DSharedVO dsvo;
+
     List<DocsVO> Docslist;
     SqlSessionFactory factory;
     private boolean mouse = false;

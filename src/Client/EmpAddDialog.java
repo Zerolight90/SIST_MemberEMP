@@ -49,7 +49,7 @@ public class EmpAddDialog extends JDialog {
         loadMgrList(); // 관리자 콤보박스 초기화
 
         //form은 Jpanel이름
-        form.add(new JLabel("이름 *")); form.add(tfEname);
+        form.add(new JLabel("이름 *   (*은 필수 입력 요쇼입니다.)")); form.add(tfEname);
         form.add(new JLabel("부서 *")); form.add(cbDept);
         form.add(new JLabel("직급 *")); form.add(cbPos);
         form.add(new JLabel("급여 *")); form.add(tfSal);

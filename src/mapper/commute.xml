@@ -12,7 +12,11 @@
 
     <select id="login" parameterType="Map" resultType="vo.CommuteVO">
 
-        SELECT * FROM team_db.attendance WHERE empno = #{empno}
+        SELECT empno, date, chkin, chkout, attend_note
+        FROM team_db.attendance
+        WHERE
+        empno = #{empno}
+
 
     </select>
 
@@ -53,11 +57,11 @@
         where empno = #{empno} AND date = DATE(NOW()) AND chkout is null
     </select>
 
-    <update id="chkout" parameterType="Map">
+    <update id="chkout" parameterType="Map" >
         UPDATE attendance
         SET
-        chkout = TIME(NOW())
-<!--        attend_note = #{note}-->
+        chkout = TIME(NOW()),
+        attend_note = #{note}
         WHERE
         empno = #{empno}
         AND date = DATE(NOW());

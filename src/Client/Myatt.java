@@ -38,18 +38,20 @@ public class Myatt extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 userFrame.cl.show(userFrame.centerCard_p, "myAttCard");
+                All_searchAttendance(vo,userFrame); // 로그인한 사원의 전체 근태기록 테이블을 호출하는 함수
             }
+
         });
 
         initDB(); //DB연결
-        All_searchAttendance(vo,userFrame); // 로그인한 사원의 전체 근태기록 테이블을 호출하는 함수
+
 
     }// 생성자의 끝
 
     //나의 근태정보 버튼을 눌렀을때 테이블 전체 나의 deptno를 가져와서 전체날짜를 검색에 테이블에 표출시키는 함수
     private void All_searchAttendance(EmpVO vo, UserFrame userFrame) {
 
-        Map<String, String> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
         map.put("empno", vo.getEmpno());
 
         try {

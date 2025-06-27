@@ -19,13 +19,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
-/**
- *
- * @author zhfja
- */
 public class VacAdd extends JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(VacAdd.class.getName());
@@ -37,9 +34,7 @@ public class VacAdd extends JFrame {
     UserFrame frame;
 
     Vac_Search vac_search;
-    /**
-     * Creates new form VacAdd
-     */
+
     public VacAdd(Vac_Search vac_search, SqlSessionFactory factory, EmpVO vo, UserFrame frame) {
 
         this.vac_search = vac_search;
@@ -98,8 +93,8 @@ public class VacAdd extends JFrame {
                     setdaybymonthyear();
                 }
                 else {
-                    System.out.println(year_cb.getSelectedItem());
-                    System.out.println(month_cb.getSelectedItem());
+//                    System.out.println(year_cb.getSelectedItem());
+//                    System.out.println(month_cb.getSelectedItem());
                     setday();
                 }
             }
@@ -122,12 +117,7 @@ public class VacAdd extends JFrame {
                 Leave_ofVO lovo = new Leave_ofVO(); // inset문에 전달할 vo
 
                 lovo.setEmpno(vo.getEmpno()); // 로그인한 객체의 사번
-                if(vacKind_cb.getSelectedItem().equals("연차")) // 연차, 오전/오후 반차에 따라 따로 지정
-                    lovo.setLname("연차");
-                else if (vacKind_cb.getSelectedItem().equals("오전 반차"))
-                    lovo.setLname("오전 반차");
-                else
-                    lovo.setLname("오후 반차");
+                    lovo.setLname((String) vacKind_cb.getSelectedItem());
                 StringBuffer ldate = new StringBuffer(); // 각각 콤보박스에서 정보 취합해 하나의 정보로 완성
                 ldate.append(year_cb.getSelectedItem())
                         .append(month_cb.getSelectedItem()).append(day_cb.getSelectedItem());
@@ -135,19 +125,22 @@ public class VacAdd extends JFrame {
                 lovo.setDuration((String) vacLong_cb.getSelectedItem()); // 신청 일수만큼 지정
                 lovo.setLstatus("0"); // 신청상태이니 0
 
-                int cnt = ss.insert("leave.requestVac", lovo);
+                List<Leave_ofVO> lvo = ss.selectList("leave.current_vac", lovo);
 
-                if(cnt != 0) {
-                    ss.commit();
-                    System.out.println("저장완료!");
-                }
-                else
-                    ss.rollback();
-                ss.close();
+                if(lvo.size() == 0) { // 기존에 같은 일자의 휴가신청 이력이 없다면 신청허가
+                    int cnt = ss.insert("leave.requestVac", lovo);
 
-                vac_search.vacTable(frame.vo, frame);
-                dispose();
+                    if (cnt != 0) {
+                        ss.commit();
+                        System.out.println("저장완료!");
+                    } else
+                        ss.rollback();
+                    ss.close();
 
+                    vac_search.vacTable(frame.vo, frame);
+                    dispose();
+                } else
+                    JOptionPane.showMessageDialog(VacAdd.this, "해당 날짜에 이미 신청된 휴가가 있습니다");
             }
         });
     }
@@ -364,32 +357,6 @@ public class VacAdd extends JFrame {
         day_cb.setModel(new DefaultComboBoxModel<>(dayarr));
     }
 
-    /**
-     * @param args the command line arguments
-     */
-//    public static void main(String args[]) {
-//        /* Set the Nimbus look and feel */
-//        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-//        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-//         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
-//         */
-//        try {
-//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-//                if ("Nimbus".equals(info.getName())) {
-//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-//                    break;
-//                }
-//            }
-//        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-//            logger.log(java.util.logging.Level.SEVERE, null, ex);
-//        }
-//        //</editor-fold>
-//
-//        /* Create and display the form */
-//        java.awt.EventQueue.invokeLater(() -> new VacAdd().setVisible(true));
-//    }
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
     private JButton bt_add;
     private JButton bt_cancel;
     private JComboBox<String> day_cb;
@@ -413,5 +380,4 @@ public class VacAdd extends JFrame {
     private JPanel vacLong_p;
     private JComboBox<String> year_cb;
     private JLabel year_l;
-    // End of variables declaration//GEN-END:variables
 }

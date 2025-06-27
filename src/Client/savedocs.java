@@ -32,9 +32,7 @@ public class savedocs extends JFrame {
     JLabel jl1, dateL;
 
     DocsVO dvo;
-    EmpVO evo;
-    DeptVO dpvo;
-    DSharedVO dsvo;
+
     SqlSessionFactory factory;
 
     public savedocs(EmpVO evo){

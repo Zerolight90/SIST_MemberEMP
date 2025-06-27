@@ -43,7 +43,7 @@ public class UserFrame extends JFrame {
     String[] searchInfo_cname = {"사번", "이름", "직급", "부서", "전화번호", "이메일", "입사일"};
 
     // 휴가 히스토리
-    String[] vac_colum = {"휴가 항목", "휴가 기간", "남은 휴가", "신청 날짜", "결재 상태"};
+    String[] vac_colum = {"휴가 항목", "휴가 기간", "남은 휴가", "결재 날짜", "결재 상태"};
     Object[][] vac_info;
 
     //문서

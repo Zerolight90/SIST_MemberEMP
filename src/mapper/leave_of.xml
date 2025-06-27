@@ -13,6 +13,11 @@
 
     </select>
 
+    <select id="current_vac" parameterType="vo.Leave_ofVO" resultType="vo.Leave_ofVO">
+        select * from leave_of
+        where empno = #{empno} and ldate = #{ldate}
+    </select>
+
     <!-- 휴가 정보를 조회하는데 필요한 값 얻어내는 쿼리 -->
     <select id="yearsSearch" parameterType="map" resultType="vo.Leave_ofVO">
         select lname,ldate,duration,lprocessed,lstatus

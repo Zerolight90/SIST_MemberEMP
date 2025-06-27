@@ -24,10 +24,9 @@ public class viewdocs extends JFrame {
     JTable table;
     int i,j;
     UserFrame u_frame;
-    DocsVO dvo;
+
     EmpVO evo;
-    DeptVO dpvo;
-    DSharedVO dsvo;
+
     List<DocsVO> Docslist;
     SqlSessionFactory factory;
     private boolean mouse = false;
@@ -63,13 +62,15 @@ public class viewdocs extends JFrame {
     public void viewList(JTable table){
         SqlSession ss = factory.openSession();
         Docslist = ss.selectList("docs.Docs_Dept", evo.getDeptno());
-        String[] column = {"문서번호", "제목", "내용"};
+        String[] column = {"문서번호", "제목", "내용", "작성자", "날짜"};
         String[][] data = new String[Docslist.size()][column.length];
         for (int i = 0; i < Docslist.size(); i++) {
             DocsVO dvo = Docslist.get(i);
             data[i][0] = dvo.getDocs_num();
             data[i][1] = dvo.getTitle();
             data[i][2] = dvo.getContent();
+            data[i][3] = evo.getEname();
+            data[i][4] = dvo.getDate();
 
         }
         table.setModel(new DefaultTableModel(data, column) {

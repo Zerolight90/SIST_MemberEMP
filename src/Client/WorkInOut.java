@@ -48,8 +48,8 @@ public class WorkInOut extends JFrame {
         initComponents();
         this.setBounds(800, 400, this.getWidth(), this.getHeight() - 80); // 생성 시 프레임 위치 조정
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        System.out.println(userFrame.vo.getEmpno());
-        System.out.println(user_name);
+//        System.out.println(userFrame.vo.getEmpno());
+//        System.out.println(user_name);
 
         initDB();
 
@@ -131,7 +131,7 @@ public class WorkInOut extends JFrame {
         map.put("empno", loginedEmpno);
 
         if (now.isAfter(lateTime)) {
-            map.put("note", "반차인데 지각?? 너 해고");
+            map.put("note", "(반차)지각");
         }
         else {
             map.put("note", "(반차)출근");
@@ -152,8 +152,10 @@ public class WorkInOut extends JFrame {
         JOptionPane.showMessageDialog(WorkInOut.this,
                 user_name+"님 오늘하루도 고생하셨습니다.");
 
-        Map<String, Object> map = new HashMap<>();
+        Map<String, String> map = new HashMap<>();
         map.put("empno", loginedEmpno);
+        map.put("note", "퇴근");
+
         ss = factory.openSession();
             try {
             ss = factory.openSession();
