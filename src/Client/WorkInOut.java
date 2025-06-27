@@ -66,13 +66,13 @@ public class WorkInOut extends JFrame {
                 commuteVO = ss.selectOne("commute.member_search", loginedEmpno);
 //                System.out.println(commuteVO.getEmpno());
 //                System.out.println(commuteVO.getAttend_status());
-                if (commuteVO.getChkout() == null){
+                if (commuteVO == null){
                     handleClockIn();
                 }else {
                     System.out.println(commuteVO.getAttend_status());
                     if (commuteVO.getAttend_status().equals("3") || commuteVO.getAttend_status().equals("4")) {
                         updateclockIN();
-                    } else if (commuteVO.getChkout() != null) {
+                    } else if (commuteVO.getChkin() != null) {
                         JOptionPane.showMessageDialog(WorkInOut.this, "이미 출근도장을 찍으셨습니다.");
                     } else {
                         JOptionPane.showMessageDialog(WorkInOut.this,"출근버튼에서 오류나긴함");
