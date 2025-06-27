@@ -21,7 +21,11 @@ import java.util.Map;
 
 public class Vac {
 
+    boolean ctable;
+
     public Vac(AdminFrame af){ // 관리자 프레임에서 기능들을 수행할 수 있도록 기본 생성자에서 어드민 프레임을 인자로 받아옴
+        ctable = true;
+
         af.ss = af.factory.openSession();
 
         // 로그인한 사원의 부서번호를 얻어내 같은 부서인 사람들의 휴가 정보인 Leave_ofVO를 리스트 형태로 저장
@@ -50,6 +54,7 @@ public class Vac {
                 // 테이블 갱신해 출력하는 함수 호출
                 ViewvacTable(list, af.v_name, af.vacTable);
                 af.ss.close();
+                ctable = true;
             }
         });
 
@@ -61,6 +66,7 @@ public class Vac {
                 List<Leave_ofVO> list = af.ss.selectList("leave.searchvac", af.vo.getDeptno());
                 ViewvacTable(list, af.v_name, af.vacTable);
                 af.ss.close();
+                ctable = false;
             }
         });
 
@@ -69,7 +75,7 @@ public class Vac {
             @Override
             public void mouseClicked(MouseEvent e) {
                 int cnt = e.getClickCount();
-                if (cnt == 2){ // 테이블에서 더블클릭을 했다면
+                if (cnt == 2 && ctable == true){ // 테이블에서 더블클릭을 했다면
                     int i = af.vacTable.getSelectedRow(); // 정수형 변수 i에 선택된 열의 인덱스값을 저장
                     String empno = af.vacTable.getValueAt(i, 0).toString(); // 선택된 열의 사번 저장
                     String lname = af.vacTable.getValueAt(i, 3).toString(); // 선택된 열의 휴가 유형 저장
