@@ -62,8 +62,10 @@
     <!-- 휴가를 반려했을 시 해당 휴가 코드를 가지는 레코드의 휴가 상태를 2 (휴가 반려) 으로 업데이트하는 쿼리 -->
     <update id="statusUpdate2" parameterType="String">
         UPDATE leave_of
-        SET lstatus = 2
+        SET lstatus = 2,
+        lprocessed = date_format(now(), '%Y-%m-%d')
         WHERE lnum = #{lnum}
+
     </update>
 
     <!-- 휴가를 승인했을 시 해당 휴가 코드를 가지는 레코드의 결재 날짜를 현재 날짜로 업데이트하는 쿼리 -->
