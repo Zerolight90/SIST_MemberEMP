@@ -10,14 +10,18 @@
         AND date = date_format(now(), '%Y%m%d')
     </select>
 
+    <select id="outCheck" resultType="String" parameterType="String">
+        SELECT chkout FROM team_db.attendance
+        WHERE empno = #{empno}
+        AND date = date_format(now(), '%Y%m%d')
+    </select>
+
     <select id="login" parameterType="Map" resultType="vo.CommuteVO">
 
         SELECT empno, date, chkin, chkout, attend_note
         FROM team_db.attendance
         WHERE
         empno = #{empno}
-
-
     </select>
 
 

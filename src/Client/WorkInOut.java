@@ -37,6 +37,8 @@ public class WorkInOut extends JFrame {
     SqlSessionFactory factory;
     SqlSession ss;
 
+    UserFrame userFrame;
+
     // 변수 선언 끝
 
     //기본 생성자
@@ -44,6 +46,7 @@ public class WorkInOut extends JFrame {
         //UseerFrame에 있는 enmpno를 가져 오기 위해 변수를 선언한다.
         user_name = userFrame.vo.getEname();
         loginedEmpno = userFrame.vo.getEmpno();
+        this.userFrame = userFrame;
 
         initComponents();
         this.setBounds(800, 400, this.getWidth(), this.getHeight() - 80); // 생성 시 프레임 위치 조정
@@ -149,30 +152,39 @@ public class WorkInOut extends JFrame {
     }
 
     private void handleClockOut() {
-        JOptionPane.showMessageDialog(WorkInOut.this,
-                user_name+"님 오늘하루도 고생하셨습니다.");
-
-        Map<String, String> map = new HashMap<>();
-        map.put("empno", loginedEmpno);
-        map.put("note", "퇴근");
-
         ss = factory.openSession();
-            try {
-            ss = factory.openSession();
-            ss.update("commute.chkout", map);
-            ss.commit();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        //List<CommuteVO> cvo = ss.selectList("commute.outCheck", loginedEmpno);
+        String chkout = ss.selectOne("commute.outCheck", loginedEmpno);
 
-        try {
-            status = ss.selectOne("commute.getStatus", loginedEmpno); // empno로 status 조회
-            //String string = CommuteVO.
-            System.out.println(loginedEmpno);
-        }catch (Exception e){
-            e.printStackTrace();
+        if (chkout == null) {
+            JOptionPane.showMessageDialog(WorkInOut.this,
+                    user_name + "님 오늘하루도 고생하셨습니다.");
+
+            Map<String, String> map = new HashMap<>();
+            map.put("empno", loginedEmpno);
+            map.put("note", "퇴근");
+
+            ss = factory.openSession();
+            try {
+                ss = factory.openSession();
+                ss.update("commute.chkout", map);
+                ss.commit();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            try {
+                status = ss.selectOne("commute.getStatus", loginedEmpno); // empno로 status 조회
+                //String string = CommuteVO.
+                System.out.println(loginedEmpno);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            ss.close(); // 세션 닫기
+        } else {
+            JOptionPane.showMessageDialog(userFrame, "이미 퇴근하셨습니다!");
+            ss.close();
         }
-        ss.close(); // 세션 닫기
 
     }
 
