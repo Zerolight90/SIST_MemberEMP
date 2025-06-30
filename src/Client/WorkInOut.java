@@ -155,35 +155,28 @@ public class WorkInOut extends JFrame {
 
     private void handleClockOut() {
         ss = factory.openSession();
-        //List<CommuteVO> cvo = ss.selectList("commute.outCheck", loginedEmpno);
+        // 1. 현재 출근 상태 확인
+        status = ss.selectOne("commute.getStatus", loginedEmpno);
+        // 2. 퇴근 여부 확인
         String chkout = ss.selectOne("commute.outCheck", loginedEmpno);
-
-        if (chkout == null) {
+        if (chkout == null) { // 퇴근 안 했을 때
             JOptionPane.showMessageDialog(WorkInOut.this,
                     user_name + "님 오늘하루도 고생하셨습니다.");
-
             Map<String, String> map = new HashMap<>();
             map.put("empno", loginedEmpno);
-            map.put("note", "퇴근");
-
-            ss = factory.openSession();
+            if ("5".equals(status)) { // 지각 상태라면
+                map.put("note", "지각"); // 퇴근 대신 지각 유지
+            } else {
+                map.put("note", "퇴근");
+            }
             try {
-                ss = factory.openSession();
                 ss.update("commute.chkout", map);
                 ss.commit();
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-            try {
-                status = ss.selectOne("commute.getStatus", loginedEmpno); // empno로 status 조회
-                //String string = CommuteVO.
-                System.out.println(loginedEmpno);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            ss.close(); // 세션 닫기
-        } else {
+            ss.close();
+        } else { // 이미 퇴근 했을 때
             JOptionPane.showMessageDialog(userFrame, "이미 퇴근하셨습니다!");
             ss.close();
         }
